@@ -10,7 +10,7 @@
 		<servlet-class>org.restlet.ext.servlet.ServerServlet</servlet-class>
 		<init-param>
 			<param-name>org.restlet.application</param-name>
-			<param-value>ca.digitalcave.parts.AspektApplication</param-value>
+			<param-value>ca.digitalcave.parts.PartsApplication</param-value>
 		</init-param>
 	</servlet>
 

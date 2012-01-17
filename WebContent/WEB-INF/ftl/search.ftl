@@ -2,11 +2,11 @@
 	<head>
 	</head>
 	<body>
-		<form action="../search" method="POST">
+		<form action="search" method="POST">
 			<label for="keywords">Keywords:</label>
 			<input type="text" name="keywords" size="35" maxlength="250" value=""/>
 		</form>
-		<#list categories as c>
+		<#list categories! as c>
 		<h2>${c.getName()?html}</h2>
 		<ul>
 			<#list c.families as f>

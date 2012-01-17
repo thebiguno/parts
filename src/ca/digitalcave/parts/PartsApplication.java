@@ -58,7 +58,7 @@ public class PartsApplication extends Application {
 				repositoryPath);
 		repository = RepositoryImpl.create(config);
 		
-		fmConfig.setServletContextForTemplateLoading(servletContext, "WEB-INF/template/");
+		fmConfig.setServletContextForTemplateLoading(servletContext, "WEB-INF/ftl/");
 		fmConfig.setDefaultEncoding("UTF-8");
 		fmConfig.setLocalizedLookup(true);
 		fmConfig.setLocale(Locale.ENGLISH);
