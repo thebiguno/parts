@@ -10,11 +10,7 @@
 		<servlet-class>org.restlet.ext.servlet.ServerServlet</servlet-class>
 		<init-param>
 			<param-name>org.restlet.application</param-name>
-			<param-value>aspekt.AspektApplication</param-value>
-		</init-param>
-		<init-param>
-			<param-name>org.restlet.clients</param-name>
-			<param-value>SMTP</param-value>
+			<param-value>ca.digitalcave.parts.AspektApplication</param-value>
 		</init-param>
 	</servlet>
 
