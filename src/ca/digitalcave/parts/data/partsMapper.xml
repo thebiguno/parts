@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="ca.digitalcave.parts.data.PartsMapper">
+	<resultMap type="ca.digitalcave.parts.model.Category" id="search">
+		<id property="name" column="category"/>
+		<collection property="families" javaType="list">
+			<id property="name" column="family"/>
+			<result property="partsCount" column="count"/>
+		</collection>
+	</resultMap>
+	
+	<select id="search" resultMap="search">
+select category.value, family.value, count(distinct family.part_id)
+from attribute attribute 
+inner join attribute family on attribute.part_id = family.part_id and family.name = 'Family'
+inner join attribute category on attribute.part_id = category.part_id and category.name = 'Category'
+		<where>
+			<if test="terms.size() gt 0">
+				<foreach collection="terms" item="term" separator=" or ">
+attribute.value like '%${term}%'
+				</foreach>
+			</if>
+		</where>
+group by category.value, family.value
+	</select>
+	
+	<select id="attributesByFamily" resultType="string">
+	</select>
+	
+	<resultMap id="partsByFamily" type="ca.digitalcave.parts.model.Part">
+		<id property="id" column="part_id"/>
+		<collection property="attributes" javaType="list">
+			<result property="name" column="name"/>
+			<result property="value" column="value"/>
+			<result property="href" column="href"/>
+		</collection>
+	</resultMap>
+	
+	<select id="partsByFamily" resultMap="partsByFamily">
+select part_id, name, value, href
+from attribute
+inner join attribute family on attribute.part_id = family.part_id and family.name = 'Family' and family.value = #{family}
+inner join attribute category on attribute.part_id = category.part_id and category.name = 'Category' and category.value = #{category}
+	</select>
+	
+	<select id="newPartId" resultType="int">
+select coalesce(max(part_id),0) + 1 from attribute
+	</select>
+	
+	<insert id="insert">
+insert into attribute (part_id, name, value, href)
+values (#{attribute.partId}, #{attribute.name}, #{attribute.value}, #{attribute.href,jdbcType=VARCHAR})
+	</insert>
+	
+	<update id="update">
+update attribute set name = #{newAttribute.name}, value = #{newAttribute.value}, href= #{newAttribute.href}
+where part_id = #{oldAttribute.partId} and name = #{oldAttribute.name} and value = #{oldAttribute.value} and href = #{oldAttribute.href}
+	</update>
+	
+	<delete id="delete">
+delete attribute
+where part_id = #{attribute.partId} and name = #{attribute.name} and value = #{attribute.value} and href = #{attribute.href}
+	</delete>
+</mapper>
