@@ -1,20 +1,20 @@
 package ca.digitalcave.parts;
 
+import java.sql.Connection;
+import java.sql.Statement;
 import java.util.Locale;
 import java.util.Properties;
 
-import javax.jcr.Repository;
-
-import org.apache.jackrabbit.core.RepositoryImpl;
-import org.apache.jackrabbit.core.config.RepositoryConfig;
+import org.apache.derby.jdbc.EmbeddedDataSource;
+import org.apache.ibatis.mapping.Environment;
+import org.apache.ibatis.session.SqlSessionFactory;
+import org.apache.ibatis.session.SqlSessionFactoryBuilder;
+import org.apache.ibatis.transaction.jdbc.JdbcTransactionFactory;
 import org.restlet.Application;
-import org.restlet.Context;
-import org.restlet.Request;
 import org.restlet.Restlet;
 import org.restlet.data.CharacterSet;
 import org.restlet.data.Language;
 import org.restlet.data.MediaType;
-import org.restlet.data.Method;
 import org.restlet.engine.application.Encoder;
 import org.restlet.resource.Directory;
 import org.restlet.routing.Redirector;
@@ -22,9 +22,8 @@ import org.restlet.routing.Router;
 import org.restlet.service.StatusService;
 
 import ca.digitalcave.parts.resource.FamilyResource;
-import ca.digitalcave.parts.resource.PartResource;
 import ca.digitalcave.parts.resource.IndexResource;
-
+import ca.digitalcave.parts.resource.PartResource;
 import freemarker.template.Configuration;
 import freemarker.template.ObjectWrapper;
 import freemarker.template.TemplateExceptionHandler;
@@ -33,7 +32,8 @@ public class PartsApplication extends Application {
 
 	private final Properties properties = new Properties();
 	private final Configuration fmConfig = new Configuration();
-	private RepositoryImpl repository;
+	private EmbeddedDataSource dataSource;
+	private SqlSessionFactory sqlSessionFactory;
 	
 	public PartsApplication() {
 		setStatusService(new StatusService());
@@ -50,14 +50,20 @@ public class PartsApplication extends Application {
 	public synchronized void start() throws Exception {
 		// called using reflection to avoid adding servlet api to lib
 		final Object servletContext = getContext().getServerDispatcher().getContext().getAttributes().get("org.restlet.ext.servlet.ServletContext");
-		final String repositoryPath = (String) servletContext.getClass().getMethod("getRealPath", String.class).invoke(servletContext, "WEB-INF/jackrabbit");
+		final String databaseName = (String) servletContext.getClass().getMethod("getRealPath", String.class).invoke(servletContext, "WEB-INF/db");
 
-		// static binding to jackrabbit
-		final RepositoryConfig config = RepositoryConfig.create(
-				Context.getCurrent().getClientDispatcher().handle(new Request(Method.GET, "war:///WEB-INF/jackrabbit/repository.xml")).getEntity().getStream(),
-				repositoryPath);
-		repository = RepositoryImpl.create(config);
+		// set up derby
+		dataSource = new EmbeddedDataSource();
+		dataSource.setDatabaseName(databaseName);
+		dataSource.setCreateDatabase("create");
 		
+		// set up mybatis
+		final Environment environment = new Environment("prod", new JdbcTransactionFactory(), dataSource);
+		final org.apache.ibatis.session.Configuration config = new org.apache.ibatis.session.Configuration(environment);
+		config.addMappers("ca.digitalcave.parts");
+		sqlSessionFactory = new SqlSessionFactoryBuilder().build(config);
+		
+		// set up freemarker
 		fmConfig.setServletContextForTemplateLoading(servletContext, "WEB-INF/ftl/");
 		fmConfig.setDefaultEncoding("UTF-8");
 		fmConfig.setLocalizedLookup(true);
@@ -66,18 +72,36 @@ public class PartsApplication extends Application {
 		fmConfig.setObjectWrapper(ObjectWrapper.BEANS_WRAPPER);
 		fmConfig.setTemplateExceptionHandler(TemplateExceptionHandler.RETHROW_HANDLER);
 		
+		// install the schema
+		final Connection connection = dataSource.getConnection();
+		Statement statement = null;
+		try {
+			statement = connection.createStatement();
+			statement.execute("drop table attributes");
+			statement.execute("create table attribute (part_id integer, name varchar(255), value varchar(255), href varchar(255))");
+		} catch (Exception e) {
+			; 
+		} finally {
+			if (statement != null) statement.close();
+			connection.close();
+		}
+		
 		super.start();
 	}
 	
 	public synchronized void stop() throws Exception {
-		repository.shutdown();
-		repository = null;
+		// shutdown derby
+		dataSource.setShutdownDatabase("shutdown");
+		dataSource.getConnection().close();
+		dataSource = null;
+		
+		sqlSessionFactory = null;
 		
 		super.stop();
 	}
 	
-	public Repository getRepository() {
-		return repository;
+	public SqlSessionFactory getSqlSessionFactory() {
+		return sqlSessionFactory;
 	}
 	
 	public Configuration getFmConfig() {
@@ -96,7 +120,7 @@ public class PartsApplication extends Application {
 		publicRouter.attach("/", IndexResource.class);
 		publicRouter.attach("/index", IndexResource.class);
 		publicRouter.attach("/parts/{category}/{family}", FamilyResource.class);
-		publicRouter.attach("/parts/{category}/{family}/{part}", PartResource.class);
+		publicRouter.attach("/parts/{part}", PartResource.class);
 		publicRouter.attach("/media", new Directory(getContext(), "war:///media"));
 
 		final Encoder encoder = new Encoder(getContext());

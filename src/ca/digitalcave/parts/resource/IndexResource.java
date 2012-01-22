@@ -1,17 +1,14 @@
 package ca.digitalcave.parts.resource;
 
-import javax.jcr.PathNotFoundException;
-import javax.jcr.Repository;
-import javax.jcr.RepositoryException;
-import javax.jcr.Session;
-import javax.jcr.query.Query;
-import javax.jcr.query.QueryResult;
+import java.util.ArrayList;
+import java.util.Arrays;
 
+import org.apache.commons.lang.StringEscapeUtils;
+import org.apache.ibatis.session.SqlSession;
 import org.htmlparser.Parser;
 import org.htmlparser.http.ConnectionManager;
 import org.htmlparser.lexer.Page;
 import org.htmlparser.util.ParserException;
-import org.htmlparser.visitors.TagFindingVisitor;
 import org.restlet.data.Form;
 import org.restlet.data.MediaType;
 import org.restlet.data.Status;
@@ -22,6 +19,8 @@ import org.restlet.resource.ResourceException;
 import org.restlet.resource.ServerResource;
 
 import ca.digitalcave.parts.PartsApplication;
+import ca.digitalcave.parts.data.PartsMapper;
+import ca.digitalcave.parts.model.Attribute;
 
 public class IndexResource extends ServerResource {
 
@@ -34,46 +33,51 @@ public class IndexResource extends ServerResource {
 	protected Representation get(Variant variant) throws ResourceException {
 		final PartsApplication application = (PartsApplication) getApplication();
 
-		return new TemplateRepresentation("search.ftl", application.getFmConfig(), getResponseAttributes(), MediaType.TEXT_HTML);
+		return new TemplateRepresentation("index.ftl", application.getFmConfig(), getResponseAttributes(), MediaType.TEXT_HTML);
 	}
 	
 	@Override
 	protected Representation post(Representation entity, Variant variant) throws ResourceException {
+		final PartsApplication application = (PartsApplication) getApplication();
 		final Form form = new Form(entity);
-		final String keywords = form.getFirstValue("keywords");
 		final String dk = form.getFirstValue("dk");
 		if (dk != null) {
-			final ConnectionManager connectionManager = Page.getConnectionManager();
-			final Parser parser = new Parser(connectionManager.openConnection(dk));
-			
 			final DigiKeyVisitor visitor = new DigiKeyVisitor();
+			final ConnectionManager connectionManager = Page.getConnectionManager();
 			try {
+				final Parser parser = new Parser(connectionManager.openConnection(dk));
 				parser.visitAllNodesWith(visitor);
 			} catch (ParserException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				throw new ResourceException(Status.SERVER_ERROR_INTERNAL, e);
 			}
 			
+			final SqlSession sqlSession = application.getSqlSessionFactory().openSession();
+			try {
+				final PartsMapper mapper = sqlSession.getMapper(PartsMapper.class);
+				int partId = mapper.newPartId();
+				for (Attribute attribute : visitor.getAttributes()) {
+					attribute.setPartId(partId);
+					mapper.insert(attribute);
+				}
+			} finally {
+				sqlSession.close();
+			}
 		}
 		
-		final PartsApplication application = (PartsApplication) getApplication();
-		final Repository repository = application.getRepository();
-		Session session = null;
+		final ArrayList<String> terms = new ArrayList<String>();
+		final String keywords = form.getFirstValue("keywords");
+		if (keywords != null) {
+			for (String term : Arrays.asList(keywords.split("\\s+"))) {
+				terms.add(StringEscapeUtils.escapeSql(term));
+			}
+		}
+		final SqlSession sqlSession = application.getSqlSessionFactory().openSession();
 		try {
-			session = repository.login();
-			
-			final String sql = "select * from [nt:unstructured] as node where contains(node.*, $keywords)";
-			final Query query = session.getWorkspace().getQueryManager().createQuery(sql, Query.JCR_SQL2);
-			query.bindValue("keywords", session.getValueFactory().createValue(keywords));
-			final QueryResult queryResults = query.execute();
-			getResponseAttributes().put("categories", queryResults.getNodes());
-			return new TemplateRepresentation("search.ftl", application.getFmConfig(), getResponseAttributes(), MediaType.TEXT_HTML);
-		} catch (PathNotFoundException e) {
-			throw new ResourceException(Status.CLIENT_ERROR_NOT_FOUND);
-		} catch (RepositoryException e) {
-			throw new ResourceException(Status.SERVER_ERROR_INTERNAL, e);
+			final PartsMapper mapper = sqlSession.getMapper(PartsMapper.class);
+			getResponseAttributes().put("categories", mapper.search(terms));
+			return new TemplateRepresentation("index.ftl", application.getFmConfig(), getResponseAttributes(), MediaType.TEXT_HTML);
 		} finally {
-			if (session != null) session.logout();
+			sqlSession.close();
 		}
 	}
 }

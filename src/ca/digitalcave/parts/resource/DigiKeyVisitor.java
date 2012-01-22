@@ -15,6 +15,8 @@ import org.htmlparser.tags.LinkTag;
 import org.htmlparser.tags.TableTag;
 import org.htmlparser.visitors.NodeVisitor;
 
+import ca.digitalcave.parts.model.Attribute;
+
 public class DigiKeyVisitor extends NodeVisitor {
 	private static final HashSet<String> IGNORE = new HashSet<String>();
 	private static final HashMap<String, String> ENTITIES = new HashMap<String, String>();
@@ -69,24 +71,24 @@ public class DigiKeyVisitor extends NodeVisitor {
 			String text = tag.toPlainTextString().trim();
 			if ("TH".equals(tag.getTagName())) {
 				attribute = new Attribute();
-				attribute.name = text;
+				attribute.setName(text);
 			}
 			if ("TD".equals(tag.getTagName())) {
-				if (!(attribute == null || IGNORE.contains(attribute.name))) {
+				if (!(attribute == null || IGNORE.contains(attribute.getName()))) {
 					if (tag.getChildren().elementAt(0) instanceof TableTag) {
 						return;
-					} else if ("Datasheets".equals(attribute.name)) {
+					} else if ("Datasheets".equals(attribute.getName())) {
 						final DatasheetVisitor datasheetVisitor = new DatasheetVisitor();
 						tag.accept(datasheetVisitor);
 						attributes.addAll(datasheetVisitor.datasheets);
 						return;
 					} else if (tag.getChildren().elementAt(0) instanceof LinkTag) {
-						attribute.href = ((LinkTag) tag.getChildren().elementAt(0)).getAttribute("href");
+						attribute.setHref(((LinkTag) tag.getChildren().elementAt(0)).getAttribute("href"));
 					}
 					for (Map.Entry<String, String> entity : ENTITIES.entrySet()) {
 						text = text.replaceAll(entity.getKey(), entity.getValue());
 					}
-					attribute.value = text;
+					attribute.setValue(text);
 					attributes.add(attribute);
 				}
 			}
@@ -99,32 +101,14 @@ public class DigiKeyVisitor extends NodeVisitor {
 		public void visitTag(Tag tag) {
 			if ("A".equals(tag.getTagName())) {
 				final Attribute datasheet = new Attribute();
-				datasheet.name = "Datasheet";
-				datasheet.href = ((LinkTag) tag).getAttribute("href");
-				datasheet.value = tag.toPlainTextString().trim();
+				datasheet.setName("Datasheet");
+				datasheet.setHref(((LinkTag) tag).getAttribute("href"));
+				datasheet.setValue(tag.toPlainTextString().trim());
 				datasheets.add(datasheet);
 			}
 		}
 	}
 
-	public static class Attribute {
-		String name;
-		String value;
-		String href;
-		
-		public String toString() {
-			final StringBuilder sb = new StringBuilder();
-			sb.append(name);
-			sb.append(" => ");
-			sb.append(value);
-			if (href != null) {
-				sb.append(" => ");
-				sb.append(href);
-			}
-			return sb.toString();
-		}
-	}
-	
 	public static void main(String[] args) throws Exception {
 		final String[] parts = new String[] {
 				"http://search.digikey.com/ca/en/products/ATMEGA644A-PU/ATMEGA644A-PU-ND/2271041",
