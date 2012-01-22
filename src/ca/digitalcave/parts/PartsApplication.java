@@ -23,7 +23,7 @@ import org.restlet.service.StatusService;
 
 import ca.digitalcave.parts.resource.FamilyResource;
 import ca.digitalcave.parts.resource.PartResource;
-import ca.digitalcave.parts.resource.SearchResource;
+import ca.digitalcave.parts.resource.IndexResource;
 
 import freemarker.template.Configuration;
 import freemarker.template.ObjectWrapper;
@@ -93,8 +93,8 @@ public class PartsApplication extends Application {
 		final Router publicRouter = new Router(getContext());
 		
 		publicRouter.attach("", new Redirector(getContext(), "/", Redirector.MODE_CLIENT_TEMPORARY));
-//		publicRouter.attach("/", IndexResource.class);
-		publicRouter.attach("/search", SearchResource.class);
+		publicRouter.attach("/", IndexResource.class);
+		publicRouter.attach("/index", IndexResource.class);
 		publicRouter.attach("/parts/{category}/{family}", FamilyResource.class);
 		publicRouter.attach("/parts/{category}/{family}/{part}", PartResource.class);
 		publicRouter.attach("/media", new Directory(getContext(), "war:///media"));
