@@ -1,6 +1,6 @@
 <html>
 	<head>
-		<title>${part.getName?html}</title>
+		<title>${title}</title>
 		<script type="text/javascript" src="media/js/jquery-1.7.1.min.js"></script>
 		<script type="text/javascript" src="media/js/jquery.jeditable.mini.js"></script>
 		<script type="text/javascript">
@@ -30,20 +30,22 @@ $(document).ready(function() {
 			<label for="keywords">Keywords:</label>
 			<input type="text" name="keywords" size="35" maxlength="250" value=""/>
 		</form>
-		<h2>${part.getName()?html}</h2>
+		<h2>${title}</h2>
 		<button type="button" id="deletePartButton" title="Delete part">
 		<table>
 			<thead>
 				<tr>
-					<th>Property</th>
+					<th>Name</th>
 					<th>Value</th>
 				</tr>
 			</thead>
 			<tbody>
-				<#list part.getProperties() as p>
+				<#list attributes as a>
 				<tr>
-					<th class="propertyName" name="${p.getName()?html}"><button type="button" class="deleteAttrButton" title="Delete property">${p.getName()?html}</th>
-					<td class="propertyValue" name="${p.getName()?html}">${p.getString()?html}</td>
+					<th class="attributeName" name="${a.getName()?html}">${a.getName()?html}</th>
+					<td class="attributeName" name="${a.getName()?html}">
+					<#if a.getHref()??><a href="${a.getHref()?html}">${a.getValue()?html}</a><#else>${a.getValue()?html}</#if>
+					</td>
 				</tr>
 				</#list>
 			</tbody>

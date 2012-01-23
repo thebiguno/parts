@@ -23,7 +23,10 @@ a.value like '%${term}%' or a.name like '%${term}%'
 		</where>
 	</select>
 	
-	<select id="attributesByFamily" resultType="string">
+	<select id="attributesByPart" resultType="ca.digitalcave.parts.model.Attribute">
+select name, value, href
+from attribute
+where part_id = ${partId}
 	</select>
 	
 	<resultMap id="partsByFamily" type="ca.digitalcave.parts.model.Part">

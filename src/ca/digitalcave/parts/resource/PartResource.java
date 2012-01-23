@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.apache.ibatis.session.SqlSession;
 import org.restlet.data.MediaType;
+import org.restlet.data.Status;
 import org.restlet.ext.freemarker.TemplateRepresentation;
 import org.restlet.representation.EmptyRepresentation;
 import org.restlet.representation.Representation;
@@ -14,6 +15,7 @@ import org.restlet.resource.ServerResource;
 import ca.digitalcave.parts.PartsApplication;
 import ca.digitalcave.parts.data.PartsMapper;
 import ca.digitalcave.parts.model.Attribute;
+import freemarker.template.Template;
 
 
 public class PartResource extends ServerResource {
@@ -30,8 +32,18 @@ public class PartResource extends ServerResource {
 		try {
 			final int partId = Integer.parseInt((String) getRequestAttributes().get("part"));
 			final List<Attribute> attributes = sqlSession.getMapper(PartsMapper.class).attributesByPart(partId);
-			getResponseAttributes().put("attributes", attributes); 
-			return new TemplateRepresentation("part.ftl", application.getFmConfig(), getResponseAttributes(), MediaType.TEXT_HTML);
+			getResponseAttributes().put("attributes", attributes);
+			for (Attribute attribute : attributes) {
+				if ("Manufacturer Part Number".equals(attribute.getName())) {
+					getResponseAttributes().put("title", attribute.getValue());
+					break;
+				}
+			}
+			final Template template = application.getFmConfig().getTemplate("part.ftl");
+			template.setOutputEncoding("UTF-8");
+			return new TemplateRepresentation(template, getResponseAttributes(), MediaType.TEXT_HTML);
+		} catch (Exception e) {
+			throw new ResourceException(Status.SERVER_ERROR_INTERNAL, e);
 		} finally {
 			sqlSession.close();
 		}
