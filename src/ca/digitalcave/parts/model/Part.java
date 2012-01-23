@@ -8,7 +8,7 @@ public class Part {
 	private int id;
 	private List<Attribute> attributes;
 	
-	public int geId() {
+	public int getId() {
 		return id;
 	}
 	public void setId(int id) {

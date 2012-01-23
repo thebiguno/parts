@@ -17,7 +17,6 @@ $(document).ready(function() {
 		<h2>${category?html} | ${family?html}</h2>
 		<table>
 			<tr>
-				<th>Name</th>
 				<th>Manufacturer Part Number</th>
 				<th>Description</th>
 				<th>Manufacturer</th>
@@ -25,7 +24,7 @@ $(document).ready(function() {
 			</tr>
 			<#list parts as part>
 			<tr>
-				<td>${part.findAttribute("Manufacturer Part Number").getValue()?html}</td>
+				<td><a href="../${part.getId()}">${part.findAttribute("Manufacturer Part Number").getValue()?html}</a></td>
 				<td>${part.findAttribute("Description").getValue()?html}</td>
 				<td>${part.findAttribute("Manufacturer").getValue()?html}</td>
 				<td><#attempt>${part.findAttribute("Quantity In Stock").getValue()?html}<#recover></#attempt></td>
