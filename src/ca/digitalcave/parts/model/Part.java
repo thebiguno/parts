@@ -21,4 +21,10 @@ public class Part {
 	public void setAttributes(List<Attribute> attributes) {
 		this.attributes = attributes;
 	}
+	
+	@Override
+	public String toString() {
+		return Integer.toString(id);
+	}
+
 }

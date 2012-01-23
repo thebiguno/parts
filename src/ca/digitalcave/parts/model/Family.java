@@ -1,9 +1,11 @@
 package ca.digitalcave.parts.model;
 
+import java.util.List;
+
 public class Family {
 
 	private String name;
-	private int partsCount;
+	private List<Integer> partIds;
 	
 	public String getName() {
 		return name;
@@ -12,10 +14,15 @@ public class Family {
 		this.name = name;
 	}
 	
-	public int getPartsCount() {
-		return partsCount;
+	public List<Integer> getPartIds() {
+		return partIds;
 	}
-	public void setPartsCount(int partsCount) {
-		this.partsCount = partsCount;
+	public void setPartIds(List<Integer> partIds) {
+		this.partIds = partIds;
+	}
+	
+	@Override
+	public String toString() {
+		return name;
 	}
 }

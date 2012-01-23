@@ -21,11 +21,11 @@
 			<input type="text" name="dk" size="35" value=""/>
 		</form>
 
-		<#list categories! as c>
+		<#list categories as c>
 		<h2>${c.getName()?html}</h2>
 		<ul>
 			<#list c.families as f>
-			<li><a href="../catalog/${c.getName()?url}/${f.getName()?url}"/>${f.getName()?html} (${f.productCount})</li>
+			<li><a href="parts/${c.getName()?url}/${f.getName()?url}"/>${f.getName()?html} (${f.getPartIds().size()})</li>
 			</#list>
 		</ul>
 		</#list>

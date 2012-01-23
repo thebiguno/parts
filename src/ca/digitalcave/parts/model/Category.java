@@ -19,4 +19,9 @@ public class Category {
 	public void setFamilies(List<Family> families) {
 		this.families = families;
 	}
+	
+	@Override
+	public String toString() {
+		return name;
+	}
 }

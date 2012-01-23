@@ -2,6 +2,8 @@ package ca.digitalcave.parts.resource;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.ibatis.session.SqlSession;
@@ -21,6 +23,7 @@ import org.restlet.resource.ServerResource;
 import ca.digitalcave.parts.PartsApplication;
 import ca.digitalcave.parts.data.PartsMapper;
 import ca.digitalcave.parts.model.Attribute;
+import freemarker.template.Template;
 
 public class IndexResource extends ServerResource {
 
@@ -33,7 +36,20 @@ public class IndexResource extends ServerResource {
 	protected Representation get(Variant variant) throws ResourceException {
 		final PartsApplication application = (PartsApplication) getApplication();
 
-		return new TemplateRepresentation("index.ftl", application.getFmConfig(), getResponseAttributes(), MediaType.TEXT_HTML);
+		final SqlSession sqlSession = application.getSqlSessionFactory().openSession();
+		try {
+			final PartsMapper mapper = sqlSession.getMapper(PartsMapper.class);
+			final List<String> terms = Collections.emptyList();
+			getResponseAttributes().put("categories", mapper.search(terms));
+			
+			final Template template = application.getFmConfig().getTemplate("index.ftl");
+			template.setOutputEncoding("UTF-8");
+			return new TemplateRepresentation(template, getResponseAttributes(), MediaType.TEXT_HTML);
+		} catch (Exception e) {
+			throw new ResourceException(Status.SERVER_ERROR_INTERNAL, e);
+		} finally {
+			sqlSession.close();
+		}
 	}
 	
 	@Override
@@ -59,6 +75,7 @@ public class IndexResource extends ServerResource {
 					attribute.setPartId(partId);
 					mapper.insert(attribute);
 				}
+				sqlSession.commit();
 			} finally {
 				sqlSession.close();
 			}
@@ -75,7 +92,11 @@ public class IndexResource extends ServerResource {
 		try {
 			final PartsMapper mapper = sqlSession.getMapper(PartsMapper.class);
 			getResponseAttributes().put("categories", mapper.search(terms));
-			return new TemplateRepresentation("index.ftl", application.getFmConfig(), getResponseAttributes(), MediaType.TEXT_HTML);
+			final Template template = application.getFmConfig().getTemplate("index.ftl");
+			template.setOutputEncoding("UTF-8");
+			return new TemplateRepresentation(template, getResponseAttributes(), MediaType.TEXT_HTML);
+		} catch (Exception e) {
+			throw new ResourceException(Status.SERVER_ERROR_INTERNAL, e);
 		} finally {
 			sqlSession.close();
 		}
