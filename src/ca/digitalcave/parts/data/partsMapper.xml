@@ -28,7 +28,7 @@ a.value like '%${term}%' or a.name like '%${term}%'
 	
 	<resultMap id="partsByFamily" type="ca.digitalcave.parts.model.Part">
 		<id property="id" column="part_id"/>
-		<collection property="attributes" javaType="list">
+		<collection property="attributes" javaType="list" ofType="ca.digitalcave.parts.model.Attribute">
 			<result property="name" column="name"/>
 			<result property="value" column="value"/>
 			<result property="href" column="href"/>
@@ -36,10 +36,10 @@ a.value like '%${term}%' or a.name like '%${term}%'
 	</resultMap>
 	
 	<select id="partsByFamily" resultMap="partsByFamily">
-select part_id, name, value, href
-from attribute
-inner join attribute family on attribute.part_id = family.part_id and family.name = 'Family' and family.value = #{family}
-inner join attribute category on attribute.part_id = category.part_id and category.name = 'Category' and category.value = #{category}
+select a.part_id, a.name, a.value, a.href
+from attribute a
+inner join attribute f on a.part_id = f.part_id and f.name = 'Family' and f.value = #{family}
+inner join attribute c on a.part_id = f.part_id and c.name = 'Category' and c.value = #{category}
 	</select>
 	
 	<select id="newPartId" resultType="int">

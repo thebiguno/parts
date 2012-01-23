@@ -22,6 +22,15 @@ public class Part {
 		this.attributes = attributes;
 	}
 	
+	public Attribute findAttribute(String name) {
+		for (Attribute attribute : attributes) {
+			if (name.equals(attribute.getName())) {
+				return attribute;
+			}
+		}
+		return null;
+	}
+	
 	@Override
 	public String toString() {
 		return Integer.toString(id);
