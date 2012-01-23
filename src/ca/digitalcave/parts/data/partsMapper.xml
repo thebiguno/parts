@@ -17,7 +17,7 @@ from attribute a
 		<where>
 			<if test="terms.size() gt 0">
 				<foreach collection="terms" item="term" separator=" or ">
-a.value like '%${term}%' or a.name like '%${term}%'
+lower(a.value) like '%${term}%' or lower(a.name) like '%${term}%'
 				</foreach>
 			</if>
 		</where>

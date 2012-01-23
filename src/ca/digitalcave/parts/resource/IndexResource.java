@@ -85,7 +85,7 @@ public class IndexResource extends ServerResource {
 		final String keywords = form.getFirstValue("keywords");
 		if (keywords != null) {
 			for (String term : Arrays.asList(keywords.split("\\s+"))) {
-				terms.add(StringEscapeUtils.escapeSql(term));
+				terms.add(StringEscapeUtils.escapeSql(term.toLowerCase()));
 			}
 		}
 		final SqlSession sqlSession = application.getSqlSessionFactory().openSession();
