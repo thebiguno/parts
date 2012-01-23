@@ -10,7 +10,7 @@ $(document).ready(function() {
 		</script>
 	</head>
 	<body>
-		<form action="../search" method="POST">
+		<form action="../../index" method="POST">
 			<label for="keywords">Keywords:</label>
 			<input type="text" name="keywords" size="35" maxlength="250" value=""/>
 		</form>
