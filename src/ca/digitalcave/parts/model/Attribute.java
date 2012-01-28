@@ -2,15 +2,23 @@ package ca.digitalcave.parts.model;
 
 public class Attribute {
 
-	private int partId;
+	private short partId;
 	private String name;
 	private String value;
 	private String href;
+	private short sort;
 	
-	public int getPartId() {
+	public Attribute() {
+	}
+	public Attribute(String name, String value) {
+		this.name = name;
+		this.value = value;
+	}
+	
+	public short getPartId() {
 		return partId;
 	}
-	public void setPartId(int partId) {
+	public void setPartId(short partId) {
 		this.partId = partId;
 	}
 	
@@ -33,6 +41,13 @@ public class Attribute {
 	}
 	public void setHref(String href) {
 		this.href = href;
+	}
+	
+	public short getSort() {
+		return sort;
+	}
+	public void setSort(short sort) {
+		this.sort = sort;
 	}
 	
 	public String toString() {
