@@ -2,53 +2,57 @@
 	<head>
 		<title>${title}</title>
 		<script type="text/javascript" src="media/js/jquery-1.7.1.min.js"></script>
-		<script type="text/javascript" src="media/js/jquery.jeditable.mini.js"></script>
 		<script type="text/javascript">
 $(document).ready(function() {
-	$('.deleteAttrButton').click(function() {
-		$.ajax({
-			url: document.location.href,
-			data: { name: $(this).parent().attr('name'), action: 'delete' }
-			type: "POST",
-			success: function() { $(this).parent().remove(); }
-		});
+	$('.remove').click(function() {
 	});
-	$('#deletePartButton').click(function() {
-		$.ajax({
-			url: document.location.href,
-			type: "DELETE",
-			success: function() { document.location.href = "../"; }
-		});
+	$('#add').click(function() {
 	});
-	$('.propertyName').editable(document.location.href, { id: 'name', submitdata: { action: 'update_name' } });
-	$('.propertyValue').editable(document.location.href, { id: 'name', submitdata: { action: 'update_value' } });
 });
 		</script>
+		<style type="text/css">
+td input { width: 100%; }
+		</style>
 	</head>
 	<body>
 		<form action="../index" method="POST">
 			<label for="keywords">Keywords:</label>
-			<input type="text" name="keywords" size="35" maxlength="250" value=""/>
+			<input type="text" name="keywords" size="35" value=""/>
+			<input type="image" src="../media/img/magnifier.png" alt="Search"/>
 		</form>
 		<h2>${title}</h2>
 		<button type="button" id="deletePartButton" title="Delete part">
-		<table>
-			<thead>
-				<tr>
-					<th>Name</th>
-					<th>Value</th>
-				</tr>
-			</thead>
-			<tbody>
-				<#list attributes as a>
-				<tr>
-					<th class="attributeName" name="${a.getName()?html}">${a.getName()?html}</th>
-					<td class="attributeName" name="${a.getName()?html}">
-					<#if a.getHref()??><a href="${a.getHref()?html}">${a.getValue()?html}</a><#else>${a.getValue()?html}</#if>
-					</td>
-				</tr>
-				</#list>
-			</tbody>
-		</table>
+		<form action="../part/${part}" method="POST">
+			<input type="image" src="../media/img/tick-button.png" alt="Submit"/>
+			<table width="100%">
+				<thead>
+					<tr>
+						<th>Name</th>
+						<th>Value</th>
+						<th>Link</th>
+						<th></th>
+					</tr>
+				</thead>
+				<tbody>
+					<#list attributes as a>
+					<tr>
+						<td><input type="text" name="name" maxlength="255" value="${a.getName()?html}"/></td>
+						<td><input type="text" name="value" maxlength="255" value="${a.getValue()?html}"/></td>
+						<td><input type="url" name="href" maxlength="255" value="${a.getHref()!?html}"/></td>
+						<td width="32">
+							<a class="remove" href="#"><img src="../media/img/minus-button.png" alt="Remove"/></a>
+							<#if a.getHref()??><a target="datasheet" href="${a.getHref()?html}"><img src="../media/img/chain.png"/></a><#else>&nbsp;</#if>
+						</td>
+					</tr>
+					</#list>
+				</tbody>
+				</tfoot>
+					<tr>
+						<td/><td/><td/>
+						<td><a class="add" href="#"><img src="../media/img/plus-button.png" alt="Add"/></a>
+					</tr>
+				</tfoot>
+			</table>
+		</form>
 	<body>
 </html>

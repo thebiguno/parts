@@ -1,8 +1,10 @@
 package ca.digitalcave.parts.resource;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.ibatis.session.SqlSession;
+import org.restlet.data.Form;
 import org.restlet.data.MediaType;
 import org.restlet.data.Status;
 import org.restlet.ext.freemarker.TemplateRepresentation;
@@ -30,15 +32,26 @@ public class PartResource extends ServerResource {
 		final PartsApplication application = (PartsApplication) getApplication();
 		final SqlSession sqlSession = application.getSqlSessionFactory().openSession();
 		try {
-			final int partId = Integer.parseInt((String) getRequestAttributes().get("part"));
-			final List<Attribute> attributes = sqlSession.getMapper(PartsMapper.class).attributesByPart(partId);
-			getResponseAttributes().put("attributes", attributes);
-			for (Attribute attribute : attributes) {
-				if ("Manufacturer Part Number".equals(attribute.getName())) {
-					getResponseAttributes().put("title", attribute.getValue());
-					break;
+			final List<Attribute> attributes;
+			final String part = (String) getRequestAttributes().get("part");
+			if ("new".equals(part)) {
+				attributes = new ArrayList<Attribute>();
+				attributes.add(new Attribute("Category", ""));
+				attributes.add(new Attribute("Family", ""));
+				attributes.add(new Attribute("Manufacturer Part Number", ""));
+				getResponseAttributes().put("title", "New Part");
+			} else {
+				final short partId = Short.parseShort(part);
+				attributes = sqlSession.getMapper(PartsMapper.class).attributesByPart(partId);
+				for (Attribute attribute : attributes) {
+					if ("Manufacturer Part Number".equals(attribute.getName())) {
+						getResponseAttributes().put("title", attribute.getValue());
+						break;
+					}
 				}
 			}
+			getResponseAttributes().put("part", part);
+			getResponseAttributes().put("attributes", attributes);
 			final Template template = application.getFmConfig().getTemplate("part.ftl");
 			template.setOutputEncoding("UTF-8");
 			return new TemplateRepresentation(template, getResponseAttributes(), MediaType.TEXT_HTML);
@@ -49,29 +62,44 @@ public class PartResource extends ServerResource {
 		}
 	}
 	
-	// TODO
 	@Override
 	protected Representation post(Representation entity, Variant variant) throws ResourceException {
 		final PartsApplication application = (PartsApplication) getApplication();
 		final SqlSession sqlSession = application.getSqlSessionFactory().openSession();
 		try {
-			final int partId = Integer.parseInt((String) getRequestAttributes().get("part"));
+			final PartsMapper mapper = sqlSession.getMapper(PartsMapper.class);
+			final String part = (String) getRequestAttributes().get("part");
+			final short partId;
+			if ("new".equals(part)) {
+				partId = mapper.newPartId();
+			} else {
+				partId = Short.parseShort(part);
+			}
+
+			final ArrayList<Attribute> attributes = new ArrayList<Attribute>();
+			final Form form = new Form(entity);
+			final String[] names = form.getValuesArray("name");
+			final String[] values = form.getValuesArray("value");
+			final String[] hrefs = form.getValuesArray("href");
 			
-//			final Form form = new Form(entity);
-//			final String name = form.getFirstValue("name");
-//			final String action = form.getFirstValue("action");
-//			final String newValue = form.getFirstValue("newvalue");
-//			
-//			if ("delete".equals(action)) {
-//				node.setProperty(name, (Value) null);
-//			} else if ("update_name".equals(action)) {
-//				final Value value = node.getProperty(name).getValue();
-//				node.setProperty(newValue, value);
-//				node.setProperty(name, (Value) null);
-//			} else if ("update_value".equals(action)) {
-//				node.setProperty(name, newValue);
-//			}
+			for (short i = 0; i < names.length; i++) {
+				final Attribute attribute = new Attribute();
+				attribute.setPartId(partId);
+				attribute.setName(names[i]);
+				attribute.setValue(values[i]);
+				attribute.setHref(hrefs[i]);
+				attribute.setSort(i);
+				attributes.add(attribute);
+			}
 			
+			mapper.removeAttributes(partId);
+			for (Attribute attribute : attributes) {
+				mapper.insert(attribute);
+			}
+			
+			sqlSession.commit();
+			
+			redirectPermanent("parts/" + partId);
 			return new EmptyRepresentation();
 		} finally {
 			sqlSession.close();
