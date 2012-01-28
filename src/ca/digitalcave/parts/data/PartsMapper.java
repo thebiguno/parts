@@ -29,8 +29,7 @@ public interface PartsMapper {
 	 */
 	List<Attribute> attributesByPart(@Param("partId") int partId);
 	
-	int newPartId();
+	short newPartId();
 	void insert(@Param("attribute") Attribute attribute);
-	void update(@Param("oldAttribute") Attribute oldAttribute, @Param("newAttribute") Attribute newAttribute);
-	void remove(@Param("attribute") Attribute attribute);
+	void remove(@Param("partId") short partId);
 }

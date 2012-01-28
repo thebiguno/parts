@@ -50,17 +50,12 @@ select coalesce(max(part_id),0) + 1 from attribute
 	</select>
 	
 	<insert id="insert">
-insert into attribute (part_id, name, value, href)
-values (#{attribute.partId}, #{attribute.name}, #{attribute.value}, #{attribute.href,jdbcType=VARCHAR})
+insert into attribute (part_id, name, value, href, sort)
+values (#{attribute.partId}, #{attribute.name}, #{attribute.value}, #{attribute.href,jdbcType=VARCHAR}, #{attribute.sort})
 	</insert>
 	
-	<update id="update">
-update attribute set name = #{newAttribute.name}, value = #{newAttribute.value}, href= #{newAttribute.href}
-where part_id = #{oldAttribute.partId} and name = #{oldAttribute.name} and value = #{oldAttribute.value} and href = #{oldAttribute.href}
-	</update>
-	
-	<delete id="delete">
+	<delete id="remove">
 delete attribute
-where part_id = #{attribute.partId} and name = #{attribute.name} and value = #{attribute.value} and href = #{attribute.href}
+where part_id = #{partId}
 	</delete>
 </mapper>
