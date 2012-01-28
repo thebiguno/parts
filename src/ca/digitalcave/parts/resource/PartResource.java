@@ -92,7 +92,7 @@ public class PartResource extends ServerResource {
 				attributes.add(attribute);
 			}
 			
-			mapper.removeAttributes(partId);
+			mapper.remove(partId);
 			for (Attribute attribute : attributes) {
 				mapper.insert(attribute);
 			}
