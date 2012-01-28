@@ -70,7 +70,7 @@ public class IndexResource extends ServerResource {
 			final SqlSession sqlSession = application.getSqlSessionFactory().openSession();
 			try {
 				final PartsMapper mapper = sqlSession.getMapper(PartsMapper.class);
-				int partId = mapper.newPartId();
+				short partId = mapper.newPartId();
 				for (Attribute attribute : visitor.getAttributes()) {
 					attribute.setPartId(partId);
 					mapper.insert(attribute);

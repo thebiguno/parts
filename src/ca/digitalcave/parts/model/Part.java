@@ -5,13 +5,13 @@ import java.util.List;
 
 public class Part {
 
-	private int id;
+	private short id;
 	private List<Attribute> attributes;
 	
 	public int getId() {
 		return id;
 	}
-	public void setId(int id) {
+	public void setId(short id) {
 		this.id = id;
 	}
 	
