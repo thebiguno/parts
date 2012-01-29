@@ -5,14 +5,14 @@
 		<id property="name" column="category"/>
 		<collection property="families" javaType="list" ofType="ca.digitalcave.parts.model.Family">
 			<id property="name" column="family"/>
-			<collection property="partIds" javaType="list" ofType="integer" column="part_id"/>
+			<collection property="partIds" javaType="list" ofType="short" column="part_id"/>
 		</collection>
 	</resultMap>
 	
 	<select id="search" resultMap="search">
 select distinct a.part_id part_id,
-	(select value from attribute c where c.name = 'Category' and c.part_id = a.part_id) category,
-	(select value from attribute f where f.name = 'Family' and f.part_id = a.part_id) family
+	(select value from attribute c where c.name = 'Category' and c.part_id = a.part_id fetch first 1 rows only) category,
+	(select value from attribute f where f.name = 'Family' and f.part_id = a.part_id fetch first 1 rows only) family
 from attribute a
 		<where>
 			<if test="terms.size() gt 0">
@@ -45,7 +45,7 @@ inner join attribute f on a.part_id = f.part_id and f.name = 'Family' and f.valu
 inner join attribute c on a.part_id = f.part_id and c.name = 'Category' and c.value = #{category}
 	</select>
 	
-	<select id="newPartId" resultType="int">
+	<select id="newPartId" resultType="short">
 select coalesce(max(part_id),0) + 1 from attribute
 	</select>
 	
@@ -55,7 +55,7 @@ values (#{attribute.partId}, #{attribute.name}, #{attribute.value}, #{attribute.
 	</insert>
 	
 	<delete id="remove">
-delete attribute
+delete from attribute
 where part_id = #{partId}
 	</delete>
 </mapper>

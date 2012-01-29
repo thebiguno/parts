@@ -15,6 +15,7 @@ import org.restlet.data.Form;
 import org.restlet.data.MediaType;
 import org.restlet.data.Status;
 import org.restlet.ext.freemarker.TemplateRepresentation;
+import org.restlet.representation.EmptyRepresentation;
 import org.restlet.representation.Representation;
 import org.restlet.representation.Variant;
 import org.restlet.resource.ResourceException;
@@ -67,18 +68,25 @@ public class IndexResource extends ServerResource {
 				throw new ResourceException(Status.SERVER_ERROR_INTERNAL, e);
 			}
 			
-			final SqlSession sqlSession = application.getSqlSessionFactory().openSession();
-			try {
-				final PartsMapper mapper = sqlSession.getMapper(PartsMapper.class);
-				short partId = mapper.newPartId();
-				for (Attribute attribute : visitor.getAttributes()) {
-					attribute.setPartId(partId);
-					mapper.insert(attribute);
+			if (visitor.getAttributes().size() > 0) {
+				visitor.getAttributes().add(new Attribute("Quantity In Stock", "0"));
+				
+				final SqlSession sqlSession = application.getSqlSessionFactory().openSession();
+				try {
+					final PartsMapper mapper = sqlSession.getMapper(PartsMapper.class);
+					short partId = mapper.newPartId();
+					for (Attribute attribute : visitor.getAttributes()) {
+						attribute.setPartId(partId);
+						mapper.insert(attribute);
+					}
+					sqlSession.commit();
+					
+				} finally {
+					sqlSession.close();
 				}
-				sqlSession.commit();
-			} finally {
-				sqlSession.close();
 			}
+			redirectSeeOther("index.html");
+			return new EmptyRepresentation();
 		}
 		
 		final ArrayList<String> terms = new ArrayList<String>();

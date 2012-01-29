@@ -77,6 +77,7 @@ public class PartsApplication extends Application {
 		Statement statement = null;
 		try {
 			statement = connection.createStatement();
+			statement.execute("delete from attribute");
 			statement.execute("create table attribute (part_id smallint, name varchar(255), value varchar(255), href varchar(255), sort smallint)");
 		} catch (Exception e) {
 			; 
@@ -115,8 +116,8 @@ public class PartsApplication extends Application {
 	public Restlet createRoot() {
 		final Router publicRouter = new Router(getContext());
 		
-		publicRouter.attach("", new Redirector(getContext(), "/", Redirector.MODE_CLIENT_TEMPORARY));
-		publicRouter.attach("/", IndexResource.class);
+		publicRouter.attach("", new Redirector(getContext(), "index.html", Redirector.MODE_CLIENT_TEMPORARY));
+		publicRouter.attach("/", new Redirector(getContext(), "index.html", Redirector.MODE_CLIENT_TEMPORARY));
 		publicRouter.attach("/index", IndexResource.class);
 		publicRouter.attach("/parts/{category}/{family}", FamilyResource.class);
 		publicRouter.attach("/parts/{part}", PartResource.class);

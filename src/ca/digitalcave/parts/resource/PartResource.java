@@ -39,6 +39,7 @@ public class PartResource extends ServerResource {
 				attributes.add(new Attribute("Category", ""));
 				attributes.add(new Attribute("Family", ""));
 				attributes.add(new Attribute("Manufacturer Part Number", ""));
+				attributes.add(new Attribute("Quantity In Stock", "0"));
 				getResponseAttributes().put("title", "New Part");
 			} else {
 				final short partId = Short.parseShort(part);
@@ -82,14 +83,56 @@ public class PartResource extends ServerResource {
 			final String[] values = form.getValuesArray("value");
 			final String[] hrefs = form.getValuesArray("href");
 			
+			boolean category = false;
+			boolean family = false;
+			boolean mpn = false;
+			
 			for (short i = 0; i < names.length; i++) {
 				final Attribute attribute = new Attribute();
 				attribute.setPartId(partId);
 				attribute.setName(names[i]);
 				attribute.setValue(values[i]);
-				attribute.setHref(hrefs[i]);
+				if (hrefs[i].trim().length() > 0) attribute.setHref(hrefs[i]);
 				attribute.setSort(i);
 				attributes.add(attribute);
+				
+				// required attributes
+				if ("Category".equals(names[i])) {
+					if (values[i].trim().length() == 0) {
+						attribute.setValue("Undefined");
+					}
+					category = true;
+				}
+				if ("Family".equals(names[i])) {
+					if (values[i].trim().length() == 0) {
+						attribute.setValue("Undefined");
+					}
+					family = true;
+				}
+				if ("Manufacturer Part Number".equals(names[i])) {
+					if (values[i].trim().length() == 0) {
+						attribute.setValue("Undefined");
+					}
+					mpn = true;
+				}
+			}
+			
+			if (attributes.size() > 0) {
+				if (!category) {
+					final Attribute attribute = new Attribute("Category", "Undefined");
+					attribute.setPartId(partId);
+					attributes.add(attribute);
+				}
+				if (!family) {
+					final Attribute attribute = new Attribute("Family", "Undefined");
+					attribute.setPartId(partId);
+					attributes.add(attribute);
+				}
+				if (!mpn) {
+					final Attribute attribute = new Attribute("Manufacturer Part Number", "Undefined");
+					attribute.setPartId(partId);
+					attributes.add(attribute);
+				}
 			}
 			
 			mapper.remove(partId);
@@ -99,7 +142,7 @@ public class PartResource extends ServerResource {
 			
 			sqlSession.commit();
 			
-			redirectPermanent("parts/" + partId);
+			redirectSeeOther("" + partId);
 			return new EmptyRepresentation();
 		} finally {
 			sqlSession.close();
