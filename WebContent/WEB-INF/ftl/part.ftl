@@ -7,6 +7,7 @@
 		<link rel="stylesheet" type="text/css" href="../media/css/grid.css" media="screen" />
 		<link rel="stylesheet" type="text/css" href="../media/css/layout.css" media="screen" />
 		<script type="text/javascript" src="../media/js/jquery-1.7.1.min.js"></script>
+		<script type="text/javascript" src="../media/js/jquery-ui-1.8.17.custom.min.js"></script>
 		<script type="text/javascript">
 $(document).ready(function() {
 	$('.remove').live('click', function() {
@@ -23,6 +24,8 @@ $(document).ready(function() {
 		$('#attributes tbody').append(row.join(''));
 		return false;
 	});
+	$("#attributes tbody").sortable();
+	$("#attributes tbody").disableSelection();
 });
 		</script>
 		<style type="text/css">

@@ -27,6 +27,7 @@ lower(a.value) like '%${term}%' or lower(a.name) like '%${term}%'
 select name, value, href
 from attribute
 where part_id = ${partId}
+order by sort
 	</select>
 	
 	<resultMap id="partsByFamily" type="ca.digitalcave.parts.model.Part">
