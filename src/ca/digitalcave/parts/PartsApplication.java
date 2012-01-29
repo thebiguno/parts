@@ -12,6 +12,7 @@ import org.apache.ibatis.session.SqlSessionFactoryBuilder;
 import org.apache.ibatis.transaction.jdbc.JdbcTransactionFactory;
 import org.restlet.Application;
 import org.restlet.Restlet;
+import org.restlet.data.ChallengeScheme;
 import org.restlet.data.CharacterSet;
 import org.restlet.data.Language;
 import org.restlet.data.MediaType;
@@ -19,11 +20,13 @@ import org.restlet.engine.application.Encoder;
 import org.restlet.resource.Directory;
 import org.restlet.routing.Redirector;
 import org.restlet.routing.Router;
+import org.restlet.security.ChallengeAuthenticator;
 import org.restlet.service.StatusService;
 
 import ca.digitalcave.parts.resource.FamilyResource;
 import ca.digitalcave.parts.resource.IndexResource;
 import ca.digitalcave.parts.resource.PartResource;
+import ca.digitalcave.parts.security.PartsVerifier;
 import freemarker.template.Configuration;
 import freemarker.template.ObjectWrapper;
 import freemarker.template.TemplateExceptionHandler;
@@ -114,17 +117,25 @@ public class PartsApplication extends Application {
 
 	@Override  
 	public Restlet createRoot() {
-		final Router publicRouter = new Router(getContext());
+
+		final Router privateRouter = new Router(getContext());
+		privateRouter.attach("/index", IndexResource.class);
+		privateRouter.attach("/parts/{category}/{family}", FamilyResource.class);
+		privateRouter.attach("/parts/{part}", PartResource.class);
 		
-		publicRouter.attach("", new Redirector(getContext(), "index.html", Redirector.MODE_CLIENT_TEMPORARY));
-		publicRouter.attach("/", new Redirector(getContext(), "index.html", Redirector.MODE_CLIENT_TEMPORARY));
-		publicRouter.attach("/index", IndexResource.class);
-		publicRouter.attach("/parts/{category}/{family}", FamilyResource.class);
-		publicRouter.attach("/parts/{part}", PartResource.class);
+		final ChallengeAuthenticator authenticator = new ChallengeAuthenticator(getContext(), ChallengeScheme.HTTP_BASIC, "Parts");
+		authenticator.setVerifier(new PartsVerifier(this));
+		authenticator.setNext(privateRouter);
+
+		final Router publicRouter = new Router(getContext());
+		privateRouter.attach("", new Redirector(getContext(), "index.html", Redirector.MODE_CLIENT_TEMPORARY));
+		privateRouter.attach("/", new Redirector(getContext(), "index.html", Redirector.MODE_CLIENT_TEMPORARY));
 		publicRouter.attach("/media", new Directory(getContext(), "war:///media"));
+		publicRouter.attachDefault(authenticator);
 
 		final Encoder encoder = new Encoder(getContext());
 		encoder.setNext(publicRouter);
+
 		return encoder;
 	}
 }

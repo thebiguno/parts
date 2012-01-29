@@ -7,6 +7,7 @@ import org.restlet.Response;
 import org.restlet.data.ChallengeScheme;
 import org.restlet.data.Method;
 import org.restlet.data.Status;
+import org.restlet.security.User;
 import org.restlet.security.Verifier;
 
 import ca.digitalcave.parts.PartsApplication;
@@ -15,12 +16,12 @@ public class PartsVerifier implements Verifier {
 
 	private PartsApplication application;
 	
-	public PartsVerifier(PartsApplication aspekt) {
-		this.application = aspekt;
+	public PartsVerifier(PartsApplication application) {
+		this.application = application;
 	}
 	
 	public int verify(Request request, Response response) {
-		final Request passwdRequest = new Request(Method.GET, "war://WEB-INF/passwd.properties");
+		final Request passwdRequest = new Request(Method.GET, "war:///WEB-INF/passwd.properties");
 		final Response passwdResponse = application.getContext().getClientDispatcher().handle(passwdRequest);
 
 		if (passwdResponse.getStatus() == Status.CLIENT_ERROR_NOT_FOUND) {
@@ -36,12 +37,13 @@ public class PartsVerifier implements Verifier {
 				} catch (Exception e) {
 					;
 				}
-				passwd.getProperty(request.getClientInfo().getUser().getIdentifier());
 
 				final String identifier = request.getChallengeResponse().getIdentifier();
 				final String secret = new String(request.getChallengeResponse().getSecret());
 				final String storedSecret = passwd.getProperty(identifier);
-				
+
+				request.getClientInfo().setUser(new User(identifier));
+
 				if (storedSecret.startsWith("OBF:")) {
 					return PasswordUtil.deobfuscate(storedSecret).equals(secret) ? RESULT_VALID : RESULT_INVALID;
 				} else if (storedSecret.startsWith("MD2:")
