@@ -77,7 +77,7 @@ public class PartsApplication extends Application {
 		Statement statement = null;
 		try {
 			statement = connection.createStatement();
-			statement.execute("delete from attribute");
+//			statement.execute("delete from attribute");
 			statement.execute("create table attribute (part_id smallint, name varchar(255), value varchar(255), href varchar(255), sort smallint)");
 		} catch (Exception e) {
 			; 
