@@ -56,20 +56,24 @@
 					<h2>${category?html} | ${family?html}</h2>
 					<div class="block">
 						<table>
-							<tr>
-								<th>Manufacturer Part Number</th>
-								<th>Description</th>
-								<th>Manufacturer</th>
-								<th>Quantity In Stock</th>
-							</tr>
-							<#list parts as part>
-							<tr>
-								<td><a href="../${part.getId()}"><#attempt>${part.findAttribute("Manufacturer Part Number").getValue()?html}<#recover>Undefined</#attempt></a></td>
-								<td><#attempt>${part.findAttribute("Description").getValue()?html}<#recover>-</#attempt></td>
-								<td><#attempt>${part.findAttribute("Manufacturer").getValue()?html}<#recover>-</#attempt></td>
-								<td><#attempt>${part.findAttribute("Quantity In Stock").getValue()?html}<#recover>-</#attempt></td>
-							</tr>
-							</#list>
+							<thead>
+								<tr>
+									<th>Manufacturer Part Number</th>
+									<th>Description</th>
+									<th>Manufacturer</th>
+									<th>Quantity In Stock</th>
+								</tr>
+							</thead>
+							<tbody>
+								<#list parts as part>
+								<tr>
+									<td><a href="../${part.getId()}"><#attempt>${part.findAttribute("Manufacturer Part Number").getValue()?html}<#recover>Undefined</#attempt></a></td>
+									<td><#attempt>${part.findAttribute("Description").getValue()?html}<#recover>-</#attempt></td>
+									<td><#attempt>${part.findAttribute("Manufacturer").getValue()?html}<#recover>-</#attempt></td>
+									<td><#attempt>${part.findAttribute("Quantity In Stock").getValue()?html}<#recover>-</#attempt></td>
+								</tr>
+								</#list>
+							</tbody>
 						</table>
 					</div>
 				</div>
