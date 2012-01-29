@@ -38,7 +38,9 @@ public class PartResource extends ServerResource {
 				attributes = new ArrayList<Attribute>();
 				attributes.add(new Attribute("Category", ""));
 				attributes.add(new Attribute("Family", ""));
+				attributes.add(new Attribute("Manufacturer", ""));
 				attributes.add(new Attribute("Manufacturer Part Number", ""));
+				attributes.add(new Attribute("Description", ""));
 				attributes.add(new Attribute("Quantity In Stock", "0"));
 				getResponseAttributes().put("title", "New Part");
 			} else {
