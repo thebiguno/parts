@@ -95,7 +95,7 @@ public class PartsApplication extends Application {
 	public synchronized void stop() throws Exception {
 		// shutdown derby
 		dataSource.setShutdownDatabase("shutdown");
-		dataSource.getConnection().close();
+		dataSource.getConnection();
 		dataSource = null;
 		
 		sqlSessionFactory = null;
