@@ -41,6 +41,10 @@ public class PartsVerifier implements Verifier {
 				final String identifier = request.getChallengeResponse().getIdentifier();
 				final String secret = new String(request.getChallengeResponse().getSecret());
 				final String storedSecret = passwd.getProperty(identifier);
+				
+				if (storedSecret == null) {
+					return RESULT_INVALID;
+				}
 
 				request.getClientInfo().setUser(new User(identifier));
 
