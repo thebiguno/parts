@@ -4,8 +4,16 @@ import java.util.List;
 
 public class Family {
 
+	private String category;
 	private String name;
 	private List<Integer> partIds;
+	
+	public void setCategory(String category) {
+		this.category = category;
+	}
+	public String getCategory() {
+		return category;
+	}
 	
 	public String getName() {
 		return name;

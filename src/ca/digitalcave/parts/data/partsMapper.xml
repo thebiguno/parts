@@ -4,8 +4,11 @@
 	<resultMap type="ca.digitalcave.parts.model.Category" id="search">
 		<id property="name" column="category"/>
 		<collection property="families" javaType="list" ofType="ca.digitalcave.parts.model.Family">
+			<id property="category" column="category"/>
 			<id property="name" column="family"/>
-			<collection property="partIds" javaType="list" ofType="short" column="part_id"/>
+			<collection property="partIds" javaType="list" ofType="short">
+				<id property="value" column="part_id"/>
+			</collection>
 		</collection>
 	</resultMap>
 	
