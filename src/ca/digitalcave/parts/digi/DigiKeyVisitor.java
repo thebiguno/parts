@@ -1,16 +1,13 @@
-package ca.digitalcave.parts.resource;
+package ca.digitalcave.parts.digi;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Stack;
 
-import org.htmlparser.Parser;
 import org.htmlparser.Tag;
-import org.htmlparser.http.ConnectionManager;
-import org.htmlparser.lexer.Page;
 import org.htmlparser.tags.LinkTag;
 import org.htmlparser.tags.TableTag;
 import org.htmlparser.visitors.NodeVisitor;
@@ -20,7 +17,12 @@ import ca.digitalcave.parts.model.Attribute;
 public class DigiKeyVisitor extends NodeVisitor {
 	private static final HashSet<String> IGNORE = new HashSet<String>();
 	private static final HashMap<String, String> ENTITIES = new HashMap<String, String>();
-	private final ArrayList<Attribute> attributes = new ArrayList<Attribute>();
+
+	ArrayList<Attribute> attributes = new ArrayList<Attribute>();
+	String title;
+	LinkedHashMap<String, String> inputs = new LinkedHashMap<String, String>();
+	String script;
+	String action;
 	
 	static {
 		for (String string : new String[] { "Customer Reference", "Extended Price", "Quantity Available", "Product Photos", "For Use With/Related Products", "Catalog Page", "For Use With", "Associated Product", "Other Names", "3D Model", "Standard Package", "RoHS Information", "Lead Free Status / RoHS Status", "Catalog Drawings", "Minimum Quantity", "Product Change Notification" }) {
@@ -45,13 +47,23 @@ public class DigiKeyVisitor extends NodeVisitor {
 	private boolean listening = false;
 	private Attribute attribute;
 	
-	public List<Attribute> getAttributes() {
-		return attributes;
-	}
-	
 	@Override
 	public void visitTag(Tag tag) {
-		if ("TABLE".equals(tag.getTagName())) {
+//		System.out.println(tag.getText());
+		if ("TITLE".equals(tag.getTagName())) {
+			title = tag.getText();
+		}
+		
+		if ("SCRIPT".equals(tag.getTagName()) && title == null) {
+			this.script = tag.toPlainTextString();
+		}
+		if ("INPUT".equals(tag.getTagName()) && title == null) {
+			inputs.put(tag.getAttribute("name"), tag.getAttribute("value"));
+		}
+		if ("FORM".equals(tag.getTagName()) && title == null) {
+			action = tag.getAttribute("action");
+		}
+		if ("TABLE".equals(tag.getTagName()) && title != null) {
 			if (listening) {
 				if (tag.isEndTag()) {
 					tables.pop();
@@ -105,24 +117,6 @@ public class DigiKeyVisitor extends NodeVisitor {
 				datasheet.setHref(((LinkTag) tag).getAttribute("href"));
 				datasheet.setValue(tag.toPlainTextString().trim());
 				datasheets.add(datasheet);
-			}
-		}
-	}
-
-	public static void main(String[] args) throws Exception {
-		final String[] parts = new String[] {
-				"http://search.digikey.com/ca/en/products/ATMEGA644A-PU/ATMEGA644A-PU-ND/2271041",
-				"http://search.digikey.com/ca/en/products/ERD-S2TJ5R1V/P5.1BATB-ND/503242",
-		};
-		
-		final ConnectionManager connectionManager = Page.getConnectionManager();
-		for (String part : parts) {
-			System.out.println(part);
-			final Parser parser = new Parser(connectionManager.openConnection(part));
-			final DigiKeyVisitor visitor = new DigiKeyVisitor();
-			parser.visitAllNodesWith(visitor);
-			for (Attribute attribute : visitor.attributes) {
-				System.out.println(attribute);
 			}
 		}
 	}
