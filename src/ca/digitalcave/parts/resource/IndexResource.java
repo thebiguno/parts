@@ -7,10 +7,6 @@ import java.util.List;
 
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.ibatis.session.SqlSession;
-import org.htmlparser.Parser;
-import org.htmlparser.http.ConnectionManager;
-import org.htmlparser.lexer.Page;
-import org.htmlparser.util.ParserException;
 import org.restlet.data.Form;
 import org.restlet.data.MediaType;
 import org.restlet.data.Status;
@@ -23,6 +19,7 @@ import org.restlet.resource.ServerResource;
 
 import ca.digitalcave.parts.PartsApplication;
 import ca.digitalcave.parts.data.PartsMapper;
+import ca.digitalcave.parts.digi.DigiKeyClient;
 import ca.digitalcave.parts.model.Attribute;
 import freemarker.template.Template;
 
@@ -59,34 +56,32 @@ public class IndexResource extends ServerResource {
 		final Form form = new Form(entity);
 		final String dk = form.getFirstValue("dk");
 		if (dk != null) {
-			final DigiKeyVisitor visitor = new DigiKeyVisitor();
-			final ConnectionManager connectionManager = Page.getConnectionManager();
 			try {
-				final Parser parser = new Parser(connectionManager.openConnection(dk));
-				parser.visitAllNodesWith(visitor);
-			} catch (ParserException e) {
+				final DigiKeyClient client = new DigiKeyClient();
+				final List<Attribute> attributes = client.parse(dk);
+				
+				if (attributes.size() > 0) {
+					attributes.add(new Attribute("Quantity In Stock", "0"));
+					
+					final SqlSession sqlSession = application.getSqlSessionFactory().openSession();
+					try {
+						final PartsMapper mapper = sqlSession.getMapper(PartsMapper.class);
+						short partId = mapper.newPartId();
+						for (Attribute attribute : attributes) {
+							attribute.setPartId(partId);
+							mapper.insert(attribute);
+						}
+						sqlSession.commit();
+						
+					} finally {
+						sqlSession.close();
+					}
+				}
+				redirectSeeOther("index.html");
+				return new EmptyRepresentation();
+			} catch (Exception e) {
 				throw new ResourceException(Status.SERVER_ERROR_INTERNAL, e);
 			}
-			
-			if (visitor.getAttributes().size() > 0) {
-				visitor.getAttributes().add(new Attribute("Quantity In Stock", "0"));
-				
-				final SqlSession sqlSession = application.getSqlSessionFactory().openSession();
-				try {
-					final PartsMapper mapper = sqlSession.getMapper(PartsMapper.class);
-					short partId = mapper.newPartId();
-					for (Attribute attribute : visitor.getAttributes()) {
-						attribute.setPartId(partId);
-						mapper.insert(attribute);
-					}
-					sqlSession.commit();
-					
-				} finally {
-					sqlSession.close();
-				}
-			}
-			redirectSeeOther("index.html");
-			return new EmptyRepresentation();
 		}
 		
 		final ArrayList<String> terms = new ArrayList<String>();
