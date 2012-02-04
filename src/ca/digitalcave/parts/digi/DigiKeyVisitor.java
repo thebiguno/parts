@@ -92,7 +92,17 @@ public class DigiKeyVisitor extends NodeVisitor {
 					} else if ("Datasheets".equals(attribute.getName())) {
 						final DatasheetVisitor datasheetVisitor = new DatasheetVisitor();
 						tag.accept(datasheetVisitor);
-						attributes.addAll(datasheetVisitor.datasheets);
+						attributes.addAll(datasheetVisitor.attributes);
+						return;
+					} else if ("Product Photos".equals(attribute.getName())) {
+						final PhotosVisitor photosVisitor = new PhotosVisitor();
+						tag.accept(photosVisitor);
+						attributes.addAll(photosVisitor.attributes);
+						return;
+					} else if ("Catalog Drawings".equals(attribute.getName())) {
+						final DrawingsVisitor drawingsVisitor = new DrawingsVisitor();
+						tag.accept(drawingsVisitor);
+						attributes.addAll(drawingsVisitor.attributes);
 						return;
 					} else if (tag.getChildren().elementAt(0) instanceof LinkTag) {
 						attribute.setHref(((LinkTag) tag.getChildren().elementAt(0)).getAttribute("href"));
@@ -108,7 +118,7 @@ public class DigiKeyVisitor extends NodeVisitor {
 	}
 	
 	private static class DatasheetVisitor extends NodeVisitor {
-		private final ArrayList<Attribute> datasheets = new ArrayList<Attribute>();
+		private final ArrayList<Attribute> attributes = new ArrayList<Attribute>();
 		@Override
 		public void visitTag(Tag tag) {
 			if ("A".equals(tag.getTagName())) {
@@ -116,7 +126,35 @@ public class DigiKeyVisitor extends NodeVisitor {
 				datasheet.setName("Datasheet");
 				datasheet.setHref(((LinkTag) tag).getAttribute("href"));
 				datasheet.setValue(tag.toPlainTextString().trim());
-				datasheets.add(datasheet);
+				attributes.add(datasheet);
+			}
+		}
+	}
+
+	private static class PhotosVisitor extends NodeVisitor {
+		private final ArrayList<Attribute> attributes = new ArrayList<Attribute>();
+		@Override
+		public void visitTag(Tag tag) {
+			if ("A".equals(tag.getTagName())) {
+				final Attribute datasheet = new Attribute();
+				datasheet.setName("Photo");
+				datasheet.setHref(((LinkTag) tag).getAttribute("href"));
+				datasheet.setValue(tag.toPlainTextString().trim());
+				attributes.add(datasheet);
+			}
+		}
+	}
+	
+	private static class DrawingsVisitor extends NodeVisitor {
+		private final ArrayList<Attribute> attributes = new ArrayList<Attribute>();
+		@Override
+		public void visitTag(Tag tag) {
+			if ("A".equals(tag.getTagName())) {
+				final Attribute datasheet = new Attribute();
+				datasheet.setName("Catalog Drawing");
+				datasheet.setHref(((LinkTag) tag).getAttribute("href"));
+				datasheet.setValue(tag.toPlainTextString().trim());
+				attributes.add(datasheet);
 			}
 		}
 	}
