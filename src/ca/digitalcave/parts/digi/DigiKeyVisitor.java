@@ -25,7 +25,7 @@ public class DigiKeyVisitor extends NodeVisitor {
 	String action;
 	
 	static {
-		for (String string : new String[] { "Customer Reference", "Extended Price", "Quantity Available", "Product Photos", "For Use With/Related Products", "Catalog Page", "For Use With", "Associated Product", "Other Names", "3D Model", "Standard Package", "RoHS Information", "Lead Free Status / RoHS Status", "Catalog Drawings", "Minimum Quantity", "Product Change Notification" }) {
+		for (String string : new String[] { "Customer Reference", "Extended Price", "Quantity Available", "For Use With/Related Products", "Catalog Page", "For Use With", "Associated Product", "Other Names", "3D Model", "Standard Package", "RoHS Information", "Lead Free Status / RoHS Status", "Catalog Drawings", "Minimum Quantity", "Product Change Notification" }) {
 			IGNORE.add(string);
 		}
 		ENTITIES.put("&reg;", "\u00ae");
