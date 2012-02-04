@@ -77,7 +77,8 @@ public class DigiKeyClient {
 	
 	public static void main(String[] args) throws Exception {
 		final String[] parts = new String[] {
-				"http://search.digikey.com/scripts/dksearch/dksus.dll?vendor=0&keywords=770-101-r1kp-nd",
+				"http://search.digikey.com/ca/en/products/LE33CZ/LE33CZ-ND/1038464",
+//				"http://search.digikey.com/scripts/dksearch/dksus.dll?vendor=0&keywords=770-101-r1kp-nd",
 //				"http://search.digikey.com/scripts/DkSearch/dksus.dll?x=0&y=0&lang=en&site=ca&KeyWords=ct2088-nd",
 //				"http://search.digikey.com/scripts/dksearch/dksus.dll?vendor=0&keywords=490-3637-nd",
 //				"http://search.digikey.com/ca/en/products/ATMEGA644A-PU/ATMEGA644A-PU-ND/2271041",

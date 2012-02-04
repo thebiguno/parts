@@ -25,7 +25,7 @@ public class DigiKeyVisitor extends NodeVisitor {
 	String action;
 	
 	static {
-		for (String string : new String[] { "Customer Reference", "Extended Price", "Quantity Available", "For Use With/Related Products", "Catalog Page", "For Use With", "Associated Product", "Other Names", "3D Model", "Standard Package", "RoHS Information", "Lead Free Status / RoHS Status", "Minimum Quantity", "Product Change Notification" }) {
+		for (String string : new String[] { "Packaging", "Customer Reference", "Extended Price", "Quantity Available", "For Use With/Related Products", "Catalog Page", "For Use With", "Associated Product", "Other Names", "3D Model", "Standard Package", "RoHS Information", "Lead Free Status / RoHS Status", "Minimum Quantity", "Product Change Notification" }) {
 			IGNORE.add(string);
 		}
 		ENTITIES.put("&reg;", "\u00ae");
@@ -105,13 +105,16 @@ public class DigiKeyVisitor extends NodeVisitor {
 						attributes.addAll(drawingsVisitor.attributes);
 						return;
 					} else if (tag.getChildren().elementAt(0) instanceof LinkTag) {
-						attribute.setHref(((LinkTag) tag.getChildren().elementAt(0)).getAttribute("href"));
+						final String href = ((LinkTag) tag.getChildren().elementAt(0)).getAttribute("href");
+						attribute.setHref(href);
 					}
 					for (Map.Entry<String, String> entity : ENTITIES.entrySet()) {
 						text = text.replaceAll(entity.getKey(), entity.getValue());
 					}
 					attribute.setValue(text);
-					attributes.add(attribute);
+					if (attribute.getValue().length() <= 255 && attribute.getValue().length() <= 255 && (attribute.getHref() == null || attribute.getHref().length() <= 255)) {
+						attributes.add(attribute);
+					}
 				}
 			}
 		}
@@ -123,10 +126,14 @@ public class DigiKeyVisitor extends NodeVisitor {
 		public void visitTag(Tag tag) {
 			if ("A".equals(tag.getTagName())) {
 				final Attribute attribute = new Attribute();
-				attribute.setName("Datasheet");
-				attribute.setHref(((LinkTag) tag).getAttribute("href"));
-				attribute.setValue(tag.toPlainTextString().trim());
-				attributes.add(attribute);
+				final String href = ((LinkTag) tag).getAttribute("href");
+				final String value = tag.toPlainTextString().trim();
+				if (value.length() <= 255 && href.length() <= 255) {
+					attribute.setName("Datasheet");
+					attribute.setHref(href);
+					attribute.setValue(value);
+					attributes.add(attribute);
+				}
 			}
 		}
 	}
@@ -137,10 +144,14 @@ public class DigiKeyVisitor extends NodeVisitor {
 		public void visitTag(Tag tag) {
 			if ("A".equals(tag.getTagName())) {
 				final Attribute attribute = new Attribute();
-				attribute.setName("Photo");
-				attribute.setHref(((LinkTag) tag).getAttribute("href"));
-				attribute.setValue(tag.toPlainTextString().trim());
-				attributes.add(attribute);
+				final String href = ((LinkTag) tag).getAttribute("href");
+				final String value = tag.toPlainTextString().trim();
+				if (value.length() <= 255 && href.length() <= 255) {
+					attribute.setName("Photo");
+					attribute.setHref(href);
+					attribute.setValue(value);
+					attributes.add(attribute);
+				}
 			}
 		}
 	}
@@ -151,10 +162,14 @@ public class DigiKeyVisitor extends NodeVisitor {
 		public void visitTag(Tag tag) {
 			if ("A".equals(tag.getTagName())) {
 				final Attribute attribute = new Attribute();
-				attribute.setName("Catalog Drawing");
-				attribute.setHref(((LinkTag) tag).getAttribute("href"));
-				attribute.setValue(tag.toPlainTextString().trim());
-				attributes.add(attribute);
+				final String href = ((LinkTag) tag).getAttribute("href");
+				final String value = tag.toPlainTextString().trim();
+				if (value.length() <= 255 && href.length() <= 255) {
+					attribute.setName("Catalog Drawing");
+					attribute.setHref(href);
+					attribute.setValue(value);
+					attributes.add(attribute);
+				}
 			}
 		}
 	}
