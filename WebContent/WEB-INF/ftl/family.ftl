@@ -50,7 +50,7 @@
 					</div>
 				</div>
 			</div>
-			<div class="clear"></div>			
+			<div class="clear"></div>
 			<div class="grid_12">
 				<div class="box">
 					<h2>${category?html} | ${family?html}</h2>
@@ -62,6 +62,7 @@
 									<th>Description</th>
 									<th>Manufacturer</th>
 									<th>Quantity In Stock</th>
+									<th></th>
 								</tr>
 							</thead>
 							<tbody>
@@ -71,6 +72,9 @@
 									<td><#attempt>${part.findAttribute("Description").getValue()?html}<#recover>-</#attempt></td>
 									<td><#attempt>${part.findAttribute("Manufacturer").getValue()?html}<#recover>-</#attempt></td>
 									<td><#attempt>${part.findAttribute("Quantity In Stock").getValue()?html}<#recover>-</#attempt></td>
+									<td width="34">
+										<form action="../${part.getId()}?method=delete" method="POST"><input type="image" src="../../media/img/minus-button.png" alt="Remove"/></form>
+									</td>
 								</tr>
 								</#list>
 							</tbody>

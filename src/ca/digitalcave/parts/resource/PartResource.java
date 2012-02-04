@@ -151,4 +151,22 @@ public class PartResource extends ServerResource {
 		}	
 	}
 	
+	@Override
+	protected Representation delete(Variant variant) throws ResourceException {
+		final PartsApplication application = (PartsApplication) getApplication();
+		final SqlSession sqlSession = application.getSqlSessionFactory().openSession();
+		try {
+			final String part = (String) getRequestAttributes().get("part");
+			final short partId = Short.parseShort(part);
+			final PartsMapper mapper = sqlSession.getMapper(PartsMapper.class);
+			mapper.remove(partId);
+			sqlSession.commit();
+			
+			redirectSeeOther("../index.html");
+			return new EmptyRepresentation();
+		} finally {
+			sqlSession.close();
+		}
+	}
+	
 }
