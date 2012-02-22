@@ -1,0 +1,3 @@
+-Add quantity directly, beside DK URL field
+-Check in / check out buttons next to 'in stock quantity' on list view
+-Read-only detail page; click to edit
