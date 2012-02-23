@@ -57,7 +57,7 @@
 					<div class="block">
 						<ul>
 							<#list c.families as f>
-							<li><a href="parts/${c.getName()?url}/${f.getName()?url}"/>${f.getName()?html} (${f.getPartIds().size()})</li>
+							<li><a href="parts/${c.getName()?url}/${f.getName()?url}"/>${f.getName()?html} (${f.getPartIds().size()})</a></li>
 							</#list>
 						</ul>
 					</div>

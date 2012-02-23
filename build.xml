@@ -1,0 +1,22 @@
+<?xml version="1.0"?>
+<!DOCTYPE project [
+<!ENTITY baseBuild SYSTEM "../ca.digitalcave.build/build.xml.inc">
+]>
+<project name="Electronics Part List" default="war" basedir=".">
+
+	<!-- Version number and other build-specific properties -->
+	<property file="etc/build.properties"/>
+
+	<!-- Set up all the project specific properties -->
+	<property name="PROJECT_NAME" value="Electronics Part List"/>
+	<property name="PROJECT_SHORT_NAME" value="parts"/>
+	<property name="PROJECT_DESCRIPTION" value="Electronics Part List"/>
+	<property name="PROJECT_COPYRIGHT" value="Copyright Warren Janssens"/>
+
+	<path id="classpath">
+		<fileset dir="WebContent/WEB-INF/lib" includes="**/*.jar"/>
+	</path>
+	
+	&baseBuild;
+
+</project>

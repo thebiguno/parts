@@ -1,0 +1,7 @@
+-Add quantity directly, beside DK URL field
+-Check in / check out buttons next to 'in stock quantity' on list view
+-Read-only detail page; click to edit
+-Min stock attr; report which has shows all items for which stock < min stock
+-Wishlist?  Watch list?
+-Direct link to DK (put DK part number into search; if no DK part, use man part, desc, etc)
+

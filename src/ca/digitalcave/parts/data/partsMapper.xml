@@ -24,13 +24,14 @@ lower(a.value) like '%${term}%' or lower(a.name) like '%${term}%'
 				</foreach>
 			</if>
 		</where>
+	order by category, family
 	</select>
 	
 	<select id="attributesByPart" resultType="ca.digitalcave.parts.model.Attribute">
 select name, value, href
 from attribute
 where part_id = ${partId}
-order by sort
+order by sort, name
 	</select>
 	
 	<resultMap id="partsByFamily" type="ca.digitalcave.parts.model.Part">
@@ -47,6 +48,7 @@ select a.part_id, a.name, a.value, a.href
 from attribute a
 inner join attribute f on a.part_id = f.part_id and f.name = 'Family' and f.value = #{family}
 inner join attribute c on a.part_id = f.part_id and c.name = 'Category' and c.value = #{category}
+order by c.name, f.name
 	</select>
 	
 	<select id="newPartId" resultType="short">
