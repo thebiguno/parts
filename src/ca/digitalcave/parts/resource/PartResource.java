@@ -42,6 +42,7 @@ public class PartResource extends ServerResource {
 				attributes.add(new Attribute("Manufacturer Part Number", ""));
 				attributes.add(new Attribute("Description", ""));
 				attributes.add(new Attribute("Quantity In Stock", "0"));
+				attributes.add(new Attribute("Minimum Stock", "0"));
 				getResponseAttributes().put("title", "New Part");
 			} else {
 				final short partId = Short.parseShort(part);

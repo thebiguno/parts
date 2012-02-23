@@ -60,6 +60,7 @@ public class IndexResource extends ServerResource {
 				final DigiKeyClient client = new DigiKeyClient();
 				final List<Attribute> attributes = client.parse(dk);
 				
+				attributes.add(new Attribute("Minimum Stock", "0"));
 				final Attribute dkAttr = new Attribute("URL", "URL");
 				dkAttr.setHref(dk);
 				attributes.add(dkAttr);
