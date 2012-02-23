@@ -29,7 +29,8 @@
 							<fieldset class="login">
 								<p>
 									<label for="name">Add from Digikey URL:</label>
-									<input type="text" name="dk" size="35" value=""/>
+									<input style="display:inline; width: 50%" type="text" name="dk" size="30" value=""/>
+									<input style="display:inline; width: 10%" type="text" name="qty" size="5" value=""/>
 								</p>
 							</fieldset>
 						</form>
