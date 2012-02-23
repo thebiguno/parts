@@ -60,8 +60,11 @@ public class IndexResource extends ServerResource {
 				final DigiKeyClient client = new DigiKeyClient();
 				final List<Attribute> attributes = client.parse(dk);
 				
+				final Attribute dkAttr = new Attribute("URL", "URL");
+				dkAttr.setHref(dk);
+				attributes.add(dkAttr);
 				if (attributes.size() > 0) {
-					attributes.add(new Attribute("Quantity In Stock", "0"));
+					attributes.add(new Attribute("Quantity In Stock", form.getFirstValue("qty","0")));
 					
 					final SqlSession sqlSession = application.getSqlSessionFactory().openSession();
 					try {
