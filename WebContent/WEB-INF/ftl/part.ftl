@@ -55,8 +55,9 @@ td input { width: 100%; }
 							<fieldset class="login">
 								<p>
 									<label for="name">Add from Digikey URL:</label>
-									<input style="display:inline; width: 50%" type="text" name="dk" size="30" value=""/>
+									<input style="display:inline; width: 45%" type="text" name="dk" size="30" value=""/>
 									<input style="display:inline; width: 10%" type="text" name="qty" size="5" value=""/>
+									<input style="display:inline; width: 16px;" type="image" src="media/img/tick-button.png" alt="Submit"/>
 								</p>
 							</fieldset>
 						</form>
