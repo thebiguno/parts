@@ -63,7 +63,7 @@ public class PartsApplication extends Application {
 		// set up mybatis
 		final Environment environment = new Environment("prod", new JdbcTransactionFactory(), dataSource);
 		final org.apache.ibatis.session.Configuration config = new org.apache.ibatis.session.Configuration(environment);
-		config.addMappers("ca.digitalcave.parts");
+		config.addMappers("ca.digitalcave.parts.data");
 		sqlSessionFactory = new SqlSessionFactoryBuilder().build(config);
 		
 		// set up freemarker
