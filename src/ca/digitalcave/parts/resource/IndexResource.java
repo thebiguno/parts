@@ -6,6 +6,7 @@ import java.util.Collections;
 import java.util.List;
 
 import org.apache.commons.lang.StringEscapeUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.ibatis.session.SqlSession;
 import org.restlet.data.Form;
 import org.restlet.data.MediaType;
@@ -65,7 +66,9 @@ public class IndexResource extends ServerResource {
 				dkAttr.setHref(dk);
 				attributes.add(dkAttr);
 				if (attributes.size() > 0) {
-					attributes.add(new Attribute("Quantity In Stock", form.getFirstValue("qty","0")));
+					String quantityInStock = form.getFirstValue("qty","0");
+					if (StringUtils.isBlank(quantityInStock)) quantityInStock = "0";
+					attributes.add(new Attribute("Quantity In Stock", quantityInStock));
 					
 					final SqlSession sqlSession = application.getSqlSessionFactory().openSession();
 					try {
