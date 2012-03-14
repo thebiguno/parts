@@ -73,8 +73,8 @@
 								<tr>
 									<td><a href="../${part.getId()}"><#attempt>${part.findAttribute("Manufacturer Part Number").getValue()?html}<#recover>Undefined</#attempt></a></td>
 									<td><#attempt>${part.findAttribute("Description").getValue()?html}<#recover>-</#attempt></td>
-									<td><#attempt>${part.findAttribute("Manufacturer").getValue()?html}<#recover>-</#attempt></td>
 									<td><#attempt>${part.findAttribute("Notes").getValue()?html}<#recover>-</#attempt></td>
+									<td><#attempt>${part.findAttribute("Manufacturer").getValue()?html}<#recover>-</#attempt></td>
 									<td><#attempt>${part.findAttribute("Quantity In Stock").getValue()?html}<#recover>-</#attempt></td>
 									<td width="34">
 										<form action="../${part.getId()}?method=delete" method="POST"><input type="image" src="../../media/img/minus-button.png" alt="Remove"/></form>
