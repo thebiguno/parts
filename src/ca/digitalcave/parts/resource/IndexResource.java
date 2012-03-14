@@ -72,6 +72,7 @@ public class IndexResource extends ServerResource {
 						final PartsMapper mapper = sqlSession.getMapper(PartsMapper.class);
 						short partId = mapper.newPartId();
 						for (Attribute attribute : attributes) {
+							if (attribute.getValue().length() > 255) attribute.setValue(attribute.getValue().substring(0, 255));	//Prevent DB field overflow
 							attribute.setPartId(partId);
 							mapper.insert(attribute);
 						}
