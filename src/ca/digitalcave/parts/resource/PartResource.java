@@ -40,6 +40,7 @@ public class PartResource extends ServerResource {
 				attributes.add(new Attribute("Family", ""));
 				attributes.add(new Attribute("Manufacturer", ""));
 				attributes.add(new Attribute("Manufacturer Part Number", ""));
+				attributes.add(new Attribute("Notes", ""));
 				attributes.add(new Attribute("Description", ""));
 				attributes.add(new Attribute("Quantity In Stock", "0"));
 				attributes.add(new Attribute("Minimum Stock", "0"));

@@ -48,7 +48,8 @@ select a.part_id, a.name, a.value, a.href
 from attribute a
 inner join attribute f on a.part_id = f.part_id and f.name = 'Family' and f.value = #{family}
 inner join attribute c on a.part_id = f.part_id and c.name = 'Category' and c.value = #{category}
-order by c.name, f.name
+inner join attribute p on a.part_id = p.part_id and p.name = 'Manufacturer Part Number'
+order by c.name, f.name, p.name
 	</select>
 	
 	<select id="newPartId" resultType="short">
