@@ -76,14 +76,20 @@
 									<td><#attempt>${part.findAttribute("Description").getValue()?html}<#recover>-</#attempt></td>
 									<td><#attempt>${part.findAttribute("Notes").getValue()?html}<#recover>-</#attempt></td>
 									<td><#attempt>${part.findAttribute("Manufacturer").getValue()?html}<#recover>-</#attempt></td>
-									<td><#attempt>${part.findAttribute("Quantity In Stock").getValue()?html}<#recover>-</#attempt></td>
+									<td>
+										<form action="../${part.getId()}?method=put" method="POST">
+										<#attempt>${part.findAttribute("Quantity In Stock").getValue()?html}<#recover>-</#attempt>
+										<input name="minus" type="image" src="../../media/img/minus-button.png" alt="Checkout"/>
+										<input name="plus" type="image" src="../../media/img/plus-button.png" alt="Checkout"/>
+										</form>
+									</td>
 									<td><#list part.findAttributes("Datasheet") as ds>
 										<a href="${ds.getHref()}">${ds.getValue()}</a>
 										<#if ds_has_next><br/></#if>
 										</#list>
 									</td>
 									<td width="34">
-										<form action="../${part.getId()}?method=delete" method="POST"><input type="image" src="../../media/img/minus-button.png" alt="Remove"/></form>
+										<form action="../${part.getId()}?method=delete" method="POST"><input type="image" src="../../media/img/cross-button.png" alt="Remove"/></form>
 									</td>
 								</tr>
 								</#list>
