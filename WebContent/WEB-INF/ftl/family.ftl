@@ -65,6 +65,7 @@
 									<th>Notes</th>
 									<th>Manufacturer</th>
 									<th>Quantity In Stock</th>
+									<th>Datasheet(s)</th>
 									<th></th>
 								</tr>
 							</thead>
@@ -76,6 +77,11 @@
 									<td><#attempt>${part.findAttribute("Notes").getValue()?html}<#recover>-</#attempt></td>
 									<td><#attempt>${part.findAttribute("Manufacturer").getValue()?html}<#recover>-</#attempt></td>
 									<td><#attempt>${part.findAttribute("Quantity In Stock").getValue()?html}<#recover>-</#attempt></td>
+									<td><#list part.findAttributes("Datasheet") as ds>
+										<a href="${ds.getHref()}">${ds.getValue()}</a>
+										<#if ds_has_next><br/></#if>
+										</#list>
+									</td>
 									<td width="34">
 										<form action="../${part.getId()}?method=delete" method="POST"><input type="image" src="../../media/img/minus-button.png" alt="Remove"/></form>
 									</td>

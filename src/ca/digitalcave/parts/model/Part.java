@@ -1,5 +1,6 @@
 package ca.digitalcave.parts.model;
 
+import java.util.ArrayList;
 import java.util.List;
 
 
@@ -29,6 +30,15 @@ public class Part {
 			}
 		}
 		return null;
+	}
+	public List<Attribute> findAttributes(String name) {
+		final ArrayList<Attribute> result = new ArrayList<Attribute>();
+		for (Attribute attribute : attributes) {
+			if (name.equals(attribute.getName())) {
+				result.add(attribute);
+			}
+		}
+		return result;
 	}
 	
 	@Override
