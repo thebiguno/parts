@@ -60,7 +60,7 @@
 						<table>
 							<thead>
 								<tr>
-									<th>Manufacturer Part Number</th>
+									<th>Part</th>
 									<th>Description</th>
 									<th>Notes</th>
 									<th style='text-align: right;'>Quantity In Stock</th>
