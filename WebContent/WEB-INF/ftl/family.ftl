@@ -63,7 +63,6 @@
 									<th>Manufacturer Part Number</th>
 									<th>Description</th>
 									<th>Notes</th>
-									<th>Manufacturer</th>
 									<th style='text-align: right;'>Quantity In Stock</th>
 									<th>Datasheet(s)</th>
 									<th></th>
@@ -75,7 +74,6 @@
 									<td><a href="../${part.getId()}"><#attempt>${part.findAttribute("Manufacturer Part Number").getValue()?html}<#recover>Undefined</#attempt></a></td>
 									<td><#attempt>${part.findAttribute("Description").getValue()?html}<#recover>-</#attempt></td>
 									<td><#attempt>${part.findAttribute("Notes").getValue()?html}<#recover>-</#attempt></td>
-									<td><#attempt>${part.findAttribute("Manufacturer").getValue()?html}<#recover>-</#attempt></td>
 									<td style="text-align: right;">
 										<form action="../${part.getId()}?method=put" method="POST">
 										<#attempt>${part.findAttribute("Quantity In Stock").getValue()?html}<#recover>-</#attempt>
