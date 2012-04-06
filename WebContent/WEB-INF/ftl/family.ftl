@@ -83,10 +83,12 @@
 										<input name="plus" type="image" src="../../media/img/plus-button.png" alt="Checkout"/>
 										</form>
 									</td>
-									<td><#list part.findAttributes("Datasheet") as ds>
+									<td><#attempt>
+										<#list part.findAttributes("Datasheet") as ds>
 										<a href="${ds.getHref()}">${ds.getValue()}</a>
 										<#if ds_has_next><br/></#if>
 										</#list>
+										<#recover>-</#attempt>
 									</td>
 									<td width="34">
 										<form action="../${part.getId()}?method=delete" method="POST"><input type="image" src="../../media/img/cross-button.png" alt="Remove"/></form>
