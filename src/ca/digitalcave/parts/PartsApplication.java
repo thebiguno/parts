@@ -131,6 +131,7 @@ public class PartsApplication extends Application {
 		privateRouter.attach("", new Redirector(getContext(), "index.html", Redirector.MODE_CLIENT_TEMPORARY));
 		privateRouter.attach("/", new Redirector(getContext(), "index.html", Redirector.MODE_CLIENT_TEMPORARY));
 		publicRouter.attach("/media", new Directory(getContext(), "war:///media"));
+		publicRouter.attach("/datasheets", new Directory(getContext(), "war:///datasheets"));
 		publicRouter.attachDefault(authenticator);
 
 		final Encoder encoder = new Encoder(getContext());
