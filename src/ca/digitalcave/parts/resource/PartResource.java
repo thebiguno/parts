@@ -17,6 +17,7 @@ import org.restlet.resource.ServerResource;
 import ca.digitalcave.parts.PartsApplication;
 import ca.digitalcave.parts.data.PartsMapper;
 import ca.digitalcave.parts.model.Attribute;
+import ca.digitalcave.parts.model.Part;
 import freemarker.template.Template;
 
 
@@ -151,6 +152,35 @@ public class PartResource extends ServerResource {
 		} finally {
 			sqlSession.close();
 		}	
+	}
+	
+	@Override
+	protected Representation put(Representation entity, Variant variant) throws ResourceException {
+		final PartsApplication application = (PartsApplication) getApplication();
+		final SqlSession sqlSession = application.getSqlSessionFactory().openSession();
+		try {
+			final Form form = new Form(entity);
+			final short partId = Short.parseShort((String) getRequestAttributes().get("part"));
+			final PartsMapper mapper = sqlSession.getMapper(PartsMapper.class);
+			final short delta = form.getFirstValue("minus.x") != null ? (short) -1 : (short) 1;
+			final List<Attribute> attributesByPart = mapper.attributesByPart(partId);
+			final Part part = new Part();
+			part.setId(partId);
+			part.setAttributes(attributesByPart);
+			final Attribute quantity = part.findAttribute("Quantity In Stock");
+			final Attribute category = part.findAttribute("Category");
+			final Attribute family = part.findAttribute("Family");
+			final Short q = (short) (Short.parseShort(quantity.getValue()) + delta);
+			if (q > 0) {
+				mapper.setQuantity(partId, Short.toString(q));
+				sqlSession.commit();
+			}
+			
+			redirectSeeOther("../parts/" + category.getValue() + "/" + family.getValue());
+			return new EmptyRepresentation();
+		} finally {
+			sqlSession.close();
+		}
 	}
 	
 	@Override

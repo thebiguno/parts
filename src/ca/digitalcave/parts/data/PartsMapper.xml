@@ -65,4 +65,8 @@ values (#{attribute.partId}, #{attribute.name}, #{attribute.value}, #{attribute.
 delete from attribute
 where part_id = #{partId}
 	</delete>
+	
+	<update id="setQuantity">
+update attribute set value = #{value} where part_id = #{partId} and name = 'Quantity In Stock'
+	</update>
 </mapper>

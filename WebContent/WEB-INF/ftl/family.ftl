@@ -60,11 +60,11 @@
 						<table>
 							<thead>
 								<tr>
-									<th>Manufacturer Part Number</th>
+									<th>Part</th>
 									<th>Description</th>
 									<th>Notes</th>
-									<th>Manufacturer</th>
-									<th>Quantity In Stock</th>
+									<th style='text-align: right;'>Quantity In Stock</th>
+									<th>Datasheet(s)</th>
 									<th></th>
 								</tr>
 							</thead>
@@ -74,10 +74,22 @@
 									<td><a href="../${part.getId()}"><#attempt>${part.findAttribute("Manufacturer Part Number").getValue()?html}<#recover>Undefined</#attempt></a></td>
 									<td><#attempt>${part.findAttribute("Description").getValue()?html}<#recover>-</#attempt></td>
 									<td><#attempt>${part.findAttribute("Notes").getValue()?html}<#recover>-</#attempt></td>
-									<td><#attempt>${part.findAttribute("Manufacturer").getValue()?html}<#recover>-</#attempt></td>
-									<td><#attempt>${part.findAttribute("Quantity In Stock").getValue()?html}<#recover>-</#attempt></td>
+									<td style="text-align: right;">
+										<form action="../${part.getId()}?method=put" method="POST">
+										<#attempt>${part.findAttribute("Quantity In Stock").getValue()?html}<#recover>-</#attempt>
+										<input name="minus" type="image" src="../../media/img/minus-button.png" alt="Checkout"/>
+										<input name="plus" type="image" src="../../media/img/plus-button.png" alt="Checkout"/>
+										</form>
+									</td>
+									<td><#attempt>
+										<#list part.findAttributes("Datasheet") as ds>
+										<a href="${ds.getHref()}">${ds.getValue()}</a>
+										<#if ds_has_next><br/></#if>
+										</#list>
+										<#recover>-</#attempt>
+									</td>
 									<td width="34">
-										<form action="../${part.getId()}?method=delete" method="POST"><input type="image" src="../../media/img/minus-button.png" alt="Remove"/></form>
+										<form action="../${part.getId()}?method=delete" method="POST"><input type="image" src="../../media/img/cross-button.png" alt="Remove"/></form>
 									</td>
 								</tr>
 								</#list>
