@@ -54,11 +54,11 @@
 			<div class="grid_12">
 				<div class="box">
 					<#list categories as c>
-					<h2>${c.getName()?html}</h2>
+					<h2>${c.getName()!?html}</h2>
 					<div class="block">
 						<ul>
 							<#list c.families as f>
-							<li><a href="parts/${c.getName()?url}/${f.getName()?url}"/>${f.getName()?html} (${f.getPartIds().size()})</a></li>
+							<li><a href="parts/${c.getName()!?url}/${f.getName()!?url}"/>${f.getName()!?html} (${f.getPartIds().size()})</a></li>
 							</#list>
 						</ul>
 					</div>
