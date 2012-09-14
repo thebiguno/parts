@@ -3,6 +3,7 @@ Ext.application({
 
 	requires: [
 		"Ext.MessageBox",
+		"Ext.field.Spinner",
 		"mobile.model.CatalogList",
 		"mobile.model.FamilyList",
 		"mobile.store.CatalogList",

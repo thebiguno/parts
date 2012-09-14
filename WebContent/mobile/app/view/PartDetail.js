@@ -32,12 +32,20 @@ Ext.define("mobile.view.PartDetail", {
 					{
 						xtype: "labelfield",
 						name: "description",
-						label: "Description"
+						label: "Desc"
 					},
 					{
 						xtype: "labelfield",
 						name: "notes",
 						label: "Notes"
+					},
+					{
+						xtype: "spinnerfield",
+						name: "quantity",
+						id: "quantity-spinner",
+						label: "Qty",
+						minValue: 0,
+						increment: 1
 					}
 				]
 			},
@@ -47,7 +55,7 @@ Ext.define("mobile.view.PartDetail", {
 					{
 						xtype: "labelfield",
 						name: "datasheets",
-						label: "Datasheets"
+						label: "Docs"
 					}
 				]
 			}
@@ -55,6 +63,5 @@ Ext.define("mobile.view.PartDetail", {
 	},
 	setPart: function(record){
 		this.setRecord(record);
-		//this.down("labelfield").setValue(record.data.datasheets);
 	}
 });

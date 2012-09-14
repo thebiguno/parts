@@ -41,10 +41,12 @@ public class FamilyResourceMobile extends ServerResource {
 				final Attribute partNumber = part.findAttribute("Manufacturer Part Number");
 				final Attribute description = part.findAttribute("Description");
 				final Attribute notes = part.findAttribute("Notes");
+				final Attribute quantity = part.findAttribute("Quantity In Stock");
 				JSONObject partObj = new JSONObject();
 				partObj.put("part", partNumber != null ? partNumber.getValue() : null);
 				partObj.put("description", description != null ? description.getValue() : null);
 				partObj.put("notes", notes != null ? notes.getValue() : null);
+				partObj.put("quantity", quantity != null ? Integer.parseInt(quantity.getValue()) : null);
 				final StringBuilder datasheets = new StringBuilder();
 				for (Attribute attribute : part.findAttributes("Datasheet")) {
 					datasheets.append("<a href='").append(attribute.getHref()).append("' target='_blank'>").append(attribute.getValue()).append("</a><br/>");

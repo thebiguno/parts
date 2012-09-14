@@ -5,6 +5,7 @@ Ext.define("mobile.model.FamilyList", {
 			"part",
 			"description",
 			"notes",
+			"quantity",
 			"datasheets"
 		]
 	}
