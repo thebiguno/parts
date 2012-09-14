@@ -1,9 +1,8 @@
 Ext.define("mobile.view.FamilyList", {
 	extend: 'Ext.dataview.List',
 	alias: "widget.family-list",
-	requires: ["mobile.store.FamilyList"],
 	config: {
-		store: Ext.create("mobile.store.FamilyList"),
+		store: "FamilyList",
 		itemTpl: "<div>{description}</div>",
 		detailCard: {
 			html: "<p>Foo</p><p>Bar Baz!</p>"
