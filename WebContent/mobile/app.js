@@ -3,8 +3,14 @@ Ext.application({
 
 	requires: [
 		"Ext.MessageBox",
+		"mobile.model.CatalogList",
+		"mobile.model.FamilyList",
+		"mobile.store.CatalogList",
 		"mobile.store.FamilyList",
-		"mobile.store.CatalogList"
+		"mobile.view.CatalogList",
+		"mobile.view.FamilyList",
+		"mobile.view.PartDetail",
+		"mobile.view.components.LabelField"
 	],
 	
 	viewport: {
