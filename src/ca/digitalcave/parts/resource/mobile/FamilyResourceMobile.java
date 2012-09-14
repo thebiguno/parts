@@ -39,9 +39,9 @@ public class FamilyResourceMobile extends ServerResource {
 			final JSONObject result = new JSONObject();
 			for (Part part : parts) {
 				JSONObject partObj = new JSONObject();
-				partObj.put("part", part.findAttribute("Manufacturer Part Number"));
-				partObj.put("description", part.findAttribute("Description"));
-				partObj.put("notes", part.findAttribute("Notes"));
+				partObj.put("part", part.findAttribute("Manufacturer Part Number").getValue());
+				partObj.put("description", part.findAttribute("Description").getValue());
+				partObj.put("notes", part.findAttribute("Notes").getValue());
 				final StringBuilder datasheets = new StringBuilder();
 				for (Attribute attribute : part.findAttributes("Datasheet")) {
 					datasheets.append("<a href='").append(attribute.getHref()).append("' target='_blank'>").append(attribute.getValue()).append("</a><br/>");
