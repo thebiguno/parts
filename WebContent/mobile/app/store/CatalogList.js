@@ -1,8 +1,8 @@
-Ext.define("PartsDB.store.CatalogList", {
+Ext.define("mobile.store.CatalogList", {
 	extend: 'Ext.data.Store',
-	requires: ["PartsDB.model.CatalogList"],
+	requires: ["mobile.model.CatalogList"],
 	config: {
-		model: "PartsDB.model.CatalogList",
+		model: "mobile.model.CatalogList",
 		grouper: {
 			groupFn: function(record) {
 				return record.get('category');

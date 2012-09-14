@@ -1,4 +1,4 @@
-Ext.define("PartsDB.controller.FamilyList", {
+Ext.define("mobile.controller.FamilyList", {
 	extend: "Ext.app.Controller",
 	config: {
 		refs: {
@@ -19,9 +19,9 @@ Ext.define("PartsDB.controller.FamilyList", {
 	activatePartDetail: function(list, index, target, record){
 		var partDetail = this.getPartDetail();
 		if (partDetail == null){
-			partDetail = Ext.create("PartsDB.view.PartDetail", {});
+			partDetail = Ext.create("mobile.view.PartDetail", {});
 		}
-		//partDetail.getStore().load({});
+		partDetail.setPart(record);
 		Ext.Viewport.animateActiveItem(partDetail, {type: 'slide', direction: 'left'});
 	},
 	backToCatalogList: function(){

@@ -1,4 +1,4 @@
-Ext.define("PartsDB.controller.CatalogList", {
+Ext.define("mobile.controller.CatalogList", {
 	extend: "Ext.app.Controller",
 	config: {
 		refs: {
@@ -14,7 +14,7 @@ Ext.define("PartsDB.controller.CatalogList", {
 	activateFamilyList: function (list, index, target, record) {
 		var familyList = this.getFamilyList();
 		if (familyList == null){
-			familyList = Ext.create("PartsDB.view.FamilyList", {});
+			familyList = Ext.create("mobile.view.FamilyList", {});
 		}
 		familyList.getStore().getProxy().setUrl("../m/parts/" + record.data.category + "/" + record.data.family);
 		familyList.getStore().load({

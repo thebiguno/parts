@@ -41,6 +41,12 @@ public class IndexResource extends ServerResource {
 			final List<String> terms = Collections.emptyList();
 			getResponseAttributes().put("categories", mapper.search(terms));
 			
+			final String userAgent = getRequest().getClientInfo().getAgent();
+			final boolean ios = userAgent.contains("iPad") || userAgent.contains("iPhone") || userAgent.contains("iPod");
+			if (ios){
+				getResponse().redirectPermanent("mobile");
+			}
+			
 			final Template template = application.getFmConfig().getTemplate("index.ftl");
 			template.setOutputEncoding("UTF-8");
 			return new TemplateRepresentation(template, getResponseAttributes(), MediaType.TEXT_HTML);

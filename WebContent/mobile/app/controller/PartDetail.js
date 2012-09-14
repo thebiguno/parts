@@ -1,4 +1,4 @@
-Ext.define("PartsDB.controller.PartDetail", {
+Ext.define("mobile.controller.PartDetail", {
 	extend: "Ext.app.Controller",
 	config: {
 		refs: {

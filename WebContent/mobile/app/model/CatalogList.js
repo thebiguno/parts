@@ -1,4 +1,4 @@
-Ext.define("PartsDB.model.CatalogList", {
+Ext.define("mobile.model.CatalogList", {
 	extend: 'Ext.data.Model',
 	config: {
 		fields: [

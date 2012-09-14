@@ -137,7 +137,7 @@ public class PartsApplication extends Application {
 		
 		publicRouter.attach("/m/index", IndexResourceMobile.class);
 		publicRouter.attach("/m/parts/{category}/{family}", FamilyResourceMobile.class);
-		publicRouter.attach("/PartsDB", new Directory(getContext(), "war:///PartsDB"));
+		publicRouter.attach("/mobile", new Directory(getContext(), "war:///mobile"));
 		publicRouter.attachDefault(authenticator);
 
 		final Encoder encoder = new Encoder(getContext());

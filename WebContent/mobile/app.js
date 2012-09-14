@@ -1,13 +1,19 @@
 Ext.application({
-	name: 'PartsDB',
+	name: 'mobile',
 
 	requires: [
-		'Ext.MessageBox'
+		"Ext.MessageBox",
+		"mobile.store.FamilyList",
+		"mobile.store.CatalogList"
 	],
+	
+	viewport: {
+		autoMaximize: true
+	},
 
 	models: ["CatalogList", "FamilyList"],
 	stores: ["CatalogList", "FamilyList"],
-	views: ["Main", "CatalogList", "FamilyList", "PartDetail"],
+	views: ["CatalogList", "FamilyList", "PartDetail"],
 	controllers: ["CatalogList", "FamilyList", "PartDetail"],
 
 	icon: {
@@ -33,7 +39,7 @@ Ext.application({
 		Ext.fly('appLoadingIndicator').destroy();
 
 		// Initialize the main view
-		Ext.Viewport.add(Ext.create('PartsDB.view.Main'));
+		Ext.Viewport.add(Ext.create('mobile.view.CatalogList'));
 	},
 
 	onUpdated: function() {

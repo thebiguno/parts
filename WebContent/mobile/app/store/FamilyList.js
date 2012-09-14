@@ -1,7 +1,7 @@
-Ext.define("PartsDB.store.FamilyList", {
+Ext.define("mobile.store.FamilyList", {
 	extend: 'Ext.data.Store',
 	config: {
-		model: "PartsDB.model.FamilyList",
+		model: "mobile.model.FamilyList",
 		autoLoad: true,
 		proxy: {
 			type: "ajax",
