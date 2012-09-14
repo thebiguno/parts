@@ -11,7 +11,9 @@
 	<property name="PROJECT_NAME" value="Electronics Part List"/>
 	<property name="PROJECT_SHORT_NAME" value="parts"/>
 	<property name="PROJECT_DESCRIPTION" value="Electronics Part List"/>
-	<property name="PROJECT_COPYRIGHT" value="Copyright Warren Janssens"/>
+	<property name="PROJECT_COPYRIGHT" value="Copyright Warren Janssens and Wyatt Olson"/>
+	
+	<property name="COMPILE_EXCLUDES" value="**/ca/digitalcave/parts/test/*"/>
 
 	<path id="classpath">
 		<fileset dir="WebContent/WEB-INF/lib" includes="**/*.jar"/>
