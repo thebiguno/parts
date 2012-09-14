@@ -26,6 +26,8 @@ import org.restlet.service.StatusService;
 import ca.digitalcave.parts.resource.FamilyResource;
 import ca.digitalcave.parts.resource.IndexResource;
 import ca.digitalcave.parts.resource.PartResource;
+import ca.digitalcave.parts.resource.mobile.FamilyResourceMobile;
+import ca.digitalcave.parts.resource.mobile.IndexResourceMobile;
 import ca.digitalcave.parts.security.PartsVerifier;
 import freemarker.template.Configuration;
 import freemarker.template.ObjectWrapper;
@@ -132,6 +134,10 @@ public class PartsApplication extends Application {
 		privateRouter.attach("/", new Redirector(getContext(), "index.html", Redirector.MODE_CLIENT_TEMPORARY));
 		publicRouter.attach("/media", new Directory(getContext(), "war:///media"));
 		publicRouter.attach("/datasheets", new Directory(getContext(), "war:///datasheets"));
+		
+		publicRouter.attach("/m/index", IndexResourceMobile.class);
+		publicRouter.attach("/m/parts/{category}/{family}", FamilyResourceMobile.class);
+		publicRouter.attach("/PartsDB", new Directory(getContext(), "war:///PartsDB"));
 		publicRouter.attachDefault(authenticator);
 
 		final Encoder encoder = new Encoder(getContext());
