@@ -171,7 +171,7 @@ public class PartResource extends ServerResource {
 			final Attribute category = part.findAttribute("Category");
 			final Attribute family = part.findAttribute("Family");
 			final Short q = (short) (Short.parseShort(quantity.getValue()) + delta);
-			if (q > 0) {
+			if (q >= 0) {
 				mapper.setQuantity(partId, Short.toString(q));
 				sqlSession.commit();
 			}
