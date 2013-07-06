@@ -9,7 +9,7 @@ Ext.application({
 	},
 
 	"stores": ["CatalogTree"],
-	"views": ["CatalogTree"],
+	"views": ["CatalogTree","PartList"],
 	//"controllers": ["CatalogTree", "PartList"],
 
 	"launch": function() {

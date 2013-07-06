@@ -3,13 +3,14 @@ Ext.define('Parts.view.PartList', {
 	"alias": "widget.partlist",
 	
 	"rootVisible": false,
-	"store": "PartList",
+	//"store": "PartList",
 	
 	"columns": [
 		{
 			"text": "Name",
 			"flex": 1,
-			"dataIndex": "name"
+			"dataIndex": "name",
+			"sortable": false
 		}
 	]
 });

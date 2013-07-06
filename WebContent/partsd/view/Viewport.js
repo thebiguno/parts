@@ -10,19 +10,21 @@ Ext.define("Parts.view.Viewport", {
 	
 	"requires": [
 		"Parts.view.CatalogTree",
-		//"Parts.view.PartList"
+		"Parts.view.PartList"
 	],
 	
 	"layout": "border",
 
 	"items": [
 		{
+			"region": "west",
+			"xtype": "catalogtree",
+			"width": 250,
+			"split": true
+		},
+		{
 			"region": "center",
-			"xtype": "catalogtree"
+			"xtype": "partlist"
 		}
-//		{
-//			"region": "center",
-//			"xtype": "partlist"
-//		}
 	]
 });
