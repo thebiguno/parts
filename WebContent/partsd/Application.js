@@ -5,16 +5,15 @@ Ext.application({
 	"appFolder": "partsd",
 	
 	"viewport": {
-		autoMaximize: true
+		"autoMaximize": true
 	},
 
-	stores: ["CatalogList", "FamilyList"],
-	views: ["CatalogList"],
-	controllers: ["CatalogList", "FamilyList", "PartDetail"],
+	"stores": ["CatalogTree"],
+	"views": ["CatalogTree"],
+	//"controllers": ["CatalogTree", "PartList"],
 
-	launch: function() {
-		Ext.Viewport.add(Ext.create('Parts.view.CatalogList'));
-		
+	"launch": function() {
 		Parts.app = this;
+		Ext.create( "Parts.view.Viewport");
 	}
 });

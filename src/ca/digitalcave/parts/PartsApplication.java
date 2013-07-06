@@ -121,9 +121,9 @@ public class PartsApplication extends Application {
 	@Override  
 	public Restlet createRoot() {
 
-		final Router datamRouter = new Router(getContext());
-		datamRouter.attach("/", CatalogResource.class);
-		datamRouter.attach("/{category}/{family}", FamilyResource.class);
+		final Router dataRouter = new Router(getContext());
+		dataRouter.attach("/", CatalogResource.class);
+		dataRouter.attach("/{category}/{family}", FamilyResource.class);
 //		datamRouter.attach("/{part}", PartResource.class);
 		
 //		final ChallengeAuthenticator authenticator = new ChallengeAuthenticator(getContext(), ChallengeScheme.HTTP_BASIC, "Parts");
@@ -133,7 +133,7 @@ public class PartsApplication extends Application {
 		final Router publicRouter = new Router(getContext());
 //		privateRouter.attach("", new Redirector(getContext(), "index.html", Redirector.MODE_CLIENT_TEMPORARY));
 //		privateRouter.attach("/", new Redirector(getContext(), "index.html", Redirector.MODE_CLIENT_TEMPORARY));
-		publicRouter.attach("/datam", datamRouter);
+		publicRouter.attach("/data", dataRouter);
 		publicRouter.attach("/datasheets", new Directory(getContext(), "war:///datasheets"));
 		
 		publicRouter.attachDefault(DefaultResource.class).setMatchingMode(Template.MODE_STARTS_WITH);

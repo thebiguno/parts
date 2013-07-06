@@ -45,6 +45,7 @@ public class CatalogResource extends ServerResource {
 		try {
 			final List<String> terms = Collections.emptyList();
 			final List<Category> search = sqlSession.getMapper(PartsMapper.class).search(terms);
+			final boolean tree = getQuery().getFirst("node") != null;
 			
 			return new WriterRepresentation(MediaType.APPLICATION_JSON) {
 				@Override
@@ -52,16 +53,34 @@ public class CatalogResource extends ServerResource {
 					final JsonGenerator g = application.getJsonFactory().createJsonGenerator(w);
 					g.writeStartObject();
 					g.writeBooleanField("success", true);
-					g.writeArrayFieldStart("data");
-					for (Category category : search) {
-						for (Family family : category.getFamilies()) {
+					if (tree) {
+						g.writeArrayFieldStart("children");
+						for (Category category : search) {
 							g.writeStartObject();
-							g.writeStringField("category", category.getName());
-							g.writeStringField("family", family.getName());
+							g.writeStringField("name", category.getName());
+							g.writeArrayFieldStart("children");
+							for (Family family : category.getFamilies()) {
+								g.writeStartObject();
+								g.writeStringField("name", family.getName());
+								g.writeBooleanField("leaf", true);
+								g.writeEndObject();
+							}
+							g.writeEndArray();
 							g.writeEndObject();
 						}
+						g.writeEndArray();
+					} else {
+						g.writeArrayFieldStart("data");
+						for (Category category : search) {
+							for (Family family : category.getFamilies()) {
+								g.writeStartObject();
+								g.writeStringField("category", category.getName());
+								g.writeStringField("family", family.getName());
+								g.writeEndObject();
+							}
+						}
+						g.writeEndArray();
 					}
-					g.writeEndArray();
 					g.writeEndObject();
 					g.flush();
 				}

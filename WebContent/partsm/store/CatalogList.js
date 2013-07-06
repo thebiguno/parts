@@ -13,7 +13,7 @@ Ext.define("Parts.store.CatalogList", {
 		autoLoad: true,
 		proxy: {
 			type: "ajax",
-			url: "datam/",
+			url: "data/",
 			reader: {
 				type: 'json',
 				rootProperty: 'data'
