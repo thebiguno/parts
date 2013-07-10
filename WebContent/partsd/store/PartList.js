@@ -1,16 +1,14 @@
 Ext.define("Parts.store.PartList", {
-	extend: 'Ext.data.Store',
-	fields: [
-		"name"
-	],
+	"extend": "Ext.data.Store",
+	"fields": [ "part", "description", "quantity", "datasheets" ],
 	"autoLoad": false,
 	
 	"proxy": {
 		"type": "ajax",
-		url: "data/", // this will be dynamic
-		reader: {
-			type: 'json',
-			rootProperty: 'data'
+		"url": "dynamic",
+		"reader": {
+			"type": "json",
+			"root": "data"
 		}
 	}
 });

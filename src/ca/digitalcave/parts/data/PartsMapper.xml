@@ -46,8 +46,8 @@ order by sort, name
 	<select id="partsByFamily" resultMap="partsByFamily">
 select a.part_id, a.name, a.value, a.href
 from attribute a
-inner join attribute f on a.part_id = f.part_id and f.name = 'Family' and f.value = #{family}
-inner join attribute c on a.part_id = f.part_id and c.name = 'Category' and c.value = #{category}
+inner join attribute f on a.part_id = f.part_id and f.name = 'Family' <if test="family != null">and f.value = #{family}</if>
+inner join attribute c on a.part_id = c.part_id and c.name = 'Category' and c.value = #{category}
 inner join attribute p on a.part_id = p.part_id and p.name = 'Manufacturer Part Number'
 order by c.name, f.name, p.value
 	</select>

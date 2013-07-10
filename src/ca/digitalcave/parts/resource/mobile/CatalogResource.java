@@ -58,11 +58,15 @@ public class CatalogResource extends ServerResource {
 						for (Category category : search) {
 							g.writeStartObject();
 							g.writeStringField("name", category.getName());
+							g.writeStringField("category", category.getName());
+							g.writeStringField("family",  "");
 							g.writeArrayFieldStart("children");
 							for (Family family : category.getFamilies()) {
 								g.writeStartObject();
 								g.writeStringField("name", family.getName());
 								g.writeBooleanField("leaf", true);
+								g.writeStringField("category", category.getName());
+								g.writeStringField("family", family.getName());
 								g.writeEndObject();
 							}
 							g.writeEndArray();

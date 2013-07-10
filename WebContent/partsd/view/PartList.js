@@ -3,14 +3,36 @@ Ext.define('Parts.view.PartList', {
 	"alias": "widget.partlist",
 	
 	"rootVisible": false,
-	//"store": "PartList",
+	"store": "PartList",
 	
 	"columns": [
 		{
-			"text": "Name",
-			"flex": 1,
-			"dataIndex": "name",
+			"text": "Part #",
+			"width": 250,
+			"dataIndex": "part",
 			"sortable": false
+		},
+		{
+			"text": "Description",
+			"flex": 1,
+			"dataIndex": "description",
+			"sortable": false
+		},
+		{
+			"text": "Quantity",
+			"width": 80,
+			"dataIndex": "quantity",
+			"sortable": false
+		},
+		{
+			"text": "Datasheets",
+			"width": 250,
+			"dataIndex": "datasheets",
+			"sortable": false
+		},
+		{
+			"width": 100
+			// TODO actions
 		}
 	]
 });

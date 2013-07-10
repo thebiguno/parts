@@ -16,7 +16,7 @@ Ext.define("Parts.controller.CatalogList", {
 		if (familyList == null){
 			familyList = Ext.create("Parts.view.FamilyList", {});
 		}
-		familyList.getStore().getProxy().setUrl("datam/" + record.data.category + "/" + record.data.family);
+		familyList.getStore().getProxy().setUrl("data/" + record.data.category + "/" + record.data.family);
 		familyList.getStore().load({
 			callback: function(){
 				Ext.Viewport.animateActiveItem(familyList, {type: 'slide', direction: 'left'});

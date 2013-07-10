@@ -32,7 +32,10 @@ public class FamilyResource extends ServerResource {
 		final SqlSession sqlSession = application.getSqlSessionFactory().openSession();
 		try {
 			final String category = URLDecoder.decode((String) getRequestAttributes().get("category"), "UTF-8");
-			final String family = URLDecoder.decode((String) getRequestAttributes().get("family"), "UTF-8");
+			String family = null;
+			try {
+				family = URLDecoder.decode((String) getRequestAttributes().get("family"), "UTF-8");
+			} catch (Throwable t) {}
 			
 			List<Part> parts = sqlSession.getMapper(PartsMapper.class).partsByFamily(category, family);
 			
@@ -53,6 +56,7 @@ public class FamilyResource extends ServerResource {
 				}
 				partObj.put("datasheets", datasheets.toString());
 				result.append("data", partObj);
+				result.put("success", true);
 			}
 
 			return new JsonRepresentation(result);
