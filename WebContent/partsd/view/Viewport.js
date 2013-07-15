@@ -17,6 +17,50 @@ Ext.define("Parts.view.Viewport", {
 
 	"items": [
 		{
+			"region": "north",
+			"xtype": "toolbar",
+			"items": [
+				{
+					"xtype": "button",
+					"text": "New",
+					"itemId": "newbutton"
+				},
+				"-",
+				{
+					"xtype": "textfield",
+					"emptyText": "Search Terms",
+					"itemId": "searchterms"
+				},
+				{
+					"xtype": "button",
+					"text": "Search",
+					"itemId": "searchbutton"
+				},
+				"-",
+				{
+					"xtype": "textfield",
+					"emptyText": "Digikey URL",
+					"itemId": "digikeyurl"
+				},
+				{
+					"xtype": "textfield",
+					"emptyText": "Quantity",
+					"itemId": "digikeyqty"
+				},
+				{
+					"xtype": "button",
+					"text": "Add",
+					"itemId": "addbutton"
+				},
+				"-",
+				{
+					"xtype": "button",
+					"text": "Report",
+					"itemId": "reportbutton"
+				}
+			]
+		},
+		{
 			"region": "west",
 			"xtype": "catalogtree",
 			"width": 250,

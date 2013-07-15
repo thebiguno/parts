@@ -2,7 +2,7 @@ Ext.define('Parts.view.CatalogTree', {
 	"extend": "Ext.tree.Panel",
 	"alias": "widget.catalogtree",
 	
-	"rootVisible": false,
+	"rootVisible": true,
 	"store": "CatalogTree",
 	
 	"columns": [
@@ -13,5 +13,14 @@ Ext.define('Parts.view.CatalogTree', {
 			"sortable": false,
 			"dataIndex": "name"
 		}
-	]
+	],
+
+	"initComponent": function() {
+		this.callParent(arguments);
+		
+		var me = this;
+		this.getStore().addListener("load", function() {
+			//me.getSelectionModel().selectPath('/' + me.getRootNode().getId());
+		});
+	}
 });

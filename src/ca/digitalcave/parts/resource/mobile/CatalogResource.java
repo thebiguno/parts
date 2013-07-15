@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.io.Writer;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 import org.apache.commons.lang.StringEscapeUtils;
@@ -43,7 +42,8 @@ public class CatalogResource extends ServerResource {
 
 		final SqlSession sqlSession = application.getSqlSessionFactory().openSession();
 		try {
-			final List<String> terms = Collections.emptyList();
+			final String q = getQuery().getFirstValue("q", "");
+			final List<String> terms = Arrays.asList(q.split(" "));
 			final List<Category> search = sqlSession.getMapper(PartsMapper.class).search(terms);
 			final boolean tree = getQuery().getFirst("node") != null;
 			
@@ -59,7 +59,7 @@ public class CatalogResource extends ServerResource {
 							g.writeStartObject();
 							g.writeStringField("name", category.getName());
 							g.writeStringField("category", category.getName());
-							g.writeStringField("family",  "");
+							g.writeStringField("family",  "*");
 							g.writeArrayFieldStart("children");
 							for (Family family : category.getFamilies()) {
 								g.writeStartObject();

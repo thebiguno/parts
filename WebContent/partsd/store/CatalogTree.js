@@ -3,6 +3,14 @@ Ext.define("Parts.store.CatalogTree", {
 	"fields": [ "name", "category", "family" ],
 	"autoLoad": true,
 	
+	"root": {
+		"name": "All",
+		"expanded": true,
+		"category": "*",
+		"family": "*"
+	},
+	
+
 	"proxy": {
 		"type": "ajax",
 		"url": "data/",

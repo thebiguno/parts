@@ -31,11 +31,10 @@ public class FamilyResource extends ServerResource {
 		final PartsApplication application = (PartsApplication) getApplication();
 		final SqlSession sqlSession = application.getSqlSessionFactory().openSession();
 		try {
-			final String category = URLDecoder.decode((String) getRequestAttributes().get("category"), "UTF-8");
-			String family = null;
-			try {
-				family = URLDecoder.decode((String) getRequestAttributes().get("family"), "UTF-8");
-			} catch (Throwable t) {}
+			String category = URLDecoder.decode((String) getRequestAttributes().get("category"), "UTF-8");
+			String family = URLDecoder.decode((String) getRequestAttributes().get("family"), "UTF-8");
+			if ("*".equals(category)) category = null;
+			if ("*".equals(family)) family = null;
 			
 			List<Part> parts = sqlSession.getMapper(PartsMapper.class).partsByFamily(category, family);
 			

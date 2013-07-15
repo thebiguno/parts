@@ -5,3 +5,26 @@
 -Direct link to DK (put DK part number into search; if no DK part, use man part, desc, etc)
 -Warn about duplicate parts
 
+create table user (
+	user_id smallint,
+	email varchar(255),
+	credentials varchar(255)
+)
+create table part (
+	user_id smallint not null,
+	part_id integer not null,
+	available smallint not null default 0, -- quantity on hand
+	minimum smallint not null default 0, -- quantity desired
+	category varchar(255) not null,
+	family varchar(255) not null,
+	part_no varchar(255) not null,
+	description varchar(255),
+	notes varchar(255)
+)
+create table attribute (
+	part_id integer not null, 
+	name varchar(255) not null, 
+	value varchar(255) not null, 
+	href varchar(255), 
+	sort smallint default 0
+)

@@ -123,7 +123,6 @@ public class PartsApplication extends Application {
 
 		final Router dataRouter = new Router(getContext());
 		dataRouter.attach("/", CatalogResource.class);
-		dataRouter.attach("/{category}/", FamilyResource.class);
 		dataRouter.attach("/{category}/{family}", FamilyResource.class);
 //		datamRouter.attach("/{part}", PartResource.class);
 		
