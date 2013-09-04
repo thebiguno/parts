@@ -40,7 +40,7 @@ public class CatalogResource extends ServerResource {
 	protected Representation get(Variant variant) throws ResourceException {
 		final PartsApplication application = (PartsApplication) getApplication();
 
-		final SqlSession sqlSession = application.getSqlSessionFactory().openSession();
+		final SqlSession sqlSession = application.getSqlFactory().openSession();
 		try {
 			final String q = getQuery().getFirstValue("q", "");
 			final List<String> terms = Arrays.asList(q.split(" "));
@@ -117,7 +117,7 @@ public class CatalogResource extends ServerResource {
 					if (StringUtils.isBlank(quantityInStock)) quantityInStock = "0";
 					attributes.add(new Attribute("Quantity In Stock", quantityInStock));
 					
-					final SqlSession sqlSession = application.getSqlSessionFactory().openSession();
+					final SqlSession sqlSession = application.getSqlFactory().openSession();
 					try {
 						final PartsMapper mapper = sqlSession.getMapper(PartsMapper.class);
 						short partId = mapper.newPartId();
@@ -146,7 +146,7 @@ public class CatalogResource extends ServerResource {
 				terms.add(StringEscapeUtils.escapeSql(term.toLowerCase()));
 			}
 		}
-		final SqlSession sqlSession = application.getSqlSessionFactory().openSession();
+		final SqlSession sqlSession = application.getSqlFactory().openSession();
 		try {
 			final PartsMapper mapper = sqlSession.getMapper(PartsMapper.class);
 			getResponseAttributes().put("categories", mapper.search(terms));

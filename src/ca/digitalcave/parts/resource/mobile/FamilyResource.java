@@ -29,14 +29,14 @@ public class FamilyResource extends ServerResource {
 	@Override
 	protected Representation get(Variant variant) throws ResourceException {
 		final PartsApplication application = (PartsApplication) getApplication();
-		final SqlSession sqlSession = application.getSqlSessionFactory().openSession();
+		final SqlSession sqlSession = application.getSqlFactory().openSession();
 		try {
 			String category = URLDecoder.decode((String) getRequestAttributes().get("category"), "UTF-8");
 			String family = URLDecoder.decode((String) getRequestAttributes().get("family"), "UTF-8");
 			if ("*".equals(category)) category = null;
 			if ("*".equals(family)) family = null;
 			
-			List<Part> parts = sqlSession.getMapper(PartsMapper.class).partsByFamily(category, family);
+			final List<Part> parts = sqlSession.getMapper(PartsMapper.class).partsByFamily(category, family);
 			
 			final JSONObject result = new JSONObject();
 			for (Part part : parts) {

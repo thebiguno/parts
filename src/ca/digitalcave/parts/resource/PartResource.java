@@ -31,7 +31,7 @@ public class PartResource extends ServerResource {
 	@Override
 	protected Representation get(Variant variant) throws ResourceException {
 		final PartsApplication application = (PartsApplication) getApplication();
-		final SqlSession sqlSession = application.getSqlSessionFactory().openSession();
+		final SqlSession sqlSession = application.getSqlFactory().openSession();
 		try {
 			final List<Attribute> attributes;
 			final String part = (String) getRequestAttributes().get("part");
@@ -71,7 +71,7 @@ public class PartResource extends ServerResource {
 	@Override
 	protected Representation post(Representation entity, Variant variant) throws ResourceException {
 		final PartsApplication application = (PartsApplication) getApplication();
-		final SqlSession sqlSession = application.getSqlSessionFactory().openSession();
+		final SqlSession sqlSession = application.getSqlFactory().openSession();
 		try {
 			final PartsMapper mapper = sqlSession.getMapper(PartsMapper.class);
 			final String part = (String) getRequestAttributes().get("part");
@@ -157,7 +157,7 @@ public class PartResource extends ServerResource {
 	@Override
 	protected Representation put(Representation entity, Variant variant) throws ResourceException {
 		final PartsApplication application = (PartsApplication) getApplication();
-		final SqlSession sqlSession = application.getSqlSessionFactory().openSession();
+		final SqlSession sqlSession = application.getSqlFactory().openSession();
 		try {
 			final Form form = new Form(entity);
 			final short partId = Short.parseShort((String) getRequestAttributes().get("part"));
@@ -186,7 +186,7 @@ public class PartResource extends ServerResource {
 	@Override
 	protected Representation delete(Variant variant) throws ResourceException {
 		final PartsApplication application = (PartsApplication) getApplication();
-		final SqlSession sqlSession = application.getSqlSessionFactory().openSession();
+		final SqlSession sqlSession = application.getSqlFactory().openSession();
 		try {
 			final String part = (String) getRequestAttributes().get("part");
 			final short partId = Short.parseShort(part);
