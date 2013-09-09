@@ -2,12 +2,12 @@
 
 --changeset wj:create_account
 create table account (
-    account_id smallint primary key,
-    name varchar(255) not null unique
-    email varchar(255) not null,
-    credentials varchar(255) not null,
-    created_at timestamp not null,
-    modified_at timestamp not null
+	account_id smallint primary key,
+	name varchar(255) not null unique
+	email varchar(255) not null,
+	credentials varchar(255) not null,
+	created_at timestamp not null,
+	modified_at timestamp not null
 );
 --rollback drop table account;
 
@@ -43,9 +43,14 @@ create table attribute (
 --changeset wj:create_attachment
 create table attachment (
 	attachment_id int primary_key,
-	component_id smallint not null,
+	component_id smallint not null references component (component_id),
 	name varchar(255) not null,
-	mime_type varchar(255) not null
+	mime_type varchar(255) not null default 'application/octet-stream',
+	modified_at timestamp not null,
+	data oid
 );
 --rollback drop table attachment;
- 
+
+--changeset wj:create_attachment_trigger
+create trigger t_attachment before update or delete on attachment
+	for each row execute procedure lo_manage(data);

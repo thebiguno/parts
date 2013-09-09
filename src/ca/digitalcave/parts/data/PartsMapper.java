@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.apache.ibatis.annotations.Param;
 
+import ca.digitalcave.parts.model.Account;
 import ca.digitalcave.parts.model.Attribute;
 import ca.digitalcave.parts.model.Category;
 import ca.digitalcave.parts.model.Part;
@@ -33,4 +34,7 @@ public interface PartsMapper {
 	void insert(@Param("attribute") Attribute attribute);
 	void remove(@Param("partId") short partId);
 	void setQuantity(@Param("partId") short partId, @Param("value") String value);
+
+	
+	Account selectAccount(String identifier);
 }

@@ -16,9 +16,8 @@ import org.apache.ibatis.session.SqlSessionFactoryBuilder;
 import org.apache.ibatis.transaction.jdbc.JdbcTransactionFactory;
 import org.codehaus.jackson.JsonFactory;
 import org.restlet.Application;
-import org.restlet.Request;
-import org.restlet.Response;
 import org.restlet.Restlet;
+import org.restlet.data.ChallengeScheme;
 import org.restlet.data.CharacterSet;
 import org.restlet.data.Language;
 import org.restlet.data.MediaType;
@@ -26,12 +25,15 @@ import org.restlet.engine.application.Encoder;
 import org.restlet.resource.Directory;
 import org.restlet.routing.Router;
 import org.restlet.routing.Template;
-import org.restlet.security.Authenticator;
+import org.restlet.security.ChallengeAuthenticator;
 import org.restlet.service.StatusService;
 
+import ca.digitalcave.parts.resource.DatasheetResource;
 import ca.digitalcave.parts.resource.DefaultResource;
+import ca.digitalcave.parts.resource.PartResource;
 import ca.digitalcave.parts.resource.mobile.CatalogResource;
 import ca.digitalcave.parts.resource.mobile.FamilyResource;
+import ca.digitalcave.parts.security.CookieVerifier;
 
 import com.mchange.v2.c3p0.ComboPooledDataSource;
 
@@ -144,11 +146,12 @@ public class PartsApplication extends Application {
 		final Router dataRouter = new Router(getContext());
 		dataRouter.attach("/", CatalogResource.class);
 		dataRouter.attach("/{category}/{family}", FamilyResource.class);
-//		datamRouter.attach("/{part}", PartResource.class);
+		dataRouter.attach("/{part}/datasheets/{id}", DatasheetResource.class);
+		dataRouter.attach("/{part}", PartResource.class);
 		
-//		final ChallengeAuthenticator authenticator = new ChallengeAuthenticator(getContext(), ChallengeScheme.HTTP_BASIC, "Parts");
-//		authenticator.setVerifier(new PartsVerifier(this));
-//		authenticator.setNext(privateRouter);
+		final ChallengeAuthenticator authenticator = new ChallengeAuthenticator(getContext(), ChallengeScheme.HTTP_BASIC, "Parts");
+		authenticator.setVerifier(new CookieVerifier(this));
+		authenticator.setNext(dataRouter);
 
 		final Router publicRouter = new Router(getContext());
 //		privateRouter.attach("", new Redirector(getContext(), "index.html", Redirector.MODE_CLIENT_TEMPORARY));
