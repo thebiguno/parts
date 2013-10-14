@@ -1,7 +1,6 @@
 package ca.digitalcave.parts;
 
 import java.sql.Connection;
-import java.sql.Statement;
 import java.util.Locale;
 import java.util.Properties;
 
@@ -22,7 +21,9 @@ import org.restlet.data.CharacterSet;
 import org.restlet.data.Language;
 import org.restlet.data.MediaType;
 import org.restlet.engine.application.Encoder;
+import org.restlet.resource.ClientResource;
 import org.restlet.resource.Directory;
+import org.restlet.routing.Redirector;
 import org.restlet.routing.Router;
 import org.restlet.routing.Template;
 import org.restlet.security.ChallengeAuthenticator;
@@ -30,6 +31,7 @@ import org.restlet.service.StatusService;
 
 import ca.digitalcave.parts.resource.DatasheetResource;
 import ca.digitalcave.parts.resource.DefaultResource;
+import ca.digitalcave.parts.resource.IndexResource;
 import ca.digitalcave.parts.resource.PartResource;
 import ca.digitalcave.parts.resource.mobile.CatalogResource;
 import ca.digitalcave.parts.resource.mobile.FamilyResource;
@@ -55,6 +57,7 @@ public class PartsApplication extends Application {
 		getMetadataService().setDefaultCharacterSet(CharacterSet.UTF_8);
 		getMetadataService().setDefaultLanguage(Language.ENGLISH);
 		getMetadataService().addExtension("html", MediaType.TEXT_HTML);
+		getMetadataService().addExtension("json", MediaType.APPLICATION_JAVASCRIPT);
 		getTunnelService().setEnabled(true);
 		getTunnelService().setExtensionsTunnel(true);
 		getTunnelService().setMethodTunnel(true);
@@ -62,11 +65,10 @@ public class PartsApplication extends Application {
 	}
 	
 	public synchronized void start() throws Exception {
-		// called using reflection to avoid adding servlet api to lib
-		final Object servletContext = getContext().getServerDispatcher().getContext().getAttributes().get("org.restlet.ext.servlet.ServletContext");
-//		final String databaseName = (String) servletContext.getClass().getMethod("getRealPath", String.class).invoke(servletContext, "WEB-INF/db");
-
-		// set up derby
+		final ClientResource propertiesResource = new ClientResource("war:///WEB-INF/config.properties");
+		properties.load(propertiesResource.get().getReader());
+		
+		// set up database
 		dataSource = new ComboPooledDataSource();
 		dataSource.setDriverClass(properties.getProperty("jdbc.driver"));
 		dataSource.setJdbcUrl(properties.getProperty("jdbc.url"));
@@ -79,17 +81,19 @@ public class PartsApplication extends Application {
 		config.addMappers("ca.digitalcave.parts.data");
 		sqlFactory = new SqlSessionFactoryBuilder().build(config);
 		
+		// schema migration
 		final Connection c = dataSource.getConnection();
 		try {
 			final DatabaseConnection dbc = new JdbcConnection(c);
 			final ClassLoaderResourceAccessor ra = new ClassLoaderResourceAccessor(getClass().getClassLoader());
-			final Liquibase l = new Liquibase("/recipe/data/migrate.sql", ra, dbc);
+			final Liquibase l = new Liquibase("ca/digitalcave/parts/data/migrate.sql", ra, dbc);
 			l.update("all");
 		} finally {
 			c.close();
 		}
 		
 		// set up freemarker
+		final Object servletContext = getContext().getAttributes().get("org.restlet.ext.servlet.ServletContext");
 		fmConfig.setServletContextForTemplateLoading(servletContext, "/");
 		fmConfig.setDefaultEncoding("UTF-8");
 		fmConfig.setLocalizedLookup(true);
@@ -98,25 +102,10 @@ public class PartsApplication extends Application {
 		fmConfig.setObjectWrapper(ObjectWrapper.BEANS_WRAPPER);
 		fmConfig.setTemplateExceptionHandler(TemplateExceptionHandler.RETHROW_HANDLER);
 		
-		// install the schema
-		final Connection connection = dataSource.getConnection();
-		Statement statement = null;
-		try {
-			statement = connection.createStatement();
-//			statement.execute("delete from attribute");
-			statement.execute("create table attribute (part_id smallint, name varchar(255), value varchar(255), href varchar(255), sort smallint)");
-		} catch (Exception e) {
-			; 
-		} finally {
-			if (statement != null) statement.close();
-			connection.close();
-		}
-		
 		super.start();
 	}
 	
 	public synchronized void stop() throws Exception {
-		// shutdown derby
 		dataSource.close();
 		dataSource = null;
 		sqlFactory = null;
@@ -154,8 +143,9 @@ public class PartsApplication extends Application {
 		authenticator.setNext(dataRouter);
 
 		final Router publicRouter = new Router(getContext());
-//		privateRouter.attach("", new Redirector(getContext(), "index.html", Redirector.MODE_CLIENT_TEMPORARY));
-//		privateRouter.attach("/", new Redirector(getContext(), "index.html", Redirector.MODE_CLIENT_TEMPORARY));
+		publicRouter.attach("", new Redirector(getContext(), "index.html", Redirector.MODE_CLIENT_TEMPORARY));
+		publicRouter.attach("/", new Redirector(getContext(), "index.html", Redirector.MODE_CLIENT_TEMPORARY));
+		publicRouter.attach("/index", IndexResource.class);
 		publicRouter.attach("/data", dataRouter);
 		publicRouter.attach("/datasheets", new Directory(getContext(), "war:///datasheets"));
 		

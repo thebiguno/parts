@@ -4,16 +4,12 @@ import java.util.List;
 
 public class Category {
 
-	private Integer partId;
+	private Integer id;
 	private String name;
 	private List<Family> families;
 	
-	public Integer getPartId() {
-		return partId;
-	}
-	
-	public void setPartId(Integer partId) {
-		this.partId = partId;
+	public Integer getId() {
+		return id;
 	}
 	
 	public String getName() {

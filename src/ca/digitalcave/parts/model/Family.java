@@ -2,17 +2,16 @@ package ca.digitalcave.parts.model;
 
 import java.util.List;
 
+
 public class Family {
 
-	private String category;
+	private Integer categoryId;
+	private Integer id;
 	private String name;
-	private List<Integer> partIds;
+	private List<Part> parts;
 	
-	public void setCategory(String category) {
-		this.category = category;
-	}
-	public String getCategory() {
-		return category;
+	public Integer getId() {
+		return id;
 	}
 	
 	public String getName() {
@@ -22,11 +21,8 @@ public class Family {
 		this.name = name;
 	}
 	
-	public List<Integer> getPartIds() {
-		return partIds;
-	}
-	public void setPartIds(List<Integer> partIds) {
-		this.partIds = partIds;
+	public List<Part> getParts() {
+		return parts;
 	}
 	
 	@Override

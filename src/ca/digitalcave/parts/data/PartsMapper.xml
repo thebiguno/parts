@@ -2,29 +2,32 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="ca.digitalcave.parts.data.PartsMapper">
 	<resultMap type="ca.digitalcave.parts.model.Category" id="category">
-		<id property="name" column="category"/>
+		<result property="id" column="category_id"/>
+		<result property="name" column="category_name"/>
 		<collection property="families" javaType="list" ofType="ca.digitalcave.parts.model.Family">
-			<id property="category" column="category"/>
-			<id property="name" column="family"/>
-			<collection property="partIds" javaType="list" ofType="short">
-				<id property="value" column="part_id"/>
+			<id property="categoryId" column="category_id"/>
+			<id property="familyId" column="family_id"/>
+			<result property="name" column="family_name"/>
+			<collection property="parts" javaType="list" ofType="ca.digitalcave.parts.model.Part">
+				<id property="id" column="part_id"/>
 			</collection>
 		</collection>
 	</resultMap>
-	
+
 	<select id="search" resultMap="category">
-select distinct a.part_id part_id,
-	(select value from attribute c where c.name = 'Category' and c.part_id = a.part_id fetch first 1 rows only) category,
-	(select value from attribute f where f.name = 'Family' and f.part_id = a.part_id fetch first 1 rows only) family
-from attribute a
+select distinct p.part_id, p.part_no, p.description, f.family_id, f.name family_name, c.category_id, c.name category_name 
+from category c 
+inner join family f on c.category_id = f.category_id
+inner join part p on f.family_id = p.family_id
+inner join attribute a on p.part_id = a.part_id
 		<where>
 			<if test="terms.size() gt 0">
 				<foreach collection="terms" item="term" separator=" or ">
-lower(a.value) like '%${term}%' or lower(a.name) like '%${term}%'
+lower(a.val) like '%${term}%' or lower(a.name) like '%${term}%'
 				</foreach>
 			</if>
 		</where>
-	order by category, family
+order by c.name, f.name
 	</select>
 	
 	<select id="attributesByPart" resultType="ca.digitalcave.parts.model.Attribute">

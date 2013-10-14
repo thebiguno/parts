@@ -2,7 +2,7 @@ window.onbeforeunload = function(){return " ";};
 
 Ext.application({
 	"name": "Parts",
-	"appFolder": "partsd",
+	"appFolder": "d",
 	
 	"viewport": {
 		"autoMaximize": true

@@ -32,8 +32,8 @@ public interface PartsMapper {
 	
 	short newPartId();
 	void insert(@Param("attribute") Attribute attribute);
-	void remove(@Param("partId") short partId);
-	void setQuantity(@Param("partId") short partId, @Param("value") String value);
+	void remove(@Param("partId") int partId);
+	void setQuantity(@Param("partId") int partId, @Param("value") String value);
 
 	
 	Account selectAccount(String identifier);

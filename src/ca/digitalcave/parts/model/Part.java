@@ -6,13 +6,13 @@ import java.util.List;
 
 public class Part {
 
-	private short id;
+	private Integer id;
 	private List<Attribute> attributes;
 	
-	public int getId() {
+	public Integer getId() {
 		return id;
 	}
-	public void setId(short id) {
+	public void setId(Integer id) {
 		this.id = id;
 	}
 	

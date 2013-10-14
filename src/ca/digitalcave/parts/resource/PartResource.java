@@ -160,9 +160,9 @@ public class PartResource extends ServerResource {
 		final SqlSession sqlSession = application.getSqlFactory().openSession();
 		try {
 			final Form form = new Form(entity);
-			final short partId = Short.parseShort((String) getRequestAttributes().get("part"));
+			final int partId = Integer.parseInt((String) getRequestAttributes().get("part"));
 			final PartsMapper mapper = sqlSession.getMapper(PartsMapper.class);
-			final short delta = form.getFirstValue("minus.x") != null ? (short) -1 : (short) 1;
+			final int delta = form.getFirstValue("minus.x") != null ? -1 : 1;
 			final List<Attribute> attributesByPart = mapper.attributesByPart(partId);
 			final Part part = new Part();
 			part.setId(partId);
