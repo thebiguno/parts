@@ -2,7 +2,6 @@ package ca.digitalcave.parts.model;
 
 public class Attribute {
 
-	private short partId;
 	private String name;
 	private String value;
 	private String href;
@@ -13,13 +12,6 @@ public class Attribute {
 	public Attribute(String name, String value) {
 		this.name = name;
 		this.value = value;
-	}
-	
-	public short getPartId() {
-		return partId;
-	}
-	public void setPartId(short partId) {
-		this.partId = partId;
 	}
 	
 	public String getName() {

@@ -54,22 +54,24 @@ inner join attribute c on a.part_id = c.part_id and c.name = 'Category' <if test
 inner join attribute p on a.part_id = p.part_id and p.name = 'Manufacturer Part Number'
 order by c.name, f.name, p.value
 	</select>
-	
-	<select id="newPartId" resultType="short">
+
+
+	<insert id="insertPart">
+		<selectKey order="BEFORE" keyProperty="id">
 select coalesce(max(part_id),0) + 1 from attribute
-	</select>
-	
-	<insert id="insert">
-insert into attribute (part_id, name, value, href, sort)
-values (#{attribute.partId}, #{attribute.name}, #{attribute.value}, #{attribute.href,jdbcType=VARCHAR}, #{attribute.sort})
+		</selectKey>
+insert into part (part_id, account_id, family_id, available, minimum, part_no, description, notes)
+values (#{part.id}, #{account.id}, #{part.family.id}, #{part.available}, #{part.minimum}, #{part.number}, #{part.description}, #{part.description}));
 	</insert>
 	
-	<delete id="remove">
-delete from attribute
-where part_id = #{partId}
-	</delete>
+	<insert id="insertAttribute">
+insert into attribute (part_id, name, value, href, sort)
+values (#{partId}, #{attribute.name}, #{attribute.value}, #{attribute.href,jdbcType=VARCHAR}, #{attribute.sort})
+	</insert>
 	
-	<update id="setQuantity">
-update attribute set value = #{value} where part_id = #{partId} and name = 'Quantity In Stock'
-	</update>
+	<delete id="removeAttrtibute">
+delete from attribute
+where part_id = #{partId} and name = #{name}
+	</delete>
+
 </mapper>

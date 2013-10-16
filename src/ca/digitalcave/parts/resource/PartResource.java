@@ -1,9 +1,14 @@
 package ca.digitalcave.parts.resource;
 
+import java.io.IOException;
+import java.io.Writer;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.ibatis.session.ResultContext;
+import org.apache.ibatis.session.ResultHandler;
 import org.apache.ibatis.session.SqlSession;
+import org.codehaus.jackson.JsonGenerator;
 import org.restlet.data.Form;
 import org.restlet.data.MediaType;
 import org.restlet.data.Status;
@@ -11,6 +16,7 @@ import org.restlet.ext.freemarker.TemplateRepresentation;
 import org.restlet.representation.EmptyRepresentation;
 import org.restlet.representation.Representation;
 import org.restlet.representation.Variant;
+import org.restlet.representation.WriterRepresentation;
 import org.restlet.resource.ResourceException;
 import org.restlet.resource.ServerResource;
 
@@ -25,7 +31,7 @@ public class PartResource extends ServerResource {
 
 	@Override
 	protected void doInit() throws ResourceException {
-		getVariants().add(new Variant(MediaType.TEXT_HTML));
+		getVariants().add(new Variant(MediaType.APPLICATION_JSON));
 	}
 	
 	@Override
@@ -33,34 +39,35 @@ public class PartResource extends ServerResource {
 		final PartsApplication application = (PartsApplication) getApplication();
 		final SqlSession sqlSession = application.getSqlFactory().openSession();
 		try {
-			final List<Attribute> attributes;
 			final String part = (String) getRequestAttributes().get("part");
-			if ("new".equals(part)) {
-				attributes = new ArrayList<Attribute>();
-				attributes.add(new Attribute("Category", ""));
-				attributes.add(new Attribute("Family", ""));
-				attributes.add(new Attribute("Manufacturer", ""));
-				attributes.add(new Attribute("Manufacturer Part Number", ""));
-				attributes.add(new Attribute("Notes", ""));
-				attributes.add(new Attribute("Description", ""));
-				attributes.add(new Attribute("Quantity In Stock", "0"));
-				attributes.add(new Attribute("Minimum Stock", "0"));
-				getResponseAttributes().put("title", "New Part");
-			} else {
-				final short partId = Short.parseShort(part);
-				attributes = sqlSession.getMapper(PartsMapper.class).attributesByPart(partId);
-				for (Attribute attribute : attributes) {
-					if ("Manufacturer Part Number".equals(attribute.getName())) {
-						getResponseAttributes().put("title", attribute.getValue());
-						break;
-					}
+			final int partId = Integer.parseInt(part);
+			return new WriterRepresentation(variant.getMediaType()) {
+				@Override
+				public void write(Writer w) throws IOException {
+					final JsonGenerator g = application.getJsonFactory().createJsonGenerator(w);
+					g.writeStartObject();
+					g.writeBooleanField("success", true);
+					g.writeArrayFieldStart("data");
+					sqlSession.getMapper(PartsMapper.class).selectAttributes(partId, new ResultHandler() {
+						@Override
+						public void handleResult(ResultContext ctx) {
+							final Attribute attribute = (Attribute) ctx.getResultObject();
+							try {
+								g.writeStartObject();
+								g.writeNumberField("sort", attribute.getSort());
+								g.writeStringField("name", attribute.getName());
+								g.writeStringField("value", attribute.getValue());
+								g.writeStringField("href", attribute.getHref());
+								g.writeEndObject();
+							} catch (Exception e) {
+								throw new RuntimeException(e);
+							}
+						}
+					});
+					g.writeEndArray();
+					g.writeEndObject();
 				}
-			}
-			getResponseAttributes().put("part", part);
-			getResponseAttributes().put("attributes", attributes);
-			final Template template = application.getFmConfig().getTemplate("part.ftl");
-			template.setOutputEncoding("UTF-8");
-			return new TemplateRepresentation(template, getResponseAttributes(), MediaType.TEXT_HTML);
+			};
 		} catch (Exception e) {
 			throw new ResourceException(Status.SERVER_ERROR_INTERNAL, e);
 		} finally {
