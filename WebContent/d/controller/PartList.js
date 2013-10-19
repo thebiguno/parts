@@ -1,5 +1,21 @@
 Ext.define("Parts.controller.PartList", {
 	extend: "Ext.app.Controller",
+	
+	"init": function() {
+		this.control({
+			"attributelist toolbar button[itemId=add]": {
+				"click": function(button) {
+					
+				}
+			},
+			"attributelist toolbar button[itemId=remove]": {
+				"click": function(button) {
+					
+				}
+			}
+		});
+	}
+	
 //	config: {
 //		refs: {
 //			catalogList: "catalog-",

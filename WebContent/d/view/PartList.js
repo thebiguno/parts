@@ -5,6 +5,32 @@ Ext.define('Parts.view.PartList', {
 	"rootVisible": false,
 	"store": "PartList",
 	
+	"dockedItems": [
+		{
+			"xtype": "toolbar",
+			"dock": "top",
+			"items": [
+				{
+					"xtype": "button",
+					"itemId": "add",
+					"icon": "img/plus-button.png",
+					"text": "Add"
+				},
+				{
+					"xtype": "button",
+					"itemId": "remove",
+					"icon": "img/minus-button.png",
+					"text": "Remove"
+				}
+			]
+		},
+		{
+			"xtype": "panel",
+			"dock": "bottom",
+			"title": "Notes",
+			"height": 200
+		}
+	],
 	"columns": [
 		{
 			"text": "Part #",
