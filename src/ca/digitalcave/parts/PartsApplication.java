@@ -34,7 +34,7 @@ import ca.digitalcave.parts.resource.DefaultResource;
 import ca.digitalcave.parts.resource.IndexResource;
 import ca.digitalcave.parts.resource.PartResource;
 import ca.digitalcave.parts.resource.mobile.CatalogResource;
-import ca.digitalcave.parts.resource.mobile.FamilyResource;
+import ca.digitalcave.parts.resource.mobile.PartsResource;
 import ca.digitalcave.parts.security.CookieVerifier;
 
 import com.mchange.v2.c3p0.ComboPooledDataSource;
@@ -132,22 +132,20 @@ public class PartsApplication extends Application {
 	@Override  
 	public Restlet createInboundRoot() {
 
-		final Router dataRouter = new Router(getContext());
-		dataRouter.attach("/", CatalogResource.class);
-		dataRouter.attach("/{category}/{family}", FamilyResource.class);
-		dataRouter.attach("/{part}/datasheets/{id}", DatasheetResource.class);
-		dataRouter.attach("/{part}", PartResource.class);
+		final Router partsRouter = new Router(getContext());
+		partsRouter.attach("/", PartsResource.class);
+		partsRouter.attach("/{part}", PartResource.class);
+		partsRouter.attach("/{part}/attachment/{id}", AttachmentResource.class);
 		
 		final ChallengeAuthenticator authenticator = new ChallengeAuthenticator(getContext(), ChallengeScheme.HTTP_BASIC, "Parts");
 		authenticator.setVerifier(new CookieVerifier(this));
-		authenticator.setNext(dataRouter);
+		authenticator.setNext(partsRouter);
 
 		final Router publicRouter = new Router(getContext());
 		publicRouter.attach("", new Redirector(getContext(), "index.html", Redirector.MODE_CLIENT_TEMPORARY));
 		publicRouter.attach("/", new Redirector(getContext(), "index.html", Redirector.MODE_CLIENT_TEMPORARY));
 		publicRouter.attach("/index", IndexResource.class);
-		publicRouter.attach("/data", dataRouter);
-		publicRouter.attach("/datasheets", new Directory(getContext(), "war:///datasheets"));
+		publicRouter.attach("/parts", partsRouter);
 		
 		publicRouter.attachDefault(DefaultResource.class).setMatchingMode(Template.MODE_STARTS_WITH);
 

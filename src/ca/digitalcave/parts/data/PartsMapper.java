@@ -33,7 +33,7 @@ public interface PartsMapper {
 	void updateFamily(@Param("family") Family family);
 	void deleteFamily(@Param("id") int id);
 	
-	void selectParts(@Param("family") int family, ResultHandler handler);
+	void selectParts(@Param("category") int category, @Param("family") int family, ResultHandler handler);
 	void insertPart(@Param("part") Part part, @Param("account") Account account);
 	void updatePart(@Param("part") Part part);
 	void deletePart(@Param("id") int id);
