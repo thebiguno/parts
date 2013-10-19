@@ -15,6 +15,13 @@ public class Part {
 	private String notes;
 	private List<Attribute> attributes;
 	
+	public Part() {
+		
+	}
+	public Part(int id) {
+		this.id = id;
+	}
+	
 	public Family getFamily() {
 		return family;
 	}

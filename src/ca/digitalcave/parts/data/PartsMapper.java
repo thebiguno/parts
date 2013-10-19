@@ -24,11 +24,13 @@ public interface PartsMapper {
 	List<String> attributesByFamily(@Param("category") String category, @Param("family") String family);
 
 	void selectCategories(ResultHandler handler);
+	Category selectCategory(@Param("name") String name);
 	void insertCategory(@Param("category") Category category);
 	void updateCategory(@Param("category") Category category);
 	void deleteCategory(@Param("id") int id);
 	
 	void selectFamilies(@Param("category") int category, ResultHandler handler);
+	Family selectFamily(@Param("category") Category category, @Param("name") String name);
 	void insertFamily(@Param("family") Family family);
 	void updateFamily(@Param("family") Family family);
 	void deleteFamily(@Param("id") int id);

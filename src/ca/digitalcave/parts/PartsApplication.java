@@ -29,12 +29,12 @@ import org.restlet.routing.Template;
 import org.restlet.security.ChallengeAuthenticator;
 import org.restlet.service.StatusService;
 
+import ca.digitalcave.parts.resource.CatalogResource;
 import ca.digitalcave.parts.resource.DatasheetResource;
 import ca.digitalcave.parts.resource.DefaultResource;
 import ca.digitalcave.parts.resource.IndexResource;
 import ca.digitalcave.parts.resource.PartResource;
-import ca.digitalcave.parts.resource.mobile.CatalogResource;
-import ca.digitalcave.parts.resource.mobile.PartsResource;
+import ca.digitalcave.parts.resource.PartsResource;
 import ca.digitalcave.parts.security.CookieVerifier;
 
 import com.mchange.v2.c3p0.ComboPooledDataSource;
@@ -135,7 +135,7 @@ public class PartsApplication extends Application {
 		final Router partsRouter = new Router(getContext());
 		partsRouter.attach("/", PartsResource.class);
 		partsRouter.attach("/{part}", PartResource.class);
-		partsRouter.attach("/{part}/attachment/{id}", AttachmentResource.class);
+//		partsRouter.attach("/{part}/attachment/{id}", AttachmentResource.class);
 		
 		final ChallengeAuthenticator authenticator = new ChallengeAuthenticator(getContext(), ChallengeScheme.HTTP_BASIC, "Parts");
 		authenticator.setVerifier(new CookieVerifier(this));

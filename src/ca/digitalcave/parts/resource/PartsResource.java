@@ -1,4 +1,4 @@
-package ca.digitalcave.parts.resource.mobile;
+package ca.digitalcave.parts.resource;
 
 import java.io.IOException;
 import java.io.Writer;

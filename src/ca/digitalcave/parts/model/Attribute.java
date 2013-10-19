@@ -1,7 +1,11 @@
 package ca.digitalcave.parts.model;
 
+import java.util.Iterator;
+import java.util.List;
+
 public class Attribute {
 
+	private Part part;
 	private String name;
 	private String value;
 	private String href;
@@ -12,6 +16,13 @@ public class Attribute {
 	public Attribute(String name, String value) {
 		this.name = name;
 		this.value = value;
+	}
+	
+	public Part getPart() {
+		return part;
+	}
+	public void setPart(Part part) {
+		this.part = part;
 	}
 	
 	public String getName() {
@@ -53,5 +64,23 @@ public class Attribute {
 		}
 		return sb.toString();
 	}
-
+	
+	public static Attribute find(String name, List<Attribute> attributes) {
+		for (Attribute attribute : attributes) {
+			if (attribute.getName().equals(name)) return attribute;
+		}
+		return null;
+	}
+	public static Attribute remove(String name, List<Attribute> attributes) {
+		final Iterator<Attribute> i = attributes.iterator();
+		while (i.hasNext()) {
+			final Attribute a = i.next();
+			if (a.getName().equals(name)) {
+				i.remove();
+				return a;
+			}
+		}
+		return null;
+	}
+	
 }
