@@ -19,20 +19,22 @@ Ext.define('Parts.view.PartList', {
 			"sortable": false
 		},
 		{
-			"text": "Quantity",
+			"text": "Available",
 			"width": 80,
-			"dataIndex": "quantity",
+			"dataIndex": "available",
+			"sortable": false
+		},
+		{
+			"text": "Minimum",
+			"width": 80,
+			"dataIndex": "minimum",
 			"sortable": false
 		},
 		{
 			"text": "Datasheets",
-			"width": 250,
+			"width": 100,
 			"dataIndex": "datasheets",
 			"sortable": false
-		},
-		{
-			"width": 100
-			// TODO actions
 		}
 	]
 });
