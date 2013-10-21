@@ -69,28 +69,28 @@ public class PartsApplication extends Application {
 		properties.load(propertiesResource.get().getReader());
 		
 		// set up database
-		dataSource = new ComboPooledDataSource();
-		dataSource.setDriverClass(properties.getProperty("jdbc.driver"));
-		dataSource.setJdbcUrl(properties.getProperty("jdbc.url"));
-		dataSource.setUser(properties.getProperty("jdbc.user"));
-		dataSource.setPassword(properties.getProperty("jdbc.password"));
+//		dataSource = new ComboPooledDataSource();
+//		dataSource.setDriverClass(properties.getProperty("jdbc.driver"));
+//		dataSource.setJdbcUrl(properties.getProperty("jdbc.url"));
+//		dataSource.setUser(properties.getProperty("jdbc.user"));
+//		dataSource.setPassword(properties.getProperty("jdbc.password"));
 		
 		// set up mybatis
-		final Environment environment = new Environment("prod", new JdbcTransactionFactory(), dataSource);
-		final org.apache.ibatis.session.Configuration config = new org.apache.ibatis.session.Configuration(environment);
-		config.addMappers("ca.digitalcave.parts.data");
-		sqlFactory = new SqlSessionFactoryBuilder().build(config);
+//		final Environment environment = new Environment("prod", new JdbcTransactionFactory(), dataSource);
+//		final org.apache.ibatis.session.Configuration config = new org.apache.ibatis.session.Configuration(environment);
+//		config.addMappers("ca.digitalcave.parts.data");
+//		sqlFactory = new SqlSessionFactoryBuilder().build(config);
 		
 		// schema migration
-		final Connection c = dataSource.getConnection();
-		try {
-			final DatabaseConnection dbc = new JdbcConnection(c);
-			final ClassLoaderResourceAccessor ra = new ClassLoaderResourceAccessor(getClass().getClassLoader());
-			final Liquibase l = new Liquibase("ca/digitalcave/parts/data/migrate.sql", ra, dbc);
-			l.update("all");
-		} finally {
-			c.close();
-		}
+//		final Connection c = dataSource.getConnection();
+//		try {
+//			final DatabaseConnection dbc = new JdbcConnection(c);
+//			final ClassLoaderResourceAccessor ra = new ClassLoaderResourceAccessor(getClass().getClassLoader());
+//			final Liquibase l = new Liquibase("ca/digitalcave/parts/data/migrate.sql", ra, dbc);
+//			l.update("all");
+//		} finally {
+//			c.close();
+//		}
 		
 		// set up freemarker
 		final Object servletContext = getContext().getAttributes().get("org.restlet.ext.servlet.ServletContext");

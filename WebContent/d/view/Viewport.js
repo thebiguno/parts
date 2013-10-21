@@ -22,12 +22,6 @@ Ext.define("Parts.view.Viewport", {
 			"xtype": "toolbar",
 			"items": [
 				{
-					"xtype": "button",
-					"text": "New",
-					"itemId": "newbutton"
-				},
-				"-",
-				{
 					"xtype": "textfield",
 					"emptyText": "Search Terms",
 					"itemId": "searchterms"
@@ -35,7 +29,8 @@ Ext.define("Parts.view.Viewport", {
 				{
 					"xtype": "button",
 					"text": "Search",
-					"itemId": "searchbutton"
+					"itemId": "searchbutton",
+					"icon": "img/magnifier.png"
 				},
 				"-",
 				{
@@ -44,20 +39,31 @@ Ext.define("Parts.view.Viewport", {
 					"itemId": "digikeyurl"
 				},
 				{
-					"xtype": "textfield",
-					"emptyText": "Quantity",
-					"itemId": "digikeyqty"
+					"xtype": "numberfield",
+					"emptyText": "Available",
+					"itemId": "digikeyavail",
+					//"value": 0,
+					"width": 75
+				},
+				{
+					"xtype": "numberfield",
+					"emptyText": "Minimum",
+					"itemId": "digikeymin",
+					//"value": 0,
+					"width": 75
 				},
 				{
 					"xtype": "button",
 					"text": "Add",
-					"itemId": "addbutton"
+					"itemId": "digikeyadd",
+					"icon": "img/digikey.png"
 				},
 				"-",
 				{
 					"xtype": "button",
 					"text": "Report",
-					"itemId": "reportbutton"
+					"itemId": "reportbutton",
+					"icon": "img/report.png"
 				}
 			]
 		},

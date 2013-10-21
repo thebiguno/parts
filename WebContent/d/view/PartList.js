@@ -14,13 +14,15 @@ Ext.define('Parts.view.PartList', {
 					"xtype": "button",
 					"itemId": "add",
 					"icon": "img/plus-button.png",
-					"text": "Add"
+					"text": "Add",
+					"disabled": true
 				},
 				{
 					"xtype": "button",
 					"itemId": "remove",
 					"icon": "img/minus-button.png",
-					"text": "Remove"
+					"text": "Remove",
+					"disabled": true
 				}
 			]
 		},
@@ -54,12 +56,6 @@ Ext.define('Parts.view.PartList', {
 			"text": "Minimum",
 			"width": 80,
 			"dataIndex": "minimum",
-			"sortable": false
-		},
-		{
-			"text": "Datasheets",
-			"width": 100,
-			"dataIndex": "datasheets",
 			"sortable": false
 		}
 	]

@@ -6,8 +6,8 @@ Ext.define("Parts.store.CatalogTree", {
 	"root": {
 		"name": "All",
 		"expanded": true,
-		"category": "*",
-		"family": "*"
+		"category": null,
+		"family": null
 	},
 	
 

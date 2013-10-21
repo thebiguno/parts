@@ -12,13 +12,22 @@ Ext.define('Parts.view.AttributeList', {
 					"xtype": "button",
 					"itemId": "add",
 					"icon": "img/plus-button.png",
-					"text": "Add"
+					"text": "Add",
+					"disabled": true
 				},
 				{
 					"xtype": "button",
 					"itemId": "remove",
 					"icon": "img/minus-button.png",
-					"text": "Remove"
+					"text": "Remove",
+					"disabled": true
+				},
+				{
+					"xtype": "button",
+					"itemId": "upload",
+					"icon": "img/upload-cloud.png",
+					"text": "Upload",
+					"disabled": true
 				}
 			]
 		},
