@@ -18,6 +18,7 @@ insert into account values (0, 'Administrator', 'admin@example.com', 'password',
 --changeset wj:create_category
 create table category (
 	category_id smallint primary key,
+	account_id integer not null references account (account_id) on delete cascade,
 	name varchar(255) not null unique,
 	created_at timestamp not null,
 	modified_at timestamp not null
@@ -27,7 +28,7 @@ create table category (
 --changeset wj:create_family
 create table family (
 	family_id smallint primary key,
-	category_id smallint not null references category (category_id),
+	category_id smallint not null references category (category_id) on delete restrict,
 	name varchar(255) not null unique,
 	created_at timestamp not null,
 	modified_at timestamp not null
@@ -37,8 +38,7 @@ create table family (
 --changeset wj:create_part
 create table part (
 	part_id smallint primary key,
-	account_id integer not null references account (account_id),
-	family_id smallint not null references family (family_id),
+	family_id smallint not null references family (family_id) on delete restrict,
 	available smallint not null default 0, -- quantity on hand
 	minimum smallint not null default 0, -- quantity desired
 	part_no varchar(255) not null,
@@ -50,7 +50,7 @@ create table part (
 --changeset wj:create_property
 create table attribute (
 	attribute_id int primary key,
-	part_id smallint not null references part (part_id), 
+	part_id smallint not null references part (part_id) on delete cascade, 
 	name varchar(255) not null, 
 	val varchar(255) not null, 
 	href varchar(255), 
@@ -61,7 +61,7 @@ create table attribute (
 --changeset wj:create_attachment
 create table attachment (
 	attachment_id int primary key,
-	part_id smallint not null references part (part_id),
+	part_id smallint not null references part (part_id) on delete cascade,
 	name varchar(255) not null,
 	mime_type varchar(255) not null default 'application/octet-stream',
 	modified_at timestamp not null,
