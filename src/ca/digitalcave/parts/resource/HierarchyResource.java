@@ -24,12 +24,13 @@ import org.restlet.resource.ServerResource;
 import ca.digitalcave.parts.PartsApplication;
 import ca.digitalcave.parts.data.PartsMapper;
 import ca.digitalcave.parts.digi.DigiKeyClient;
+import ca.digitalcave.parts.model.Account;
 import ca.digitalcave.parts.model.Attribute;
 import ca.digitalcave.parts.model.Category;
 import ca.digitalcave.parts.model.Family;
 import freemarker.template.Template;
 
-public class CatalogResource extends ServerResource {
+public class HierarchyResource extends ServerResource {
 
 	@Override
 	protected void doInit() throws ResourceException {
@@ -39,12 +40,13 @@ public class CatalogResource extends ServerResource {
 	@Override
 	protected Representation get(Variant variant) throws ResourceException {
 		final PartsApplication application = (PartsApplication) getApplication();
+		final Account account = (Account) getClientInfo().getUser(); 
 
 		final SqlSession sqlSession = application.getSqlFactory().openSession();
 		try {
 			final String q = getQuery().getFirstValue("q", "");
 			final List<String> terms = Arrays.asList(q.split(" "));
-			final List<Category> search = sqlSession.getMapper(PartsMapper.class).search(terms);
+			final List<Category> search = sqlSession.getMapper(PartsMapper.class).selectHierarchy(account.getId(), terms);
 			final boolean tree = getQuery().getFirst("node") != null;
 			
 			return new WriterRepresentation(MediaType.APPLICATION_JSON) {

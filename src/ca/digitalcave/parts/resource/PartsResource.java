@@ -2,6 +2,8 @@ package ca.digitalcave.parts.resource;
 
 import java.io.IOException;
 import java.io.Writer;
+import java.util.Arrays;
+import java.util.List;
 
 import org.apache.ibatis.session.ResultContext;
 import org.apache.ibatis.session.ResultHandler;
@@ -32,9 +34,14 @@ public class PartsResource extends ServerResource {
 		final PartsApplication application = (PartsApplication) getApplication();
 		final SqlSession sqlSession = application.getSqlFactory().openSession();
 		try {
-			final int category = Integer.parseInt(getQuery().getFirstValue("cat", true, "-1"));
-			final int family = Integer.parseInt(getQuery().getFirstValue("fam", true, "-1"));
+			final String category = getQuery().getFirstValue("category");
+			final String family = getQuery().getFirstValue("family");
+			final Integer c = category == null ? null : Integer.parseInt(category);
+			final Integer f = family == null ? null : Integer.parseInt(family);
 			
+			final String q = getQuery().getFirstValue("q", "");
+			final List<String> terms = Arrays.asList(q.split(" "));
+
 			return new WriterRepresentation(MediaType.APPLICATION_JSON) {
 				@Override
 				public void write(Writer w) throws IOException {
@@ -43,7 +50,7 @@ public class PartsResource extends ServerResource {
 					g.writeBooleanField("success", true);
 					g.writeArrayFieldStart("data");
 					
-					sqlSession.getMapper(PartsMapper.class).selectParts(category, family, new ResultHandler() {
+					sqlSession.getMapper(PartsMapper.class).selectParts(c, f, terms, new ResultHandler() {
 						@Override
 						public void handleResult(ResultContext ctx) {
 							try {

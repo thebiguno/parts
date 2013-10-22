@@ -29,14 +29,7 @@ lower(a.val) like '%${term}%' or lower(a.name) like '%${term}%'
 		</where>
 order by c.name, f.name
 	</select>
-	
-	<select id="attributesByPart" resultType="ca.digitalcave.parts.model.Attribute">
-select name, value, href
-from attribute
-where part_id = ${partId}
-order by sort, name
-	</select>
-	
+		
 	<resultMap id="partsByFamily" type="ca.digitalcave.parts.model.Part">
 		<id property="id" column="part_id"/>
 		<collection property="attributes" javaType="list" ofType="ca.digitalcave.parts.model.Attribute">
@@ -112,6 +105,12 @@ delete part
 where part_id = #{id}
 	</delete>
 	
+	<select id="selectAttributes" resultType="ca.digitalcave.parts.model.Attribute">
+select name, value, href, sort
+from attribute
+where part_id = ${part}
+order by sort, name
+	</select>
 	<insert id="insertAttribute">
 insert into attribute (part_id, name, value, href, sort)
 values (#{attribute.part.id}, #{attribute.name}, #{attribute.value}, #{attribute.href,jdbcType=VARCHAR}, #{attribute.sort})

@@ -29,7 +29,7 @@ import org.restlet.routing.Template;
 import org.restlet.security.ChallengeAuthenticator;
 import org.restlet.service.StatusService;
 
-import ca.digitalcave.parts.resource.CatalogResource;
+import ca.digitalcave.parts.resource.HierarchyResource;
 import ca.digitalcave.parts.resource.DatasheetResource;
 import ca.digitalcave.parts.resource.DefaultResource;
 import ca.digitalcave.parts.resource.IndexResource;

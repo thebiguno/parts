@@ -1,15 +1,10 @@
 package ca.digitalcave.parts.resource;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
-import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.ibatis.session.SqlSession;
 import org.restlet.data.Form;
-import org.restlet.data.MediaType;
 import org.restlet.data.Status;
-import org.restlet.ext.freemarker.TemplateRepresentation;
 import org.restlet.representation.EmptyRepresentation;
 import org.restlet.representation.Representation;
 import org.restlet.representation.Variant;
@@ -24,7 +19,6 @@ import ca.digitalcave.parts.model.Attribute;
 import ca.digitalcave.parts.model.Category;
 import ca.digitalcave.parts.model.Family;
 import ca.digitalcave.parts.model.Part;
-import freemarker.template.Template;
 
 public class DigikeyResource extends ServerResource {
 
@@ -89,25 +83,9 @@ public class DigikeyResource extends ServerResource {
 			} catch (Exception e) {
 				throw new ResourceException(Status.SERVER_ERROR_INTERNAL, e);
 			}
+		} else {
+			// TODO return proper JSOS status messages here
+			return new EmptyRepresentation();
 		}
-		
-		final ArrayList<String> terms = new ArrayList<String>();
-		final String keywords = form.getFirstValue("keywords");
-		if (keywords != null) {
-			for (String term : Arrays.asList(keywords.split("\\s+"))) {
-				terms.add(StringEscapeUtils.escapeSql(term.toLowerCase()));
-			}
-		}
-		final SqlSession sqlSession = application.getSqlFactory().openSession();
-		try {
-			final PartsMapper mapper = sqlSession.getMapper(PartsMapper.class);
-			getResponseAttributes().put("categories", mapper.search(terms));
-			final Template template = application.getFmConfig().getTemplate("index.ftl");
-			template.setOutputEncoding("UTF-8");
-			return new TemplateRepresentation(template, getResponseAttributes(), MediaType.TEXT_HTML);
-		} catch (Exception e) {
-			throw new ResourceException(Status.SERVER_ERROR_INTERNAL, e);
-		} finally {
-			sqlSession.close();
-		}
-	}}
+	}
+}

@@ -14,28 +14,23 @@ import ca.digitalcave.parts.model.Part;
 
 public interface PartsMapper {
 	/**
-	 * Search for a tree of part categories and families and the number of parts that match the search terms.
-	 */
-	List<Category> search(@Param("terms") List<String> terms);
-	
-	/**
 	 * Get a list of attribute names by family.
 	 */
 	List<String> attributesByFamily(@Param("category") String category, @Param("family") String family);
 
-	void selectCategories(@Param("account") int account, ResultHandler handler);
+	List<Category> selectHierarchy(@Param("account") int account, @Param("terms") List<String> terms);
+	
 	Category selectCategory(@Param("account") int account, @Param("name") String name);
 	void insertCategory(@Param("category") Category category);
 	void updateCategory(@Param("category") Category category);
 	void deleteCategory(@Param("id") int id);
 	
-	void selectFamilies(@Param("category") int category, ResultHandler handler);
 	Family selectFamily(@Param("category") Category category, @Param("name") String name);
 	void insertFamily(@Param("family") Family family);
 	void updateFamily(@Param("family") Family family);
 	void deleteFamily(@Param("id") int id);
 	
-	void selectParts(@Param("category") int category, @Param("family") int family, ResultHandler handler);
+	void selectParts(@Param("category") Integer category, @Param("family") Integer family, @Param("terms") List<String> terms, ResultHandler handler);
 	void insertPart(@Param("part") Part part, @Param("account") Account account);
 	void updatePart(@Param("part") Part part);
 	void deletePart(@Param("id") int id);
