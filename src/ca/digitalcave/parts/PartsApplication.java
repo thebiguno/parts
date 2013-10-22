@@ -1,18 +1,9 @@
 package ca.digitalcave.parts;
 
-import java.sql.Connection;
 import java.util.Locale;
 import java.util.Properties;
 
-import liquibase.Liquibase;
-import liquibase.database.DatabaseConnection;
-import liquibase.database.jvm.JdbcConnection;
-import liquibase.resource.ClassLoaderResourceAccessor;
-
-import org.apache.ibatis.mapping.Environment;
 import org.apache.ibatis.session.SqlSessionFactory;
-import org.apache.ibatis.session.SqlSessionFactoryBuilder;
-import org.apache.ibatis.transaction.jdbc.JdbcTransactionFactory;
 import org.codehaus.jackson.JsonFactory;
 import org.restlet.Application;
 import org.restlet.Restlet;
@@ -22,15 +13,12 @@ import org.restlet.data.Language;
 import org.restlet.data.MediaType;
 import org.restlet.engine.application.Encoder;
 import org.restlet.resource.ClientResource;
-import org.restlet.resource.Directory;
 import org.restlet.routing.Redirector;
 import org.restlet.routing.Router;
 import org.restlet.routing.Template;
 import org.restlet.security.ChallengeAuthenticator;
 import org.restlet.service.StatusService;
 
-import ca.digitalcave.parts.resource.HierarchyResource;
-import ca.digitalcave.parts.resource.DatasheetResource;
 import ca.digitalcave.parts.resource.DefaultResource;
 import ca.digitalcave.parts.resource.IndexResource;
 import ca.digitalcave.parts.resource.PartResource;

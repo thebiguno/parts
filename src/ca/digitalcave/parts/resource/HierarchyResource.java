@@ -2,19 +2,17 @@ package ca.digitalcave.parts.resource;
 
 import java.io.IOException;
 import java.io.Writer;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import org.apache.commons.lang.StringEscapeUtils;
-import org.apache.commons.lang.StringUtils;
 import org.apache.ibatis.session.SqlSession;
 import org.codehaus.jackson.JsonGenerator;
-import org.restlet.data.Form;
+import org.codehaus.jackson.JsonNode;
+import org.codehaus.jackson.JsonParser;
+import org.json.JSONObject;
 import org.restlet.data.MediaType;
 import org.restlet.data.Status;
-import org.restlet.ext.freemarker.TemplateRepresentation;
-import org.restlet.representation.EmptyRepresentation;
+import org.restlet.ext.json.JsonRepresentation;
 import org.restlet.representation.Representation;
 import org.restlet.representation.Variant;
 import org.restlet.representation.WriterRepresentation;
@@ -23,12 +21,9 @@ import org.restlet.resource.ServerResource;
 
 import ca.digitalcave.parts.PartsApplication;
 import ca.digitalcave.parts.data.PartsMapper;
-import ca.digitalcave.parts.digi.DigiKeyClient;
 import ca.digitalcave.parts.model.Account;
-import ca.digitalcave.parts.model.Attribute;
 import ca.digitalcave.parts.model.Category;
 import ca.digitalcave.parts.model.Family;
-import freemarker.template.Template;
 
 public class HierarchyResource extends ServerResource {
 
@@ -56,12 +51,12 @@ public class HierarchyResource extends ServerResource {
 					g.writeStartObject();
 					g.writeBooleanField("success", true);
 					if (tree) {
+						// this is for the desktop client
 						g.writeArrayFieldStart("children");
 						for (Category category : search) {
 							g.writeStartObject();
 							g.writeStringField("name", category.getName());
 							g.writeStringField("category", category.getName());
-							g.writeStringField("family",  "*");
 							g.writeArrayFieldStart("children");
 							for (Family family : category.getFamilies()) {
 								g.writeStartObject();
@@ -76,6 +71,7 @@ public class HierarchyResource extends ServerResource {
 						}
 						g.writeEndArray();
 					} else {
+						// this is for the mobile client
 						g.writeArrayFieldStart("data");
 						for (Category category : search) {
 							for (Family family : category.getFamilies()) {
@@ -97,6 +93,47 @@ public class HierarchyResource extends ServerResource {
 			throw new ResourceException(Status.SERVER_ERROR_INTERNAL, e);
 		} finally {
 			sqlSession.close();
+		}
+	}
+	
+	@Override
+	protected Representation post(Representation entity, Variant variant) throws ResourceException {
+		final PartsApplication application = (PartsApplication) getApplication();
+		final Account account = (Account) getClientInfo().getUser(); 
+		
+		final SqlSession sql = application.getSqlFactory().openSession();
+		try {
+			final JsonParser p = application.getJsonFactory().createJsonParser(entity.getReader());
+			final JsonNode node = p.readValueAsTree();
+			p.close();
+			
+			final JsonNode categoryId = node.get("category");
+			if (categoryId == null) {
+				final Category category = new Category();
+				category.setAccount(account);
+				category.setName(node.get("name").getTextValue());
+				sql.getMapper(PartsMapper.class).insertCategory(category);
+				
+				final JSONObject result = new JSONObject();
+				result.put("success", true);
+				result.put("category", category.getId());
+				return new JsonRepresentation(result);
+			} else {
+				final Family family = new Family();
+				family.setCategory(new Category(categoryId.getIntValue()));
+				family.setName(node.get("name").getTextValue());
+				sql.getMapper(PartsMapper.class).insertFamily(family);
+				
+				final JSONObject result = new JSONObject();
+				result.put("success", true);
+				result.put("category", family.getCategory().getId());
+				result.put("family", family.getId());
+				return new JsonRepresentation(result);
+			}
+		} catch (Exception e) {
+			throw new ResourceException(e);
+		} finally {
+			sql.close();
 		}
 	}
 }

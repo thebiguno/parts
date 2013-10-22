@@ -43,7 +43,7 @@ create table part (
 	minimum smallint not null default 0, -- quantity desired
 	part_no varchar(255) not null,
 	description varchar(255),
-	notes varchar(255)
+	notes varchar(2048)
 );
 --rollback drop table part;
 
