@@ -13,11 +13,6 @@ import ca.digitalcave.parts.model.Family;
 import ca.digitalcave.parts.model.Part;
 
 public interface PartsMapper {
-	/**
-	 * Get a list of attribute names by family.
-	 */
-	List<String> attributesByFamily(@Param("category") String category, @Param("family") String family);
-
 	List<Category> selectHierarchy(@Param("account") int account, @Param("terms") List<String> terms);
 	
 	Category selectCategory(@Param("account") int account, @Param("name") String name);

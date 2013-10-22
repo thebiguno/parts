@@ -1,54 +1,61 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="ca.digitalcave.parts.data.PartsMapper">
-	<resultMap type="ca.digitalcave.parts.model.Category" id="category">
+	<resultMap type="ca.digitalcave.parts.model.Category" id="heirarchy">
 		<result property="id" column="category_id"/>
 		<result property="name" column="category_name"/>
 		<collection property="families" javaType="list" ofType="ca.digitalcave.parts.model.Family">
-			<id property="categoryId" column="category_id"/>
-			<id property="familyId" column="family_id"/>
+			<id property="id" column="family_id"/>
 			<result property="name" column="family_name"/>
-			<collection property="parts" javaType="list" ofType="ca.digitalcave.parts.model.Part">
-				<id property="id" column="part_id"/>
-			</collection>
 		</collection>
 	</resultMap>
 
-	<select id="search" resultMap="category">
-select distinct p.part_id, p.part_no, p.description, f.family_id, f.name family_name, c.category_id, c.name category_name 
-from category c 
-inner join family f on c.category_id = f.category_id
-inner join part p on f.family_id = p.family_id
-inner join attribute a on p.part_id = a.part_id
+	<select id="selectHeirarchy" resultMap="heirarchy">
+select distinct c.category_id, c.name category_name, f.family_id, f.name family_name
+from category c
+inner join family f on f.category_id = c.category_id
+inner join part p on p.family_id = f.family_id
+inner join attribute a on a.part_id = p.part_id 
 		<where>
 			<if test="terms.size() gt 0">
+and (
 				<foreach collection="terms" item="term" separator=" or ">
-lower(a.val) like '%${term}%' or lower(a.name) like '%${term}%'
+(lower(a.name) like '%${term}%' or lower(a.val) like '%${term}%' or lower(p.part_no) like '%${term}%')
 				</foreach>
+)
 			</if>
 		</where>
 order by c.name, f.name
 	</select>
-		
-	<resultMap id="partsByFamily" type="ca.digitalcave.parts.model.Part">
-		<id property="id" column="part_id"/>
-		<collection property="attributes" javaType="list" ofType="ca.digitalcave.parts.model.Attribute">
-			<result property="name" column="name"/>
-			<result property="value" column="value"/>
-			<result property="href" column="href"/>
-		</collection>
-	</resultMap>
 	
-	<select id="partsByFamily" resultMap="partsByFamily">
-select a.part_id, a.name, a.value, a.href
-from attribute a
-inner join attribute f on a.part_id = f.part_id and f.name = 'Family' <if test="family != null">and f.value = #{family}</if>
-inner join attribute c on a.part_id = c.part_id and c.name = 'Category' <if test="category != null">and c.value = #{category}</if>
-inner join attribute p on a.part_id = p.part_id and p.name = 'Manufacturer Part Number'
-order by c.name, f.name, p.value
+	<select id="selectParts" resultType="ca.digitalcave.parts.model.Part">
+select distinct p.part_id as id, p.part_no, p.description, p.notes, p.available, p.minimum
+from family f
+inner join part p on f.family_id = p.family_id
+inner join attribute a on p.part_id = a.part_id
+		<where>
+			<if test="category != null">
+f.category_id = #{category}
+			</if>
+			<if test="family != null">
+f.family_id = #{family}
+			</if>
+			<if test="terms.size() gt 0">
+and (
+				<foreach collection="terms" item="term" separator=" or ">
+(lower(a.name) like '%${term}%' or lower(a.val) like '%${term}%' or lower(p.part_no) like '%${term}%')
+				</foreach>
+)
+			</if>
+		</where>
+order by p.part_no
 	</select>
-
-
+		
+	<select id="selectCategory" resultType="ca.digitalcave.parts.model.Category">
+select category_id as id, name
+from category
+where name = #{name} and account_id = #{account.id}
+	</select>
 	<insert id="insertCategory">
 		<selectKey order="BEFORE" resultType="int" keyProperty="category.id">
 select coalesce(max(category_id),0) + 1 from category
@@ -65,6 +72,10 @@ delete category
 where category_id = #{id}
 	</delete>
 	
+	<select id="selectFamily" resultType="ca.digitalcave.parts.model.Family">
+select family_id as id, name
+from family where name = #{name} and category_id = #{category.id}
+	</select>
 	<insert id="insertFamily">
 		<selectKey order="BEFORE" resultType="int" keyProperty="family.id">
 select coalesce(max(family_id),0) + 1 from family
@@ -130,8 +141,8 @@ delete from attribute
 where attribute_id = #{id}
 	</delete>
 	
-	<select id="selectAccount">
-select account_id, email, secret, created_at, modified_at
+	<select id="selectAccount" resultType="ca.digitalcave.parts.model.Account">
+select account_id as id, email, secret, created_at as createdAt, modified_at as modifiedAt
 from account
 where identifier = #{identifier}
 	</select>
