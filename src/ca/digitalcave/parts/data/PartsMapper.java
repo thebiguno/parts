@@ -23,8 +23,8 @@ public interface PartsMapper {
 	 */
 	List<String> attributesByFamily(@Param("category") String category, @Param("family") String family);
 
-	void selectCategories(ResultHandler handler);
-	Category selectCategory(@Param("name") String name);
+	void selectCategories(@Param("account") int account, ResultHandler handler);
+	Category selectCategory(@Param("account") int account, @Param("name") String name);
 	void insertCategory(@Param("category") Category category);
 	void updateCategory(@Param("category") Category category);
 	void deleteCategory(@Param("id") int id);
@@ -43,12 +43,12 @@ public interface PartsMapper {
 	void selectAttributes(@Param("part") int part, ResultHandler handler);
 	void insertAttribute(@Param("attribute") Attribute attribute);
 	void updateAttribute(@Param("attribute") Attribute attribute);
-	void deleteAtttribute(@Param("partId") int partId, @Param("name") String name);
+	void deleteAttribute(@Param("id") int id);
 	
 	void selectAttachments(@Param("part") int part, ResultHandler handler);
 	void selectAttachment(@Param("attachment") int attachment, ResultHandler handler);
 	void insertAttachment(@Param("attachment") Attachment attachment);
 	void deleteAttachment(@Param("attachment") int attachment);
 	
-	Account selectAccount(String identifier);
+	Account selectAccount(@Param("identifier") String identifier);
 }

@@ -3,9 +3,9 @@
 --changeset wj:create_account
 create table account (
 	account_id smallint primary key,
-	name varchar(255) not null unique,
+	identifier varchar(255) not null unique,
 	email varchar(255) not null,
-	credentials varchar(255) not null,
+	secret varchar(255) not null,
 	created_at timestamp not null,
 	modified_at timestamp not null
 );
@@ -47,7 +47,7 @@ create table part (
 );
 --rollback drop table part;
 
---changeset wj:create_property
+--changeset wj:create_atttribute
 create table attribute (
 	attribute_id int primary key,
 	part_id smallint not null references part (part_id) on delete cascade, 

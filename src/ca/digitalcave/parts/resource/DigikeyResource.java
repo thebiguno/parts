@@ -19,6 +19,7 @@ import org.restlet.resource.ServerResource;
 import ca.digitalcave.parts.PartsApplication;
 import ca.digitalcave.parts.data.PartsMapper;
 import ca.digitalcave.parts.digi.DigiKeyClient;
+import ca.digitalcave.parts.model.Account;
 import ca.digitalcave.parts.model.Attribute;
 import ca.digitalcave.parts.model.Category;
 import ca.digitalcave.parts.model.Family;
@@ -30,6 +31,8 @@ public class DigikeyResource extends ServerResource {
 	@Override
 	protected Representation post(Representation entity, Variant variant) throws ResourceException {
 		final PartsApplication application = (PartsApplication) getApplication();
+		final Account account = (Account) getClientInfo().getUser();
+		
 		final Form form = new Form(entity);
 		final String dk = form.getFirstValue("dk");
 		if (dk != null) {
@@ -45,7 +48,7 @@ public class DigikeyResource extends ServerResource {
 					try {
 						final PartsMapper mapper = sqlSession.getMapper(PartsMapper.class);
 						final Attribute catAttr = Attribute.remove("Category", attributes);
-						Category category = mapper.selectCategory(catAttr.getValue());
+						Category category = mapper.selectCategory(account.getId(), catAttr.getValue());
 						if (category == null) {
 							category = new Category();
 							category.setName(catAttr.getName());

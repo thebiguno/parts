@@ -5,6 +5,7 @@ import java.util.List;
 
 public class Attribute {
 
+	private Integer id;
 	private Part part;
 	private String name;
 	private String value;
@@ -16,6 +17,13 @@ public class Attribute {
 	public Attribute(String name, String value) {
 		this.name = name;
 		this.value = value;
+	}
+	
+	public Integer getId() {
+		return id;
+	}
+	public void setId(Integer id) {
+		this.id = id;
 	}
 	
 	public Part getPart() {

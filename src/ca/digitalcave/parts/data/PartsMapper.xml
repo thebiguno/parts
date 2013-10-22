@@ -56,22 +56,85 @@ order by c.name, f.name, p.value
 	</select>
 
 
+	<insert id="insertCategory">
+		<selectKey order="BEFORE" resultType="int" keyProperty="category.id">
+select coalesce(max(category_id),0) + 1 from category
+		</selectKey>
+insert into category (category_id, account_id, name, created_at, modified_at)
+values (#{category.id}, #{category.account.id}, #{category.name}, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
+	</insert>
+	<update id="updateCategory">
+update category set name = #{category.name}, modified_at = CURRENT_TIMESTAMP
+where category_id = #{category.id}
+	</update>
+	<delete id="deleteCategory">
+delete category
+where category_id = #{id}
+	</delete>
+	
+	<insert id="insertFamily">
+		<selectKey order="BEFORE" resultType="int" keyProperty="family.id">
+select coalesce(max(family_id),0) + 1 from family
+		</selectKey>
+insert into family (family_id, category_id, name, created_at, modified_at)
+values (#{family.id}, #{family.category.id}, #{category.name}, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
+	</insert>
+	<update id="updateFamily">
+update family set name = #{family.name}, modified_at = CURRENT_TIMESTAMP
+where family_id = #{family.id}
+	</update>
+	<delete id="deleteFamily">
+delete family
+where family_id = #{id}
+	</delete>
+
 	<insert id="insertPart">
 		<selectKey order="BEFORE" keyProperty="id">
-select coalesce(max(part_id),0) + 1 from attribute
+select coalesce(max(part_id),0) + 1 from part
 		</selectKey>
-insert into part (part_id, account_id, family_id, available, minimum, part_no, description, notes)
-values (#{part.id}, #{account.id}, #{part.family.id}, #{part.available}, #{part.minimum}, #{part.number}, #{part.description}, #{part.description}));
+insert into part (part_id, family_id, available, minimum, part_no, description, notes)
+values (#{part.id}, #{part.family.id}, #{part.available}, #{part.minimum}, #{part.number}, #{part.description}, #{part.description}));
 	</insert>
+	<update id="updatePart">
+update part
+		<set>
+			<if test="part.family != null">family_id = #{part.family.id},</if>
+			<if test="part.available != null">available = #{part.available},</if>
+			<if test="part.minimum != null">minimum = #{part.minimum},</if>
+			<if test="part.number != null">part_no = #{part.number},</if>
+			<if test="part.description != null">description = #{part.description},</if>
+			<if test="part.notes != null">notes = #{parts.notes},</if>
+		</set>
+where part_id = #{part.id}
+	</update>
+	<delete id="deletePart">
+delete part
+where part_id = #{id}
+	</delete>
 	
 	<insert id="insertAttribute">
 insert into attribute (part_id, name, value, href, sort)
-values (#{partId}, #{attribute.name}, #{attribute.value}, #{attribute.href,jdbcType=VARCHAR}, #{attribute.sort})
+values (#{attribute.part.id}, #{attribute.name}, #{attribute.value}, #{attribute.href,jdbcType=VARCHAR}, #{attribute.sort})
 	</insert>
-	
-	<delete id="removeAttrtibute">
+	<update id="updateAttribute">
+update attribute
+		<set>
+			<if test="attribute.name != null">name = #{attribute.name},</if>
+			<if test="attribute.value != null">value = #{attribute.value},</if>
+			<if test="attribute.href != null">href = #{attribute.href},</if>
+			<if test="attribute.sort != null">sort = #{attribute.sort},</if>
+		</set>
+where attribute_id = #{attribute.id}
+	</update>
+	<delete id="deleteAttrtibute">
 delete from attribute
-where part_id = #{partId} and name = #{name}
+where attribute_id = #{id}
 	</delete>
+	
+	<select id="selectAccount">
+select account_id, email, secret, created_at, modified_at
+from account
+where identifier = #{identifier}
+	</select>
 
 </mapper>

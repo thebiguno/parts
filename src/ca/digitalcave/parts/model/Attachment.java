@@ -4,8 +4,8 @@ import java.sql.Blob;
 
 public class Attachment {
 
-	private int partId;
 	private Integer id;
+	private Part part;
 	private String name;
 	private String mediaType;
 	private Blob media;
@@ -15,6 +15,13 @@ public class Attachment {
 	}
 	public void setId(Integer id) {
 		this.id = id;
+	}
+	
+	public Part getPart() {
+		return part;
+	}
+	public void setPart(Part part) {
+		this.part = part;
 	}
 	
 	public String getName() {
