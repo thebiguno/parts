@@ -19,7 +19,7 @@ insert into account values (0, 'Administrator', 'admin@example.com', 'password',
 create table category (
 	category_id smallint primary key,
 	account_id integer not null references account (account_id) on delete cascade,
-	name varchar(255) not null unique,
+	name varchar(255) not null,
 	created_at timestamp not null,
 	modified_at timestamp not null
 );
@@ -29,7 +29,7 @@ create table category (
 create table family (
 	family_id smallint primary key,
 	category_id smallint not null references category (category_id) on delete restrict,
-	name varchar(255) not null unique,
+	name varchar(255) not null,
 	created_at timestamp not null,
 	modified_at timestamp not null
 );

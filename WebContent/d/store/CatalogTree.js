@@ -13,7 +13,7 @@ Ext.define("Parts.store.CatalogTree", {
 
 	"proxy": {
 		"type": "ajax",
-		"url": "data/",
+		"url": "catalog",
 		"reader": {
 			"type": "json",
 			"rootProperty": "data"

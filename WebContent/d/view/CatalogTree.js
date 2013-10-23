@@ -14,8 +14,7 @@ Ext.define('Parts.view.CatalogTree', {
 					"xtype": "button",
 					"itemId": "add",
 					"icon": "img/plus-button.png",
-					"text": "Add",
-					"disabled": true
+					"text": "Add"
 				},
 				{
 					"xtype": "button",
@@ -45,10 +44,20 @@ Ext.define('Parts.view.CatalogTree', {
 
 		this.plugins = [
 			Ext.create("Ext.grid.plugin.CellEditing", {
-				"clicksToEdit": 1,
+				"clicksToEdit": 2,
 				"listeners": {
 					"edit": function(editor, evt) {
-						alert(evt.record.data.name);
+						Ext.Ajax.request({
+							"url": 'catalog?category=' + encodeURIComponent(evt.record.data.category) + '&family=' + encodeURIComponent(evt.record.data.family),
+							"method": "PUT",
+							"params": evt.record.data.name,
+							"success": function(response) {
+								evt.record.commit();
+							},
+							"failure": function(response) {
+								evt.record.reject();
+							}
+						});
 					},
 					"beforeedit": function(editor, evt) {
 						// don't allow the root node to be edited

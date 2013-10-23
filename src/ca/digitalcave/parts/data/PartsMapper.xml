@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="ca.digitalcave.parts.data.PartsMapper">
-	<resultMap type="ca.digitalcave.parts.model.Category" id="heirarchy">
-		<result property="id" column="category_id"/>
+	<resultMap id="tree" type="ca.digitalcave.parts.model.Category">
+		<id property="id" column="category_id"/>
 		<result property="name" column="category_name"/>
 		<collection property="families" javaType="list" ofType="ca.digitalcave.parts.model.Family">
 			<id property="id" column="family_id"/>
@@ -10,13 +10,14 @@
 		</collection>
 	</resultMap>
 
-	<select id="selectHeirarchy" resultMap="heirarchy">
+	<select id="selectTree" resultMap="tree">
 select distinct c.category_id, c.name category_name, f.family_id, f.name family_name
 from category c
-inner join family f on f.category_id = c.category_id
-inner join part p on p.family_id = f.family_id
-inner join attribute a on a.part_id = p.part_id 
+left join family f on f.category_id = c.category_id
+left join part p on p.family_id = f.family_id
+left join attribute a on a.part_id = p.part_id
 		<where>
+c.account_id = #{account}
 			<if test="terms.size() gt 0">
 and (
 				<foreach collection="terms" item="term" separator=" or ">
@@ -64,11 +65,11 @@ insert into category (category_id, account_id, name, created_at, modified_at)
 values (#{category.id}, #{category.account.id}, #{category.name}, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
 	</insert>
 	<update id="updateCategory">
-update category set name = #{category.name}, modified_at = CURRENT_TIMESTAMP
-where category_id = #{category.id}
+update category set name = #{name}, modified_at = CURRENT_TIMESTAMP
+where category_id = #{id}
 	</update>
 	<delete id="deleteCategory">
-delete category
+delete from category
 where category_id = #{id}
 	</delete>
 	
@@ -81,14 +82,14 @@ from family where name = #{name} and category_id = #{category.id}
 select coalesce(max(family_id),0) + 1 from family
 		</selectKey>
 insert into family (family_id, category_id, name, created_at, modified_at)
-values (#{family.id}, #{family.category.id}, #{category.name}, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
+values (#{family.id}, #{family.category.id}, #{family.name}, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
 	</insert>
 	<update id="updateFamily">
-update family set name = #{family.name}, modified_at = CURRENT_TIMESTAMP
-where family_id = #{family.id}
+update family set name = #{name}, modified_at = CURRENT_TIMESTAMP
+where family_id = #{id}
 	</update>
 	<delete id="deleteFamily">
-delete family
+delete from family
 where family_id = #{id}
 	</delete>
 
@@ -112,7 +113,7 @@ update part
 where part_id = #{part.id}
 	</update>
 	<delete id="deletePart">
-delete part
+delete from part
 where part_id = #{id}
 	</delete>
 	

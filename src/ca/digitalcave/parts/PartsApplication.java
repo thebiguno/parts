@@ -1,9 +1,18 @@
 package ca.digitalcave.parts;
 
+import java.sql.Connection;
 import java.util.Locale;
 import java.util.Properties;
 
+import liquibase.Liquibase;
+import liquibase.database.DatabaseConnection;
+import liquibase.database.jvm.JdbcConnection;
+import liquibase.resource.ClassLoaderResourceAccessor;
+
+import org.apache.ibatis.mapping.Environment;
 import org.apache.ibatis.session.SqlSessionFactory;
+import org.apache.ibatis.session.SqlSessionFactoryBuilder;
+import org.apache.ibatis.transaction.jdbc.JdbcTransactionFactory;
 import org.codehaus.jackson.JsonFactory;
 import org.restlet.Application;
 import org.restlet.Restlet;
@@ -19,6 +28,7 @@ import org.restlet.routing.Template;
 import org.restlet.security.ChallengeAuthenticator;
 import org.restlet.service.StatusService;
 
+import ca.digitalcave.parts.resource.CatalogResource;
 import ca.digitalcave.parts.resource.DefaultResource;
 import ca.digitalcave.parts.resource.IndexResource;
 import ca.digitalcave.parts.resource.PartResource;
@@ -57,28 +67,28 @@ public class PartsApplication extends Application {
 		properties.load(propertiesResource.get().getReader());
 		
 		// set up database
-//		dataSource = new ComboPooledDataSource();
-//		dataSource.setDriverClass(properties.getProperty("jdbc.driver"));
-//		dataSource.setJdbcUrl(properties.getProperty("jdbc.url"));
-//		dataSource.setUser(properties.getProperty("jdbc.user"));
-//		dataSource.setPassword(properties.getProperty("jdbc.password"));
+		dataSource = new ComboPooledDataSource();
+		dataSource.setDriverClass(properties.getProperty("jdbc.driver"));
+		dataSource.setJdbcUrl(properties.getProperty("jdbc.url"));
+		dataSource.setUser(properties.getProperty("jdbc.user"));
+		dataSource.setPassword(properties.getProperty("jdbc.password"));
 		
 		// set up mybatis
-//		final Environment environment = new Environment("prod", new JdbcTransactionFactory(), dataSource);
-//		final org.apache.ibatis.session.Configuration config = new org.apache.ibatis.session.Configuration(environment);
-//		config.addMappers("ca.digitalcave.parts.data");
-//		sqlFactory = new SqlSessionFactoryBuilder().build(config);
+		final Environment environment = new Environment("prod", new JdbcTransactionFactory(), dataSource);
+		final org.apache.ibatis.session.Configuration config = new org.apache.ibatis.session.Configuration(environment);
+		config.addMappers("ca.digitalcave.parts.data");
+		sqlFactory = new SqlSessionFactoryBuilder().build(config);
 		
 		// schema migration
-//		final Connection c = dataSource.getConnection();
-//		try {
-//			final DatabaseConnection dbc = new JdbcConnection(c);
-//			final ClassLoaderResourceAccessor ra = new ClassLoaderResourceAccessor(getClass().getClassLoader());
-//			final Liquibase l = new Liquibase("ca/digitalcave/parts/data/migrate.sql", ra, dbc);
-//			l.update("all");
-//		} finally {
-//			c.close();
-//		}
+		final Connection c = dataSource.getConnection();
+		try {
+			final DatabaseConnection dbc = new JdbcConnection(c);
+			final ClassLoaderResourceAccessor ra = new ClassLoaderResourceAccessor(getClass().getClassLoader());
+			final Liquibase l = new Liquibase("ca/digitalcave/parts/data/migrate.sql", ra, dbc);
+			l.update("all");
+		} finally {
+			c.close();
+		}
 		
 		// set up freemarker
 		final Object servletContext = getContext().getAttributes().get("org.restlet.ext.servlet.ServletContext");
@@ -120,20 +130,21 @@ public class PartsApplication extends Application {
 	@Override  
 	public Restlet createInboundRoot() {
 
-		final Router partsRouter = new Router(getContext());
-		partsRouter.attach("/", PartsResource.class);
-		partsRouter.attach("/{part}", PartResource.class);
-//		partsRouter.attach("/{part}/attachment/{id}", AttachmentResource.class);
+		final Router catalogRouter = new Router(getContext());
+		catalogRouter.attach("", CatalogResource.class);
+		catalogRouter.attach("/parts", PartsResource.class);
+		catalogRouter.attach("/parts/{part}", PartResource.class);
+//		catalogRouter.attach("/attachment{id}", AttachmentResource.class);
 		
 		final ChallengeAuthenticator authenticator = new ChallengeAuthenticator(getContext(), ChallengeScheme.HTTP_BASIC, "Parts");
 		authenticator.setVerifier(new CookieVerifier(this));
-		authenticator.setNext(partsRouter);
+		authenticator.setNext(catalogRouter);
 
 		final Router publicRouter = new Router(getContext());
 		publicRouter.attach("", new Redirector(getContext(), "index.html", Redirector.MODE_CLIENT_TEMPORARY));
 		publicRouter.attach("/", new Redirector(getContext(), "index.html", Redirector.MODE_CLIENT_TEMPORARY));
 		publicRouter.attach("/index", IndexResource.class);
-		publicRouter.attach("/parts", partsRouter);
+		publicRouter.attach("/catalog", catalogRouter);
 		
 		publicRouter.attachDefault(DefaultResource.class).setMatchingMode(Template.MODE_STARTS_WITH);
 
