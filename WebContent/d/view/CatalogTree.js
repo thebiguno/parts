@@ -47,8 +47,13 @@ Ext.define('Parts.view.CatalogTree', {
 				"clicksToEdit": 2,
 				"listeners": {
 					"edit": function(editor, evt) {
+						var url = 'catalog';
+						var data = evt.record.data;
+						if (data.category) url += '?category=' + encodeURIComponent(data.category);
+						if (data.family) url += '&family=' + encodeURIComponent(data.family);
+
 						Ext.Ajax.request({
-							"url": 'catalog?category=' + encodeURIComponent(evt.record.data.category) + '&family=' + encodeURIComponent(evt.record.data.family),
+							"url": url,
 							"method": "PUT",
 							"params": evt.record.data.name,
 							"success": function(response) {
@@ -66,9 +71,5 @@ Ext.define('Parts.view.CatalogTree', {
 				}
 			})
 		];
-		var me = this;
-		this.getStore().addListener("load", function() {
-			//me.getSelectionModel().selectPath('/' + me.getRootNode().getId());
-		});
 	}
 });

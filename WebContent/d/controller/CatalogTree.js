@@ -11,8 +11,11 @@ Ext.define("Parts.controller.CatalogTree", {
 					
 					var partlist = row.view.up('viewport').down('partlist');
 					var data = record.data;
+					var url = 'catalog';
+					if (data.category) url += '?category=' + encodeURIComponent(data.category);
+					if (data.family) url += '&family=' + encodeURIComponent(data.family);
 					partlist.getStore().load({
-						"url": 'catalog?category=' + encodeURIComponent(data.category) + '&family=' + encodeURIComponent(data.family),
+						"url": url,
 						"callback": function(records, op, success) {
 							console.log(records);
 						}
@@ -23,9 +26,12 @@ Ext.define("Parts.controller.CatalogTree", {
 				"click": function(button) {
 					var tree = button.up('catalogtree');
 					var selected = tree.getSelectionModel().getSelection()[0];
-					
+					var data = selected.data;
+					var url = 'catalog';
+					if (data.category) url += '?category=' + encodeURIComponent(data.category);
+
 					Ext.Ajax.request({
-						"url": 'catalog?category=' + encodeURIComponent(selected.data.category),
+						"url": url,
 						"method": "POST",
 						"params": selected.data.category,
 						"success": function(response) {
@@ -41,9 +47,13 @@ Ext.define("Parts.controller.CatalogTree", {
 				"click": function(button) {
 					var tree = button.up('catalogtree');
 					var selected = tree.getSelectionModel().getSelection()[0];
-					
+					var data = selected.data;
+					var url = 'catalog';
+					if (data.category) url += '?category=' + encodeURIComponent(data.category);
+					if (data.family) url += '&family=' + encodeURIComponent(data.family);
+
 					Ext.Ajax.request({
-						"url": 'catalog?category=' + encodeURIComponent(selected.data.category) + '&family=' + encodeURIComponent(selected.data.family),
+						"url": url,
 						"method": "DELETE",
 						"success": function(response) {
 							var object = Ext.decode(response.responseText);
