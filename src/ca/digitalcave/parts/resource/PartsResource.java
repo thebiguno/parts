@@ -32,25 +32,25 @@ public class PartsResource extends ServerResource {
 	@Override
 	protected Representation get(Variant variant) throws ResourceException {
 		final PartsApplication application = (PartsApplication) getApplication();
-		final SqlSession sqlSession = application.getSqlFactory().openSession();
-		try {
-			final String category = getQuery().getFirstValue("category");
-			final String family = getQuery().getFirstValue("family");
-			final Integer c = category == null ? null : Integer.parseInt(category);
-			final Integer f = family == null ? null : Integer.parseInt(family);
-			
-			final String q = getQuery().getFirstValue("q", "");
-			final List<String> terms = Arrays.asList(q.split(" "));
+		final String category = getQuery().getFirstValue("category");
+		final String family = getQuery().getFirstValue("family");
+		final Integer c = category == null ? null : Integer.parseInt(category);
+		final Integer f = family == null ? null : Integer.parseInt(family);
+		
+		final String q = getQuery().getFirstValue("q", "");
+		final String[] terms = q.trim().length() > 0 ? q.split(" ") : new String[0];
 
-			return new WriterRepresentation(MediaType.APPLICATION_JSON) {
-				@Override
-				public void write(Writer w) throws IOException {
-					final JsonGenerator g = application.getJsonFactory().createJsonGenerator(w);
-					g.writeStartObject();
-					g.writeBooleanField("success", true);
-					g.writeArrayFieldStart("data");
-					
-					sqlSession.getMapper(PartsMapper.class).selectParts(c, f, terms, new ResultHandler() {
+		return new WriterRepresentation(MediaType.APPLICATION_JSON) {
+			@Override
+			public void write(Writer w) throws IOException {
+				final JsonGenerator g = application.getJsonFactory().createJsonGenerator(w);
+				g.writeStartObject();
+				g.writeBooleanField("success", true);
+				g.writeArrayFieldStart("data");
+				
+				final SqlSession sql = application.getSqlFactory().openSession();
+				try {
+					sql.getMapper(PartsMapper.class).selectParts(c, f, Arrays.asList(terms), new ResultHandler() {
 						@Override
 						public void handleResult(ResultContext ctx) {
 							try {
@@ -68,13 +68,13 @@ public class PartsResource extends ServerResource {
 					});
 					g.writeEndArray();
 					g.writeEndObject();
-					g.close();
+					g.flush();
+				} catch (Exception e) {
+					throw new ResourceException(Status.SERVER_ERROR_INTERNAL, e);
+				} finally {
+					sql.close();
 				}
-			};
-		} catch (Exception e) {
-			throw new ResourceException(Status.SERVER_ERROR_INTERNAL, e);
-		} finally {
-			sqlSession.close();
-		}
+			}
+		};
 	}
 }

@@ -39,7 +39,7 @@ inner join attribute a on p.part_id = a.part_id
 f.category_id = #{category}
 			</if>
 			<if test="family != null">
-f.family_id = #{family}
+and f.family_id = #{family}
 			</if>
 			<if test="terms.size() gt 0">
 and (

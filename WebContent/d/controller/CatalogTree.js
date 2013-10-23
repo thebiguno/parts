@@ -11,7 +11,7 @@ Ext.define("Parts.controller.CatalogTree", {
 					
 					var partlist = row.view.up('viewport').down('partlist');
 					var data = record.data;
-					var url = 'catalog';
+					var url = 'catalog/parts';
 					if (data.category) url += '?category=' + encodeURIComponent(data.category);
 					if (data.family) url += '&family=' + encodeURIComponent(data.family);
 					partlist.getStore().load({
