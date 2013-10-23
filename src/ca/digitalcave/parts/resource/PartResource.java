@@ -22,7 +22,7 @@ import ca.digitalcave.parts.PartsApplication;
 import ca.digitalcave.parts.data.PartsMapper;
 import ca.digitalcave.parts.model.Account;
 import ca.digitalcave.parts.model.Attribute;
-import ca.digitalcave.parts.model.Family;
+import ca.digitalcave.parts.model.Category;
 import ca.digitalcave.parts.model.Part;
 
 
@@ -81,7 +81,7 @@ public class PartResource extends ServerResource {
 		try {
 			final Form form = new Form(entity);
 			final Part part = new Part();
-			part.setFamily(new Family(Integer.parseInt(form.getFirstValue("family"))));
+			part.setCategory(new Category(Integer.parseInt(form.getFirstValue("category"))));
 			part.setMinimum(Integer.parseInt(form.getFirstValue("minimum", "0")));
 			part.setAvailable(Integer.parseInt(form.getFirstValue("available", "0")));
 			part.setNumber(form.getFirstValue("number"));
@@ -105,7 +105,7 @@ public class PartResource extends ServerResource {
 			final Form form = new Form(entity);
 			final Part part = new Part();
 			part.setId(Integer.parseInt((String) getRequestAttributes().get("part")));
-			part.setFamily(new Family(Integer.parseInt(form.getFirstValue("family"))));
+			part.setCategory(new Category(Integer.parseInt(form.getFirstValue("category"))));
 			part.setAvailable(Integer.parseInt(form.getFirstValue("available", "0")));
 			part.setMinimum(Integer.parseInt(form.getFirstValue("minimum", "0")));
 			sql.getMapper(PartsMapper.class).updatePart(part);

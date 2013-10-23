@@ -9,21 +9,16 @@ import ca.digitalcave.parts.model.Account;
 import ca.digitalcave.parts.model.Attachment;
 import ca.digitalcave.parts.model.Attribute;
 import ca.digitalcave.parts.model.Category;
-import ca.digitalcave.parts.model.Family;
 import ca.digitalcave.parts.model.Part;
 
 public interface PartsMapper {
-	List<Category> selectTree(@Param("account") int account, @Param("terms") List<String> terms);
+	List<Category> selectCategories(@Param("account") int account, @Param("terms") List<String> terms);
 	
-	Category selectCategory(@Param("account") int account, @Param("name") String name);
+	List<Category> selectDigikey(@Param("account") int account, @Param("category") String category, @Param("family") String family);
+	
 	void insertCategory(@Param("category") Category category);
 	void updateCategory(@Param("id") int id, @Param("name") String name);
 	void deleteCategory(@Param("id") int id);
-	
-	Family selectFamily(@Param("category") Category category, @Param("name") String name);
-	void insertFamily(@Param("family") Family family);
-	void updateFamily(@Param("id") int id, @Param("name") String name);
-	void deleteFamily(@Param("id") int id);
 	
 	void selectParts(@Param("category") Integer category, @Param("family") Integer family, @Param("terms") List<String> terms, ResultHandler handler);
 	void insertPart(@Param("part") Part part, @Param("account") Account account);

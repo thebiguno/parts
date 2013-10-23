@@ -17,7 +17,6 @@ import ca.digitalcave.parts.digi.DigiKeyClient;
 import ca.digitalcave.parts.model.Account;
 import ca.digitalcave.parts.model.Attribute;
 import ca.digitalcave.parts.model.Category;
-import ca.digitalcave.parts.model.Family;
 import ca.digitalcave.parts.model.Part;
 
 public class DigikeyResource extends ServerResource {
@@ -42,22 +41,22 @@ public class DigikeyResource extends ServerResource {
 					try {
 						final PartsMapper mapper = sqlSession.getMapper(PartsMapper.class);
 						final Attribute catAttr = Attribute.remove("Category", attributes);
-						Category category = mapper.selectCategory(account.getId(), catAttr.getValue());
-						if (category == null) {
-							category = new Category();
+						final Attribute famAttr = Attribute.remove("Family", attributes);
+						final List<Category> categories = mapper.selectDigikey(account.getId(), catAttr.getValue(), famAttr.getValue());
+						if (categories.size() == 0) {
+							final Category category = new Category();
 							category.setName(catAttr.getName());
 							mapper.insertCategory(category);
+							categories.add(category);
 						} 
-						final Attribute famAttr = Attribute.remove("Family", attributes);
-						Family family = mapper.selectFamily(category, famAttr.getValue());
-						if (family == null) {
-							family = new Family();
-							family.setCategory(category);
-							family.setName(famAttr.getValue());
-							mapper.insertFamily(family);
+						if (categories.size() == 1) {
+							final Category category = new Category();
+							category.setName(famAttr.getName());
+							mapper.insertCategory(category);
+							categories.add(category);
 						}
 						final Part part = new Part();
-						part.setFamily(family);
+						part.setCategory(categories.get(1));
 						final Attribute mpnAttr = Attribute.remove("Manufacturer Part Number", attributes);
 						final Attribute descAttr = Attribute.remove("Description", attributes);
 						final Attribute notesAttr = Attribute.remove("Notes", attributes);

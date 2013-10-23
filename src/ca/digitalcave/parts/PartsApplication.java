@@ -25,10 +25,11 @@ import org.restlet.resource.ClientResource;
 import org.restlet.routing.Redirector;
 import org.restlet.routing.Router;
 import org.restlet.routing.Template;
+import org.restlet.routing.Variable;
 import org.restlet.security.ChallengeAuthenticator;
 import org.restlet.service.StatusService;
 
-import ca.digitalcave.parts.resource.CatalogResource;
+import ca.digitalcave.parts.resource.CategoryResource;
 import ca.digitalcave.parts.resource.DefaultResource;
 import ca.digitalcave.parts.resource.IndexResource;
 import ca.digitalcave.parts.resource.PartResource;
@@ -131,7 +132,8 @@ public class PartsApplication extends Application {
 	public Restlet createInboundRoot() {
 
 		final Router catalogRouter = new Router(getContext());
-		catalogRouter.attach("", CatalogResource.class);
+		catalogRouter.attach("/categories", CategoryResource.class);
+		catalogRouter.attach("/categories/{category}", CategoryResource.class).getTemplate().getVariables().put("category", new Variable(Variable.TYPE_DIGIT));
 		catalogRouter.attach("/parts", PartsResource.class);
 		catalogRouter.attach("/parts/{part}", PartResource.class);
 //		catalogRouter.attach("/attachment{id}", AttachmentResource.class);

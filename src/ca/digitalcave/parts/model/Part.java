@@ -6,7 +6,7 @@ import java.util.List;
 
 public class Part {
 
-	private Family family;
+	private Category category;
 	private Integer id;
 	private Integer available;
 	private Integer minimum;
@@ -22,11 +22,11 @@ public class Part {
 		this.id = id;
 	}
 	
-	public Family getFamily() {
-		return family;
+	public Category getCategory() {
+		return category;
 	}
-	public void setFamily(Family family) {
-		this.family = family;
+	public void setCategory(Category category) {
+		this.category = category;
 	}
 	
 	public Integer getId() {

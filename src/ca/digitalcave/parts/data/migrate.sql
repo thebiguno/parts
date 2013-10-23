@@ -18,6 +18,7 @@ insert into account values (0, 'Administrator', 'admin@example.com', 'password',
 --changeset wj:create_category
 create table category (
 	category_id smallint primary key,
+	parent_id smallint references category (category_id) on delete restrict,
 	account_id integer not null references account (account_id) on delete cascade,
 	name varchar(255) not null,
 	created_at timestamp not null,
@@ -25,20 +26,10 @@ create table category (
 );
 --rollback drop table category;
 
---changeset wj:create_family
-create table family (
-	family_id smallint primary key,
-	category_id smallint not null references category (category_id) on delete restrict,
-	name varchar(255) not null,
-	created_at timestamp not null,
-	modified_at timestamp not null
-);
---rollback drop table family;
-
 --changeset wj:create_part
 create table part (
 	part_id smallint primary key,
-	family_id smallint not null references family (family_id) on delete restrict,
+	category_id smallint not null references category (category_id) on delete restrict,
 	available smallint not null default 0, -- quantity on hand
 	minimum smallint not null default 0, -- quantity desired
 	part_no varchar(255) not null,

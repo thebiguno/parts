@@ -1,20 +1,12 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="ca.digitalcave.parts.data.PartsMapper">
-	<resultMap id="tree" type="ca.digitalcave.parts.model.Category">
-		<id property="id" column="category_id"/>
-		<result property="name" column="category_name"/>
-		<collection property="families" javaType="list" ofType="ca.digitalcave.parts.model.Family">
-			<id property="id" column="family_id"/>
-			<result property="name" column="family_name"/>
-		</collection>
-	</resultMap>
 
-	<select id="selectTree" resultMap="tree">
-select distinct c.category_id, c.name category_name, f.family_id, f.name family_name
+	<!-- this doesn't actually select a tree -->
+	<select id="selectCategories" resultType="ca.digitalcave.parts.model.Category">
+select distinct c.category_id as id, c.parent_id as parentId, c.name category_name
 from category c
-left join family f on f.category_id = c.category_id
-left join part p on p.family_id = f.family_id
+left join part p on p.category_id = f.category_id
 left join attribute a on a.part_id = p.part_id
 		<where>
 c.account_id = #{account}
@@ -37,9 +29,6 @@ inner join attribute a on p.part_id = a.part_id
 		<where>
 			<if test="category != null">
 f.category_id = #{category}
-			</if>
-			<if test="family != null">
-and f.family_id = #{family}
 			</if>
 			<if test="terms.size() gt 0">
 and (
@@ -73,37 +62,17 @@ delete from category
 where category_id = #{id}
 	</delete>
 	
-	<select id="selectFamily" resultType="ca.digitalcave.parts.model.Family">
-select family_id as id, name
-from family where name = #{name} and category_id = #{category.id}
-	</select>
-	<insert id="insertFamily">
-		<selectKey order="BEFORE" resultType="int" keyProperty="family.id">
-select coalesce(max(family_id),0) + 1 from family
-		</selectKey>
-insert into family (family_id, category_id, name, created_at, modified_at)
-values (#{family.id}, #{family.category.id}, #{family.name}, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
-	</insert>
-	<update id="updateFamily">
-update family set name = #{name}, modified_at = CURRENT_TIMESTAMP
-where family_id = #{id}
-	</update>
-	<delete id="deleteFamily">
-delete from family
-where family_id = #{id}
-	</delete>
-
 	<insert id="insertPart">
 		<selectKey order="BEFORE" keyProperty="id">
 select coalesce(max(part_id),0) + 1 from part
 		</selectKey>
-insert into part (part_id, family_id, available, minimum, part_no, description, notes)
-values (#{part.id}, #{part.family.id}, #{part.available}, #{part.minimum}, #{part.number}, #{part.description}, #{part.description}));
+insert into part (part_id, category_id, available, minimum, part_no, description, notes)
+values (#{part.id}, #{part.category.id}, #{part.available}, #{part.minimum}, #{part.number}, #{part.description}, #{part.description}));
 	</insert>
 	<update id="updatePart">
 update part
 		<set>
-			<if test="part.family != null">family_id = #{part.family.id},</if>
+			<if test="part.category != null">category_id = #{part.category.id},</if>
 			<if test="part.available != null">available = #{part.available},</if>
 			<if test="part.minimum != null">minimum = #{part.minimum},</if>
 			<if test="part.number != null">part_no = #{part.number},</if>
