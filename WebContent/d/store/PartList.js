@@ -1,6 +1,6 @@
 Ext.define("Parts.store.PartList", {
 	"extend": "Ext.data.Store",
-	"fields": [ "part", "description", "quantity", "datasheets" ],
+	"fields": [ "id", "category", "number", "description", "notes", "minimum", "available" ],
 	"autoLoad": false,
 	
 	"proxy": {

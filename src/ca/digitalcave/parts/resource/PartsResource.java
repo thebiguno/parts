@@ -35,8 +35,8 @@ public class PartsResource extends ServerResource {
 	protected Representation get(Variant variant) throws ResourceException {
 		final PartsApplication application = (PartsApplication) getApplication();
 		final Account account = new Account(0); // TODO implement auth
-		final String category = getQuery().getFirstValue("category","");
-		final Integer c = category.trim().length() == 0 ? null : Integer.parseInt(category);
+		
+		final Integer categoryId = Integer.parseInt((String) getRequestAttributes().get("category"));
 		
 		final String q = getQuery().getFirstValue("q", "");
 		final String[] terms = q.trim().length() > 0 ? q.split(" ") : new String[0];
@@ -51,14 +51,17 @@ public class PartsResource extends ServerResource {
 				
 				final SqlSession sql = application.getSqlFactory().openSession();
 				try {
-					sql.getMapper(PartsMapper.class).selectParts(account.getId(), c, Arrays.asList(terms), new ResultHandler() {
+					sql.getMapper(PartsMapper.class).selectParts(account.getId(), categoryId, Arrays.asList(terms), new ResultHandler() {
 						@Override
 						public void handleResult(ResultContext ctx) {
 							try {
 								final Part part = (Part) ctx.getResultObject();
 								g.writeStartObject();
+								g.writeNumberField("id", part.getId());
+								g.writeNumberField("category", part.getCategory());
 								g.writeStringField("number", part.getNumber());
 								g.writeStringField("description", part.getDescription());
+								g.writeStringField("notes", part.getNotes());
 								g.writeNumberField("available", part.getAvailable());
 								g.writeNumberField("minimum", part.getMinimum());
 								g.writeEndObject();
@@ -87,10 +90,10 @@ public class PartsResource extends ServerResource {
 		
 		final SqlSession sql = application.getSqlFactory().openSession(true);
 		try {
-			final JSONObject resultNode = new JSONObject();
+			final JSONObject resultPart = new JSONObject();
 			final JSONObject result = new JSONObject();
 			result.put("success", true);
-			result.put("node", resultNode);
+			result.put("part", resultPart);
 			
 			final Part part = new Part();
 			part.setCategory(Integer.parseInt((String) getRequestAttributes().get("category")));
@@ -102,12 +105,13 @@ public class PartsResource extends ServerResource {
 			final int ct = sql.getMapper(PartsMapper.class).insertPart(account.getId(), part);
 			if (ct == 0) throw new ResourceException(Status.CLIENT_ERROR_NOT_FOUND);
 			
-			resultNode.put("id", part.getId());
-			resultNode.put("number", part.getNumber());
-			resultNode.put("available", part.getAvailable());
-			resultNode.put("minimum", part.getMinimum());
-			resultNode.put("description", part.getDescription());
-			resultNode.put("notes", part.getNotes());
+			resultPart.put("id", part.getId());
+			resultPart.put("number", part.getNumber());
+			resultPart.put("category", part.getCategory());
+			resultPart.put("available", part.getAvailable());
+			resultPart.put("minimum", part.getMinimum());
+			resultPart.put("description", part.getDescription());
+			resultPart.put("notes", part.getNotes());
 			return new JsonRepresentation(result);
 		} catch (Exception e) {
 			throw new ResourceException(e);

@@ -7,6 +7,7 @@ import org.apache.ibatis.session.ResultContext;
 import org.apache.ibatis.session.ResultHandler;
 import org.apache.ibatis.session.SqlSession;
 import org.codehaus.jackson.JsonGenerator;
+import org.json.JSONObject;
 import org.restlet.data.Form;
 import org.restlet.data.MediaType;
 import org.restlet.data.Status;
@@ -79,15 +80,19 @@ public class PartResource extends ServerResource {
 		
 		final SqlSession sql = application.getSqlFactory().openSession(true);
 		try {
-			final Form form = new Form(entity);
+			final JSONObject object = new JSONObject(entity.getText());
 			final Part part = new Part();
-			// TODO id and category from URI
 			part.setId(Integer.parseInt((String) getRequestAttributes().get("part")));
-			part.setCategory(Integer.parseInt(form.getFirstValue("category")));
-			part.setAvailable(Integer.parseInt(form.getFirstValue("available", "0")));
-			part.setMinimum(Integer.parseInt(form.getFirstValue("minimum", "0")));
+			part.setNumber(object.optString("number", ""));
+			part.setDescription(object.optString("description",""));
+			part.setNotes(object.optString("notes", ""));
+			part.setCategory(object.getInt("category"));
+			part.setAvailable(object.optInt("available", 0));
+			part.setMinimum(object.optInt("minimum", 0));
 			sql.getMapper(PartsMapper.class).updatePart(account.getId(), part);
 			return new StringRepresentation("{\"success\":true}");
+		} catch (Exception e) {
+			throw new ResourceException(e);
 		} finally {
 			sql.close();
 		}

@@ -30,7 +30,7 @@ Ext.define("Parts.controller.PartList", {
 						"success": function(response) {
 							var object = Ext.decode(response.responseText);
 							if (object.success) {
-								list.getStore().loadRawData(object, true);
+								list.getStore().add(object.part);
 							}
 						}
 					});
@@ -47,7 +47,7 @@ Ext.define("Parts.controller.PartList", {
 						"success": function(response) {
 							var object = Ext.decode(response.responseText);
 							if (object.success) {
-								selected.remove(false);
+								list.getStore().remove(selected);
 							}
 						}
 					});
