@@ -45,6 +45,14 @@ Ext.define('Parts.view.AttributeList', {
 			"flex": 1,
 			"dataIndex": "value",
 			"sortable": false
+		},
+		{
+			"text": "",
+			"width": 20,
+			"sortable": false,
+			"renderer": function(value, md, record) {
+				return '<a href="' + record.href + '"><img target="_blank" src="' + record.icon + '"/></a>';
+			}
 		}
 	]
 });

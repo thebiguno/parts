@@ -34,7 +34,9 @@ create table part (
 	minimum smallint not null default 0, -- quantity desired
 	part_no varchar(255) not null,
 	description varchar(255),
-	notes varchar(2048)
+	notes varchar(2048),
+	created_at timestamp not null,
+	modified_at timestamp not null
 );
 --rollback drop table part;
 
@@ -45,21 +47,13 @@ create table attribute (
 	name varchar(255) not null, 
 	val varchar(255) not null, 
 	href varchar(255), 
-	sort smallint default 0
-);
---rollback drop table property;
-
---changeset wj:create_attachment
-create table attachment (
-	attachment_id int primary key,
-	part_id smallint not null references part (part_id) on delete cascade,
-	name varchar(255) not null,
 	mime_type varchar(255) not null default 'application/octet-stream',
-	modified_at timestamp not null,
-	data oid
+	data oid,
+	created_at timestamp not null,
+	modified_at timestamp not null
 );
---rollback drop table attachment;
+--rollback drop table attribute;
 
---changeset wj:create_attachment_trigger
-create trigger t_attachment before update or delete on attachment
+--changeset wj:create_attribute_trigger
+create trigger t_attachment before update or delete on attribute
 	for each row execute procedure lo_manage(data);

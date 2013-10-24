@@ -34,7 +34,8 @@ Ext.define('Parts.view.CategoryTree', {
 			"sortable": false,
 			"dataIndex": "name",
 			"editor": {
-				"xtype": "textfield"
+				"xtype": "textfield",
+				"maxLength": 255
 			}
 		}
 	],

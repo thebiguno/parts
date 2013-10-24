@@ -25,49 +25,63 @@ Ext.define('Parts.view.PartList', {
 					"disabled": true
 				}
 			]
-		},
-		{
-			"xtype": "panel",
-			"dock": "bottom",
-			"title": "Notes",
-			"height": 200
 		}
 	],
 	"columns": [
 		{
 			"text": "Part #",
-			"width": 250,
+			"flex": 1,
 			"dataIndex": "number",
 			"sortable": false,
 			"editor": {
-				"xtype": "textfield"
+				"xtype": "textfield",
+				"maxLength": 255
 			}
 		},
 		{
 			"text": "Description",
-			"flex": 1,
+			"flex": 2,
 			"dataIndex": "description",
 			"sortable": false,
 			"editor": {
-				"xtype": "textfield"
+				"xtype": "textfield",
+				"maxLength": 255
+			},
+			"renderer": function(value) {
+				return '<div class="word-wrap">' + value + '</div>';
+			}
+		},
+		{
+			"text": "Notes",
+			"flex": 2,
+			"dataIndex": "notes",
+			"sortable": false,
+			"editor": {
+				"xtype": "textfield",
+				"maxLength": 2048
+			},
+			"renderer": function(value) {
+				return '<div class="word-wrap">' + value + '</div>';
 			}
 		},
 		{
 			"text": "Available",
-			"width": 80,
+			"width": 60,
 			"dataIndex": "available",
 			"sortable": false,
 			"editor": {
-				"xtype": "numberfield"
+				"xtype": "numberfield",
+				"minValue": 0
 			}
 		},
 		{
 			"text": "Minimum",
-			"width": 80,
+			"width": 60,
 			"dataIndex": "minimum",
 			"sortable": false,
 			"editor": {
-				"xtype": "numberfield"
+				"xtype": "numberfield",
+				"minValue": 0
 			}
 		}
 	],
