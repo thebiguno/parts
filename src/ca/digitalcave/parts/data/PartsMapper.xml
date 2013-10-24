@@ -4,9 +4,9 @@
 
 	<!-- this doesn't actually select a tree -->
 	<select id="selectCategories" resultType="ca.digitalcave.parts.model.Category">
-select distinct c.category_id as id, c.parent_id as parentId, c.name category_name
+select distinct c.category_id as id, c.parent_id as parentId, c.name
 from category c
-left join part p on p.category_id = f.category_id
+left join part p on p.category_id = c.category_id
 left join attribute a on a.part_id = p.part_id
 		<where>
 c.account_id = #{account}
@@ -18,17 +18,17 @@ and (
 )
 			</if>
 		</where>
-order by c.name, f.name
+order by c.name
 	</select>
 	
 	<select id="selectParts" resultType="ca.digitalcave.parts.model.Part">
 select distinct p.part_id as id, p.part_no, p.description, p.notes, p.available, p.minimum
-from family f
-inner join part p on f.family_id = p.family_id
+from category c
+inner join part p on c.category_id = p.category_id
 inner join attribute a on p.part_id = a.part_id
 		<where>
 			<if test="category != null">
-f.category_id = #{category}
+c.category_id = #{category}
 			</if>
 			<if test="terms.size() gt 0">
 and (
@@ -50,16 +50,22 @@ where name = #{name} and account_id = #{account.id}
 		<selectKey order="BEFORE" resultType="int" keyProperty="category.id">
 select coalesce(max(category_id),0) + 1 from category
 		</selectKey>
-insert into category (category_id, account_id, name, created_at, modified_at)
-values (#{category.id}, #{category.account.id}, #{category.name}, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
+insert into category (category_id, parent_id, account_id, name, created_at, modified_at)
+	<if test="category.parentId == null">
+values(#{category.id}, null, #{account}, #{category.name}, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
+	</if>
+	<if test="category.parentId != null">
+select #{category.id}, category_id, account_id, #{category.name}, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP
+from category where category_id = #{category.parentId} and account_id = #{account}
+	</if>
 	</insert>
 	<update id="updateCategory">
 update category set name = #{name}, modified_at = CURRENT_TIMESTAMP
-where category_id = #{id}
+where category_id = #{id} and account_id = #{account}
 	</update>
 	<delete id="deleteCategory">
 delete from category
-where category_id = #{id}
+where category_id = #{id} and account_id = #{account}
 	</delete>
 	
 	<insert id="insertPart">

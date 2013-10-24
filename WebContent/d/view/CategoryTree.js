@@ -1,9 +1,9 @@
-Ext.define('Parts.view.CatalogTree', {
+Ext.define('Parts.view.CategoryTree', {
 	"extend": "Ext.tree.Panel",
-	"alias": "widget.catalogtree",
+	"alias": "widget.categorytree",
 	
 	"rootVisible": true,
-	"store": "CatalogTree",
+	"store": "CategoryTree",
 	
 	"dockedItems": [
 		{
@@ -47,13 +47,8 @@ Ext.define('Parts.view.CatalogTree', {
 				"clicksToEdit": 2,
 				"listeners": {
 					"edit": function(editor, evt) {
-						var url = 'catalog';
-						var data = evt.record.data;
-						if (data.category) url += '?category=' + encodeURIComponent(data.category);
-						if (data.family) url += '&family=' + encodeURIComponent(data.family);
-
 						Ext.Ajax.request({
-							"url": url,
+							"url": "catalog/categories/" + encodeURIComponent(evt.record.data.id),
 							"method": "PUT",
 							"params": evt.record.data.name,
 							"success": function(response) {
@@ -66,7 +61,7 @@ Ext.define('Parts.view.CatalogTree', {
 					},
 					"beforeedit": function(editor, evt) {
 						// don't allow the root node to be edited
-						return evt.record.data.category != null;
+						return evt.record.data.id != null;
 					}
 				}
 			})

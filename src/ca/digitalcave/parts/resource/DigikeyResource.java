@@ -46,13 +46,13 @@ public class DigikeyResource extends ServerResource {
 						if (categories.size() == 0) {
 							final Category category = new Category();
 							category.setName(catAttr.getName());
-							mapper.insertCategory(category);
+							mapper.insertCategory(account.getId(), category);
 							categories.add(category);
 						} 
 						if (categories.size() == 1) {
 							final Category category = new Category();
 							category.setName(famAttr.getName());
-							mapper.insertCategory(category);
+							mapper.insertCategory(account.getId(), category);
 							categories.add(category);
 						}
 						final Part part = new Part();

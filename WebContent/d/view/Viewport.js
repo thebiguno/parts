@@ -9,7 +9,7 @@ Ext.define("Parts.view.Viewport", {
 	"stateId": "viewport",
 	
 	"requires": [
-		"Parts.view.CatalogTree",
+		"Parts.view.CategoryTree",
 		"Parts.view.PartList",
 		"Parts.view.AttributeList"
 	],
@@ -69,7 +69,7 @@ Ext.define("Parts.view.Viewport", {
 		},
 		{
 			"region": "west",
-			"xtype": "catalogtree",
+			"xtype": "categorytree",
 			"width": 250,
 			"split": true
 		},

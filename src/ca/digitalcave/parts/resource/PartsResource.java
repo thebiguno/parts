@@ -3,7 +3,6 @@ package ca.digitalcave.parts.resource;
 import java.io.IOException;
 import java.io.Writer;
 import java.util.Arrays;
-import java.util.List;
 
 import org.apache.ibatis.session.ResultContext;
 import org.apache.ibatis.session.ResultHandler;
@@ -32,10 +31,8 @@ public class PartsResource extends ServerResource {
 	@Override
 	protected Representation get(Variant variant) throws ResourceException {
 		final PartsApplication application = (PartsApplication) getApplication();
-		final String category = getQuery().getFirstValue("category");
-		final String family = getQuery().getFirstValue("family");
-		final Integer c = category == null ? null : Integer.parseInt(category);
-		final Integer f = family == null ? null : Integer.parseInt(family);
+		final String category = getQuery().getFirstValue("category","");
+		final Integer c = category.trim().length() == 0 ? null : Integer.parseInt(category);
 		
 		final String q = getQuery().getFirstValue("q", "");
 		final String[] terms = q.trim().length() > 0 ? q.split(" ") : new String[0];
@@ -50,7 +47,7 @@ public class PartsResource extends ServerResource {
 				
 				final SqlSession sql = application.getSqlFactory().openSession();
 				try {
-					sql.getMapper(PartsMapper.class).selectParts(c, f, Arrays.asList(terms), new ResultHandler() {
+					sql.getMapper(PartsMapper.class).selectParts(c, Arrays.asList(terms), new ResultHandler() {
 						@Override
 						public void handleResult(ResultContext ctx) {
 							try {

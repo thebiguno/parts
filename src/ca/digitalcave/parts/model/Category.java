@@ -8,7 +8,6 @@ public class Category {
 
 	private Integer id;
 	private Integer parentId;
-	private Account account;
 	private String name;
 	private List<Category> children = new LinkedList<Category>();
 	
@@ -31,13 +30,6 @@ public class Category {
 	}
 	public void setParentId(Integer parentId) {
 		this.parentId = parentId;
-	}
-	
-	public Account getAccount() {
-		return account;
-	}
-	public void setAccount(Account account) {
-		this.account = account;
 	}
 	
 	public String getName() {

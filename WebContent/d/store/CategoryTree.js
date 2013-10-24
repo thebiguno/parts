@@ -1,19 +1,20 @@
-Ext.define("Parts.store.CatalogTree", {
+Ext.define("Parts.store.CategoryTree", {
 	"extend": "Ext.data.TreeStore",
-	"fields": [ "name", "category", "family" ],
+	"fields": [ "id", "name" ],
 	"autoLoad": true,
+	"remoteSort": true,
+	"remoteFilter": false,
 	
 	"root": {
 		"name": "All",
 		"expanded": true,
-		"category": null,
-		"family": null
+		"icon": "img/categories.png"
 	},
-	
 
 	"proxy": {
 		"type": "ajax",
-		"url": "catalog",
+		"method": "GET",
+		"url": "catalog/categories",
 		"reader": {
 			"type": "json",
 			"rootProperty": "data"

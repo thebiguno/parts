@@ -16,11 +16,11 @@ public interface PartsMapper {
 	
 	List<Category> selectDigikey(@Param("account") int account, @Param("category") String category, @Param("family") String family);
 	
-	void insertCategory(@Param("category") Category category);
-	void updateCategory(@Param("id") int id, @Param("name") String name);
-	void deleteCategory(@Param("id") int id);
+	int insertCategory(@Param("account") int account, @Param("category") Category category);
+	int updateCategory(@Param("account") int account, @Param("id") int id, @Param("name") String name);
+	int deleteCategory(@Param("account") int account, @Param("id") int id);
 	
-	void selectParts(@Param("category") Integer category, @Param("family") Integer family, @Param("terms") List<String> terms, ResultHandler handler);
+	void selectParts(@Param("category") Integer category, @Param("terms") List<String> terms, ResultHandler handler);
 	void insertPart(@Param("part") Part part, @Param("account") Account account);
 	void updatePart(@Param("part") Part part);
 	void deletePart(@Param("id") int id);
