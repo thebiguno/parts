@@ -3,40 +3,56 @@ Ext.define("Parts.controller.PartList", {
 	
 	"init": function() {
 		this.control({
-			"attributelist toolbar button[itemId=add]": {
-				"click": function(button) {
+			"partlist": {
+				"select": function(row, record) {
+					var data = record.data;
 					
+					var toolbar = row.view.up('partlist').down('toolbar');
+					toolbar.down('button[itemId=remove]').setDisabled(data == null);
+					
+					var attrlist = row.view.up('viewport').down('attributelist');
+					attrlist.getStore().load({
+						"url": "catalog/parts/" + data.id + "/attributes"
+					});
+					
+					attrlist.down('toolbar').down('button[itemId=add]').setDisabled(record.data);
 				}
 			},
-			"attributelist toolbar button[itemId=remove]": {
+			"partlist toolbar button[itemId=add]": {
 				"click": function(button) {
+					var tree = button.up('viewport').down('categorytree');
+					var selected = tree.getSelectionModel().getSelection()[0];
+					var list = button.up('partlist');
 					
+					Ext.Ajax.request({
+						"url": "categories/" + selected.data.id + "/parts",
+						"method": "POST",
+						"success": function(response) {
+							var object = Ext.decode(response.responseText);
+							if (object.success) {
+								list.getStore().loadRawData(object, true);
+							}
+						}
+					});
+				}
+			},
+			"partlist toolbar button[itemId=remove]": {
+				"click": function(button) {
+					var list = button.up('partlist');
+					var selected = list.getSelectionModel().getSelection()[0];
+					
+					Ext.Ajax.request({
+						"url": "categories/" + encodeURIComponent(selected.data.category) + "/parts/" + encodeURIComponent(selected.data.id),
+						"method": "DELETE",
+						"success": function(response) {
+							var object = Ext.decode(response.responseText);
+							if (object.success) {
+								selected.remove(false);
+							}
+						}
+					});
 				}
 			}
 		});
 	}
-	
-//	config: {
-//		refs: {
-//			catalogList: "catalog-",
-//			familyList: "family-list"
-//		},
-//		control: {
-//			catalogList: {
-//				itemtap: "activateFamilyList"
-//			}
-//		}
-//	},
-//	activateFamilyList: function (list, index, target, record) {
-//		var familyList = this.getFamilyList();
-//		if (familyList == null){
-//			familyList = Ext.create("Parts.view.FamilyList", {});
-//		}
-//		familyList.getStore().getProxy().setUrl("datam/" + record.data.category + "/" + record.data.family);
-//		familyList.getStore().load({
-//			callback: function(){
-//				Ext.Viewport.animateActiveItem(familyList, {type: 'slide', direction: 'left'});
-//			}
-//		});
-//	}
 });

@@ -8,8 +8,10 @@ import org.apache.ibatis.session.ResultContext;
 import org.apache.ibatis.session.ResultHandler;
 import org.apache.ibatis.session.SqlSession;
 import org.codehaus.jackson.JsonGenerator;
+import org.json.JSONObject;
 import org.restlet.data.MediaType;
 import org.restlet.data.Status;
+import org.restlet.ext.json.JsonRepresentation;
 import org.restlet.representation.Representation;
 import org.restlet.representation.Variant;
 import org.restlet.representation.WriterRepresentation;
@@ -18,6 +20,7 @@ import org.restlet.resource.ServerResource;
 
 import ca.digitalcave.parts.PartsApplication;
 import ca.digitalcave.parts.data.PartsMapper;
+import ca.digitalcave.parts.model.Account;
 import ca.digitalcave.parts.model.Part;
 
 
@@ -31,6 +34,7 @@ public class PartsResource extends ServerResource {
 	@Override
 	protected Representation get(Variant variant) throws ResourceException {
 		final PartsApplication application = (PartsApplication) getApplication();
+		final Account account = new Account(0); // TODO implement auth
 		final String category = getQuery().getFirstValue("category","");
 		final Integer c = category.trim().length() == 0 ? null : Integer.parseInt(category);
 		
@@ -47,7 +51,7 @@ public class PartsResource extends ServerResource {
 				
 				final SqlSession sql = application.getSqlFactory().openSession();
 				try {
-					sql.getMapper(PartsMapper.class).selectParts(c, Arrays.asList(terms), new ResultHandler() {
+					sql.getMapper(PartsMapper.class).selectParts(account.getId(), c, Arrays.asList(terms), new ResultHandler() {
 						@Override
 						public void handleResult(ResultContext ctx) {
 							try {
@@ -73,5 +77,42 @@ public class PartsResource extends ServerResource {
 				}
 			}
 		};
+	}
+	
+	@Override
+	protected Representation post(Representation entity, Variant variant) throws ResourceException {
+		final PartsApplication application = (PartsApplication) getApplication();
+//		final Account account = (Account) getClientInfo().getUser(); 
+		final Account account = new Account(0); // TODO implement auth
+		
+		final SqlSession sql = application.getSqlFactory().openSession(true);
+		try {
+			final JSONObject resultNode = new JSONObject();
+			final JSONObject result = new JSONObject();
+			result.put("success", true);
+			result.put("node", resultNode);
+			
+			final Part part = new Part();
+			part.setCategory(Integer.parseInt((String) getRequestAttributes().get("category")));
+			part.setNumber("");
+			part.setAvailable(0);
+			part.setMinimum(0);
+			part.setDescription("");
+			part.setNotes("");
+			final int ct = sql.getMapper(PartsMapper.class).insertPart(account.getId(), part);
+			if (ct == 0) throw new ResourceException(Status.CLIENT_ERROR_NOT_FOUND);
+			
+			resultNode.put("id", part.getId());
+			resultNode.put("number", part.getNumber());
+			resultNode.put("available", part.getAvailable());
+			resultNode.put("minimum", part.getMinimum());
+			resultNode.put("description", part.getDescription());
+			resultNode.put("notes", part.getNotes());
+			return new JsonRepresentation(result);
+		} catch (Exception e) {
+			throw new ResourceException(e);
+		} finally {
+			sql.close();
+		}
 	}
 }

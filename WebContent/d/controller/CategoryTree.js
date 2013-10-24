@@ -5,22 +5,18 @@ Ext.define("Parts.controller.CategoryTree", {
 		this.control({
 			"categorytree": { 
 				"select": function(row, record) {
-					var toolbar = row.view.up('categorytree').down('toolbar');
-					toolbar.down('button[itemId=remove]').setDisabled(!record.data.id);
-					toolbar.down('button[itemId=add]').enable();
-					
-					var partlist = row.view.up('viewport').down('partlist');
 					var data = record.data;
+
+					var toolbar = row.view.up('categorytree').down('toolbar');
+					toolbar.down('button[itemId=remove]').setDisabled(data.id == 'root');
+					toolbar.down('button[itemId=add]').enable();
+
+					var partlist = row.view.up('viewport').down('partlist');
 					partlist.getStore().load({
-						"url": "catalog/parts",
-						"params": {
-							"category": data.id,
-							"terms": "" // TODO
-						},
-						"callback": function(records, op, success) {
-							console.log(records);
-						}
+						"url": "categories/" + data.id + "/parts?q=", // TODO add terms
 					});
+					
+					partlist.down('toolbar').down('button[itemId=add]').setDisabled(record.data.id == 'root');
 				}
 			},
 			"categorytree toolbar button[itemId=add]": {
@@ -29,13 +25,11 @@ Ext.define("Parts.controller.CategoryTree", {
 					var selected = tree.getSelectionModel().getSelection()[0];
 
 					Ext.Ajax.request({
-						"url": "catalog/categories",
+						"url": "categories" + (selected.data.id == 'root' ? '' : '/' + selected.data.id), 
 						"method": "POST",
-						"params": selected.data.id,
 						"success": function(response) {
 							var object = Ext.decode(response.responseText);
 							if (object.success) {
-								selected.leaf = false;
 								selected.appendChild(object.node, false, true).parentNode.expand(true);
 							}
 						}
@@ -48,7 +42,7 @@ Ext.define("Parts.controller.CategoryTree", {
 					var selected = tree.getSelectionModel().getSelection()[0];
 					
 					Ext.Ajax.request({
-						"url": "catalog/categories/" + encodeURIComponent(selected.data.id),
+						"url": "categories/" + encodeURIComponent(selected.data.id),
 						"method": "DELETE",
 						"success": function(response) {
 							var object = Ext.decode(response.responseText);

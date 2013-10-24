@@ -8,12 +8,6 @@ Ext.define("Parts.view.Viewport", {
 	"stateful": true,
 	"stateId": "viewport",
 	
-	"requires": [
-		"Parts.view.CategoryTree",
-		"Parts.view.PartList",
-		"Parts.view.AttributeList"
-	],
-	
 	"layout": "border",
 
 	"items": [

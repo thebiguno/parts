@@ -94,11 +94,10 @@ public class CategoriesResource extends ServerResource {
 			result.put("success", true);
 			result.put("node", resultNode);
 			
-			final String parentId = entity.getText();
-			
+			final String parentId = (String) getRequestAttributes().get("category");
 			final Category category = new Category();
 			category.setName("Untitled");
-			category.setParentId("root".equals(parentId) ? null : Integer.parseInt(parentId));
+			category.setParentId(parentId == null ? null : Integer.parseInt(parentId));
 			final int ct = sql.getMapper(PartsMapper.class).insertCategory(account.getId(), category);
 			if (ct == 0) throw new ResourceException(Status.CLIENT_ERROR_NOT_FOUND);
 			
@@ -106,6 +105,51 @@ public class CategoriesResource extends ServerResource {
 			resultNode.put("name", category.getName());
 			resultNode.put("children", Collections.EMPTY_LIST);
 			resultNode.put("icon", "img/category.png");
+			return new JsonRepresentation(result);
+		} catch (Exception e) {
+			throw new ResourceException(e);
+		} finally {
+			sql.close();
+		}
+	}
+	
+	@Override
+	protected Representation put(Representation entity, Variant variant) throws ResourceException {
+		final PartsApplication application = (PartsApplication) getApplication();
+//		final Account account = (Account) getClientInfo().getUser();
+		final Account account = new Account(0); // TODO implement auth
+		
+		final SqlSession sql = application.getSqlFactory().openSession(true);
+		try {
+			final JSONObject result = new JSONObject();
+			result.put("success", true);
+			
+			final int categoryId = Integer.parseInt((String) getRequestAttributes().get("category"));
+
+			int ct = sql.getMapper(PartsMapper.class).updateCategory(account.getId(), categoryId, entity.getText());
+			if (ct == 0) throw new ResourceException(Status.CLIENT_ERROR_NOT_FOUND);
+			return new JsonRepresentation(result);
+		} catch (Exception e) {
+			throw new ResourceException(e);
+		} finally {
+			sql.close();
+		}
+	}
+	
+	@Override
+	protected Representation delete(Variant variant) throws ResourceException {
+		final PartsApplication application = (PartsApplication) getApplication();
+		//final Account account = (Account) getClientInfo().getUser();
+		final Account account = new Account(0); // TODO implement auth
+		
+		final SqlSession sql = application.getSqlFactory().openSession(true);
+		try {
+			final JSONObject result = new JSONObject();
+			result.put("success", true);
+			
+			final int categoryId = Integer.parseInt((String) getRequestAttributes().get("category"));
+			final int ct = sql.getMapper(PartsMapper.class).deleteCategory(account.getId(), categoryId);
+			if (ct == 0) throw new ResourceException(Status.CLIENT_ERROR_NOT_FOUND);
 			return new JsonRepresentation(result);
 		} catch (Exception e) {
 			throw new ResourceException(e);

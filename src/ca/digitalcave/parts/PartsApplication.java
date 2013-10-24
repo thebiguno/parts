@@ -25,12 +25,14 @@ import org.restlet.resource.ClientResource;
 import org.restlet.routing.Redirector;
 import org.restlet.routing.Router;
 import org.restlet.routing.Template;
-import org.restlet.routing.Variable;
 import org.restlet.security.ChallengeAuthenticator;
 import org.restlet.service.StatusService;
 
+import ca.digitalcave.parts.resource.AttachmentResource;
+import ca.digitalcave.parts.resource.AttachmentsResource;
+import ca.digitalcave.parts.resource.AttributeResource;
+import ca.digitalcave.parts.resource.AttributesResource;
 import ca.digitalcave.parts.resource.CategoriesResource;
-import ca.digitalcave.parts.resource.CategoryResource;
 import ca.digitalcave.parts.resource.DefaultResource;
 import ca.digitalcave.parts.resource.IndexResource;
 import ca.digitalcave.parts.resource.PartResource;
@@ -132,22 +134,25 @@ public class PartsApplication extends Application {
 	@Override  
 	public Restlet createInboundRoot() {
 
-		final Router catalogRouter = new Router(getContext());
-		catalogRouter.attach("/categories", CategoriesResource.class);
-		catalogRouter.attach("/categories/{category}", CategoryResource.class).getTemplate().getVariables().put("category", new Variable(Variable.TYPE_DIGIT));
-		catalogRouter.attach("/parts", PartsResource.class);
-		catalogRouter.attach("/parts/{part}", PartResource.class);
-//		catalogRouter.attach("/attachment{id}", AttachmentResource.class);
+		final Router categoriesRouter = new Router(getContext());
+		categoriesRouter.attach("", CategoriesResource.class);
+		categoriesRouter.attach("/{category}", CategoriesResource.class);
+		categoriesRouter.attach("/{category}/parts", PartsResource.class);
+		categoriesRouter.attach("/{category}/parts/{part}", PartResource.class);
+		categoriesRouter.attach("/{category}/parts/{part}/attributes", AttributesResource.class);
+		categoriesRouter.attach("/{category}/parts/{part}/attributes/{attribute}", AttributeResource.class);
+		categoriesRouter.attach("/{category}/parts/{part}/attachments", AttachmentsResource.class);
+		categoriesRouter.attach("/{category}/parts/{part}/attachments/{id}", AttachmentResource.class);
 		
 		final ChallengeAuthenticator authenticator = new ChallengeAuthenticator(getContext(), ChallengeScheme.HTTP_BASIC, "Parts");
 		authenticator.setVerifier(new CookieVerifier(this));
-		authenticator.setNext(catalogRouter);
+		authenticator.setNext(categoriesRouter);
 
 		final Router publicRouter = new Router(getContext());
 		publicRouter.attach("", new Redirector(getContext(), "index.html", Redirector.MODE_CLIENT_TEMPORARY));
 		publicRouter.attach("/", new Redirector(getContext(), "index.html", Redirector.MODE_CLIENT_TEMPORARY));
 		publicRouter.attach("/index", IndexResource.class);
-		publicRouter.attach("/catalog", catalogRouter);
+		publicRouter.attach("/categories", categoriesRouter);
 		
 		publicRouter.attachDefault(DefaultResource.class).setMatchingMode(Template.MODE_STARTS_WITH);
 

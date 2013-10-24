@@ -14,7 +14,7 @@ Ext.define("Parts.store.CategoryTree", {
 	"proxy": {
 		"type": "ajax",
 		"method": "GET",
-		"url": "catalog/categories",
+		"url": "categories",
 		"reader": {
 			"type": "json",
 			"rootProperty": "data"

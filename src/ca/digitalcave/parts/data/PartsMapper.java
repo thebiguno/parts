@@ -20,20 +20,20 @@ public interface PartsMapper {
 	int updateCategory(@Param("account") int account, @Param("id") int id, @Param("name") String name);
 	int deleteCategory(@Param("account") int account, @Param("id") int id);
 	
-	void selectParts(@Param("category") Integer category, @Param("terms") List<String> terms, ResultHandler handler);
-	void insertPart(@Param("part") Part part, @Param("account") Account account);
-	void updatePart(@Param("part") Part part);
-	void deletePart(@Param("id") int id);
+	void selectParts(@Param("account") int account, @Param("category") Integer category, @Param("terms") List<String> terms, ResultHandler handler);
+	int insertPart(@Param("account") int account, @Param("part") Part part);
+	int updatePart(@Param("account") int account, @Param("part") Part part);
+	int deletePart(@Param("account") int account, @Param("id") int id);
 	
 	void selectAttributes(@Param("part") int part, ResultHandler handler);
-	void insertAttribute(@Param("attribute") Attribute attribute);
-	void updateAttribute(@Param("attribute") Attribute attribute);
-	void deleteAttribute(@Param("id") int id);
+	int insertAttribute(@Param("attribute") Attribute attribute);
+	int updateAttribute(@Param("attribute") Attribute attribute);
+	int deleteAttribute(@Param("id") int id);
 	
 	void selectAttachments(@Param("part") int part, ResultHandler handler);
 	void selectAttachment(@Param("attachment") int attachment, ResultHandler handler);
-	void insertAttachment(@Param("attachment") Attachment attachment);
-	void deleteAttachment(@Param("attachment") int attachment);
+	int insertAttachment(@Param("attachment") Attachment attachment);
+	int deleteAttachment(@Param("attachment") int attachment);
 	
 	Account selectAccount(@Param("identifier") String identifier);
 }

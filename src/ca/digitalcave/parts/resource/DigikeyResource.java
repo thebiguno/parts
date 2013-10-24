@@ -56,7 +56,7 @@ public class DigikeyResource extends ServerResource {
 							categories.add(category);
 						}
 						final Part part = new Part();
-						part.setCategory(categories.get(1));
+						part.setCategory(categories.get(1).getId());
 						final Attribute mpnAttr = Attribute.remove("Manufacturer Part Number", attributes);
 						final Attribute descAttr = Attribute.remove("Description", attributes);
 						final Attribute notesAttr = Attribute.remove("Notes", attributes);

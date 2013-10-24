@@ -10,7 +10,6 @@ import org.codehaus.jackson.JsonGenerator;
 import org.restlet.data.Form;
 import org.restlet.data.MediaType;
 import org.restlet.data.Status;
-import org.restlet.representation.EmptyRepresentation;
 import org.restlet.representation.Representation;
 import org.restlet.representation.StringRepresentation;
 import org.restlet.representation.Variant;
@@ -22,7 +21,6 @@ import ca.digitalcave.parts.PartsApplication;
 import ca.digitalcave.parts.data.PartsMapper;
 import ca.digitalcave.parts.model.Account;
 import ca.digitalcave.parts.model.Attribute;
-import ca.digitalcave.parts.model.Category;
 import ca.digitalcave.parts.model.Part;
 
 
@@ -75,40 +73,20 @@ public class PartResource extends ServerResource {
 	}
 	
 	@Override
-	protected Representation post(Representation entity, Variant variant) throws ResourceException {
-		final PartsApplication application = (PartsApplication) getApplication();
-		final SqlSession sql = application.getSqlFactory().openSession();
-		try {
-			final Form form = new Form(entity);
-			final Part part = new Part();
-			part.setCategory(new Category(Integer.parseInt(form.getFirstValue("category"))));
-			part.setMinimum(Integer.parseInt(form.getFirstValue("minimum", "0")));
-			part.setAvailable(Integer.parseInt(form.getFirstValue("available", "0")));
-			part.setNumber(form.getFirstValue("number"));
-			part.setDescription(form.getFirstValue("description"));
-			part.setNotes(form.getFirstValue("notes"));
-			
-			sql.getMapper(PartsMapper.class).insertPart(part, (Account) getClientInfo().getUser());
-			
-			redirectSeeOther("" + part.getId());
-			return new EmptyRepresentation();
-		} finally {
-			sql.close();
-		}	
-	}
-	
-	@Override
 	protected Representation put(Representation entity, Variant variant) throws ResourceException {
 		final PartsApplication application = (PartsApplication) getApplication();
+		final Account account = new Account(0); // TODO implement auth 
+		
 		final SqlSession sql = application.getSqlFactory().openSession(true);
 		try {
 			final Form form = new Form(entity);
 			final Part part = new Part();
+			// TODO id and category from URI
 			part.setId(Integer.parseInt((String) getRequestAttributes().get("part")));
-			part.setCategory(new Category(Integer.parseInt(form.getFirstValue("category"))));
+			part.setCategory(Integer.parseInt(form.getFirstValue("category")));
 			part.setAvailable(Integer.parseInt(form.getFirstValue("available", "0")));
 			part.setMinimum(Integer.parseInt(form.getFirstValue("minimum", "0")));
-			sql.getMapper(PartsMapper.class).updatePart(part);
+			sql.getMapper(PartsMapper.class).updatePart(account.getId(), part);
 			return new StringRepresentation("{\"success\":true}");
 		} finally {
 			sql.close();
@@ -118,12 +96,14 @@ public class PartResource extends ServerResource {
 	@Override
 	protected Representation delete(Variant variant) throws ResourceException {
 		final PartsApplication application = (PartsApplication) getApplication();
+		final Account account = new Account(0); // TODO implement auth 
+
 		final SqlSession sql = application.getSqlFactory().openSession(true);
 		try {
+			// TODO id and category from URI
 			final String part = (String) getRequestAttributes().get("part");
 			final int partId = Integer.parseInt(part);
-			final PartsMapper mapper = sql.getMapper(PartsMapper.class);
-			mapper.deletePart(partId);
+			sql.getMapper(PartsMapper.class).deletePart(account.getId(), partId);
 			return new StringRepresentation("{\"success\":true}");
 		} finally {
 			sql.close();
