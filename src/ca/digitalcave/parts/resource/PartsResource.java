@@ -51,7 +51,7 @@ public class PartsResource extends ServerResource {
 				
 				final SqlSession sql = application.getSqlFactory().openSession();
 				try {
-					sql.getMapper(PartsMapper.class).selectParts(account.getId(), categoryId, Arrays.asList(terms), new ResultHandler() {
+					sql.getMapper(PartsMapper.class).selectParts(account.getId(), categoryId == 0 ? null : categoryId, Arrays.asList(terms), new ResultHandler() {
 						@Override
 						public void handleResult(ResultContext ctx) {
 							try {

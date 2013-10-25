@@ -72,8 +72,8 @@ where category_id = #{id} and account_id = #{account}
 		<selectKey order="BEFORE" keyProperty="part.id" resultType="int">
 select coalesce(max(part_id),0) + 1 from part
 		</selectKey>
-insert into part (part_id, category_id, available, minimum, part_no, description, notes)
-select #{part.id}, category_id, #{part.available}, #{part.minimum}, #{part.number}, #{part.description}, #{part.notes}
+insert into part (part_id, category_id, available, minimum, part_no, description, notes, created_at, modified_at)
+select #{part.id}, category_id, #{part.available}, #{part.minimum}, #{part.number}, #{part.description}, #{part.notes}, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP
 from category where category_id = #{part.category} and account_id = #{account}
 	</insert>
 	<update id="updatePart">
@@ -85,6 +85,7 @@ update part
 			<if test="part.number != null">part_no = #{part.number},</if>
 			<if test="part.description != null">description = #{part.description},</if>
 			<if test="part.notes != null">notes = #{part.notes},</if>
+			modified_at = CURRENT_TIMESTAMP
 		</set>
 where part_id = #{part.id}
 	</update>
@@ -94,22 +95,29 @@ where part_id = #{id}
 	</delete>
 	
 	<select id="selectAttributes" resultType="ca.digitalcave.parts.model.Attribute">
-select name, value, href, sort
+select attribute_id as id, name, val as value, href, mime_type as mimeType
 from attribute
 where part_id = ${part}
-order by sort, name
+order by name
 	</select>
 	<insert id="insertAttribute">
-insert into attribute (part_id, name, value, href, sort)
-values (#{attribute.part.id}, #{attribute.name}, #{attribute.value}, #{attribute.href,jdbcType=VARCHAR}, #{attribute.sort})
+		<selectKey order="BEFORE" keyProperty="attribute.id" resultType="long">
+select coalesce(max(attribute_id),0) + 1 from attribute
+		</selectKey>
+insert into attribute (attribute_id, part_id, name, val, href, created_at, modified_at)
+select #{attribute.id}, part_id, #{attribute.name}, #{attribute.value}, #{attribute.href}, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP
+from part p
+inner join category c on p.category_id = c.category_id
+where p.part_id = #{attribute.part} and c.account_id = #{account} 
 	</insert>
 	<update id="updateAttribute">
 update attribute
 		<set>
 			<if test="attribute.name != null">name = #{attribute.name},</if>
-			<if test="attribute.value != null">value = #{attribute.value},</if>
+			<if test="attribute.value != null">val = #{attribute.value},</if>
 			<if test="attribute.href != null">href = #{attribute.href},</if>
-			<if test="attribute.sort != null">sort = #{attribute.sort},</if>
+			<if test="attribute.mimeType != null">mime_type = #{attribute.mimeType}</if>
+			modified_at = CURRENT_TIMESTAMP
 		</set>
 where attribute_id = #{attribute.id}
 	</update>

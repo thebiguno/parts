@@ -6,9 +6,10 @@ Ext.define("Parts.store.CategoryTree", {
 	"remoteFilter": false,
 	
 	"root": {
+		"id": 0,
 		"name": "All",
 		"expanded": true,
-		"icon": "img/categories.png"
+		"icon": "img/categories.png",
 	},
 
 	"proxy": {

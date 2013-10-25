@@ -95,10 +95,4 @@ public class Part {
 		}
 		return result;
 	}
-	
-	@Override
-	public String toString() {
-		return Integer.toString(id);
-	}
-
 }

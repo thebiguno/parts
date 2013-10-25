@@ -45,7 +45,7 @@ Ext.define('Parts.view.CategoryTree', {
 			"listeners": {
 				"edit": function(editor, evt) {
 					Ext.Ajax.request({
-						"url": "categories/" + encodeURIComponent(evt.record.data.id),
+						"url": "categories/" + evt.record.data.id,
 						"method": "PUT",
 						"params": evt.record.data.name,
 						"success": function(response) {

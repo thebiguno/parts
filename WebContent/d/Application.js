@@ -9,8 +9,8 @@ Ext.application({
 	},
 
 	"views": ["CategoryTree","PartList","AttributeList"],
-	"stores": ["CategoryTree", "PartList"],
-	"controllers": ["Toolbar", "CategoryTree", "PartList"],
+	"stores": ["CategoryTree", "PartList", "AttributeList"],
+	"controllers": ["Toolbar", "CategoryTree", "PartList", "AttributeList"],
 
 	"launch": function() {
 		Parts.app = this;

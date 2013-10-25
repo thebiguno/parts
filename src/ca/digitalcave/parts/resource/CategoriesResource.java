@@ -94,10 +94,10 @@ public class CategoriesResource extends ServerResource {
 			result.put("success", true);
 			result.put("node", resultNode);
 			
-			final String parentId = (String) getRequestAttributes().get("category");
+			final int parentId = Integer.parseInt((String) getRequestAttributes().get("category"));
 			final Category category = new Category();
 			category.setName("Untitled");
-			category.setParentId(parentId == null ? null : Integer.parseInt(parentId));
+			category.setParentId(parentId == 0 ? null : parentId);
 			final int ct = sql.getMapper(PartsMapper.class).insertCategory(account.getId(), category);
 			if (ct == 0) throw new ResourceException(Status.CLIENT_ERROR_NOT_FOUND);
 			

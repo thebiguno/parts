@@ -12,10 +12,10 @@ Ext.define("Parts.controller.PartList", {
 					
 					var attrlist = row.view.up('viewport').down('attributelist');
 					attrlist.getStore().load({
-						"url": "catalog/parts/" + data.id + "/attributes"
+						"url": "categories/" + data.category + "/parts/" + data.id + "/attributes"
 					});
 					
-					attrlist.down('toolbar').down('button[itemId=add]').setDisabled(record.data);
+					attrlist.down('toolbar').down('button[itemId=add]').setDisabled(record.data == null);
 				}
 			},
 			"partlist toolbar button[itemId=add]": {
@@ -42,7 +42,7 @@ Ext.define("Parts.controller.PartList", {
 					var selected = list.getSelectionModel().getSelection()[0];
 					
 					Ext.Ajax.request({
-						"url": "categories/" + encodeURIComponent(selected.data.category) + "/parts/" + encodeURIComponent(selected.data.id),
+						"url": "categories/" + selected.data.category + "/parts/" + selected.data.id,
 						"method": "DELETE",
 						"success": function(response) {
 							var object = Ext.decode(response.responseText);

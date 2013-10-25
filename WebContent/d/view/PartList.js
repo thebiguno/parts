@@ -91,7 +91,7 @@ Ext.define('Parts.view.PartList', {
 			"listeners": {
 				"edit": function(editor, evt) {
 					Ext.Ajax.request({
-						"url": "categories/" + encodeURIComponent(evt.record.data.category) + "/parts/" + encodeURIComponent(evt.record.data.id),
+						"url": "categories/" + evt.record.data.category + "/parts/" + evt.record.data.id,
 						"method": "PUT",
 						"jsonData": evt.record.data,
 						"success": function(response) {

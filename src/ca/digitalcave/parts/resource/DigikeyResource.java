@@ -68,8 +68,8 @@ public class DigikeyResource extends ServerResource {
 
 						for (Attribute attribute : attributes) {
 							if (attribute.getValue().length() > 255) attribute.setValue(attribute.getValue().substring(0, 255));	//Prevent DB field overflow
-							attribute.setPart(part);
-							mapper.insertAttribute(attribute);
+							attribute.setPart(part.getId());
+							mapper.insertAttribute(account.getId(), attribute);
 						}
 						sqlSession.commit();
 						

@@ -5,12 +5,12 @@ import java.util.List;
 
 public class Attribute {
 
-	private Integer id;
-	private Part part;
+	private Long id;
+	private Integer part;
 	private String name;
 	private String value;
 	private String href;
-	private short sort;
+	private String mimeType;
 	
 	public Attribute() {
 	}
@@ -19,17 +19,17 @@ public class Attribute {
 		this.value = value;
 	}
 	
-	public Integer getId() {
+	public Long getId() {
 		return id;
 	}
-	public void setId(Integer id) {
+	public void setId(Long id) {
 		this.id = id;
 	}
 	
-	public Part getPart() {
+	public Integer getPart() {
 		return part;
 	}
-	public void setPart(Part part) {
+	public void setPart(Integer part) {
 		this.part = part;
 	}
 	
@@ -54,11 +54,11 @@ public class Attribute {
 		this.href = href;
 	}
 	
-	public short getSort() {
-		return sort;
+	public String getMimeType() {
+		return mimeType;
 	}
-	public void setSort(short sort) {
-		this.sort = sort;
+	public void setMimeType(String mimeType) {
+		this.mimeType = mimeType;
 	}
 	
 	public String toString() {

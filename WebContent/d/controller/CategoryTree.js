@@ -16,7 +16,7 @@ Ext.define("Parts.controller.CategoryTree", {
 						"url": "categories/" + data.id + "/parts?q=", // TODO add terms
 					});
 					
-					partlist.down('toolbar').down('button[itemId=add]').setDisabled(record.data.id == 'root');
+					partlist.down('toolbar').down('button[itemId=add]').setDisabled(record.data.id == 0);
 				}
 			},
 			"categorytree toolbar button[itemId=add]": {
@@ -42,7 +42,7 @@ Ext.define("Parts.controller.CategoryTree", {
 					var selected = tree.getSelectionModel().getSelection()[0];
 					
 					Ext.Ajax.request({
-						"url": "categories/" + encodeURIComponent(selected.data.id),
+						"url": "categories/" + selected.data.id,
 						"method": "DELETE",
 						"success": function(response) {
 							var object = Ext.decode(response.responseText);

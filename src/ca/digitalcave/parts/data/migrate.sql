@@ -40,14 +40,14 @@ create table part (
 );
 --rollback drop table part;
 
---changeset wj:create_atttribute
+--changeset wj:create_attribute
 create table attribute (
 	attribute_id int primary key,
 	part_id smallint not null references part (part_id) on delete cascade, 
 	name varchar(255) not null, 
 	val varchar(255) not null, 
-	href varchar(255), 
-	mime_type varchar(255) not null default 'application/octet-stream',
+	href varchar(1024), 
+	mime_type varchar(255),
 	data oid,
 	created_at timestamp not null,
 	modified_at timestamp not null
@@ -55,5 +55,5 @@ create table attribute (
 --rollback drop table attribute;
 
 --changeset wj:create_attribute_trigger
-create trigger t_attachment before update or delete on attribute
+create trigger t_attribute before update or delete on attribute
 	for each row execute procedure lo_manage(data);
