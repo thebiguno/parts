@@ -22,14 +22,21 @@ order by c.name
 	</select>
 	
 	<select id="selectParts" resultType="ca.digitalcave.parts.model.Part">
+with recursive c (parent_id, category_id) as (
+	select parent_id, category_id from category where account_id = #{account}
+		<choose>
+			<when test="category != null">and category_id = #{category}</when>
+			<otherwise>and parent_id is null</otherwise>
+		</choose>
+	union all
+	select curr.parent_id, curr.category_id from category curr
+	inner join c on c.category_id = curr.parent_id
+) 
 select distinct p.part_id as id, p.category_id as category, p.part_no as number, p.description, p.notes, p.available, p.minimum
-from category c
+from c
 inner join part p on c.category_id = p.category_id
 left join attribute a on p.part_id = a.part_id
 		<where>
-			<if test="category != null">
-c.category_id = #{category}
-			</if>
 			<if test="terms.size() gt 0">
 and (
 				<foreach collection="terms" item="term" separator=" or ">
