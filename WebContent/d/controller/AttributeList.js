@@ -45,6 +45,25 @@ Ext.define("Parts.controller.AttributeList", {
 						}
 					});
 				}
+			},
+			"attachmentdialog button[itemId=okbutton]": {
+				"click": function(button) {
+					var win = button.up('window');
+					var form = win.down('form').getForm();
+					var record = win.initialConfig.record;
+					if (form.isValid()) {
+						form.submit({
+							"url": "categories/" + record.category + "/parts/" + record.part + "/attributes/" + record.id,
+							"waitMsg": "Uploading",
+							"success": function(fp, p) {
+								win.close();
+							},
+							"failure": function(fp, p) {
+								;
+							}
+						});
+					}
+				}
 			}
 		});
 	}

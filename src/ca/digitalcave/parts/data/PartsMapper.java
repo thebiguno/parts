@@ -29,8 +29,7 @@ public interface PartsMapper {
 	int updateAttribute(@Param("account") int account, @Param("attribute") Attribute attribute);
 	int deleteAttribute(@Param("account") int account, @Param("id") int id);
 	
-//	Blob selectAttachment(@Param("account") int account, @Param("attribute") long attribute);
-//	int updateAttribute(@Param("account") int account, @Param("attribute") long attribute, Blob blob);
+	Attribute selectAttribute(@Param("account") int account, @Param("attribute") long attribute);
 	
 	Account selectAccount(@Param("identifier") String identifier);
 }

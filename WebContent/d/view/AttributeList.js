@@ -50,17 +50,24 @@ Ext.define('Parts.view.AttributeList', {
 			"dataIndex": "value",
 			"sortable": false,
 			"editor": {
-				"xtype": "textfield",
-				"maxLength": 255
+				"xtype": "trigger",
+				"triggerCls": Ext.baseCSSPrefix + 'form-search-trigger',
+				"maxLength": 255,
+				"onTriggerClick": function(evt) {
+					Ext.widget({
+						"xtype": "attachmentdialog",
+						"record": this.up('grid').getSelectionModel().getSelection()[0].data
+					}).show(this);
+				}
 			}
 		},
 		{
 			"text": "",
-			"width": 20,
+			"width": 25,
 			"sortable": false,
 			"renderer": function(value, md, record) {
-				if (record.href) {
-					return '<a href="' + record.href + '"><img target="_blank" src="' + record.icon + '"/></a>';
+				if (record.data.href) {
+					return '<a target="_blank" href="' + record.data.href + '"><img src="' + record.data.icon + '"/></a>';
 				} else {
 					return '';
 				}

@@ -1,7 +1,17 @@
 package ca.digitalcave.parts.resource;
 
+import java.io.IOException;
+import java.io.OutputStream;
+import java.sql.SQLException;
+
+import org.apache.commons.fileupload.FileItemIterator;
+import org.apache.commons.fileupload.FileItemStream;
+import org.apache.commons.fileupload.util.Streams;
 import org.apache.ibatis.session.SqlSession;
 import org.json.JSONObject;
+import org.restlet.data.MediaType;
+import org.restlet.ext.fileupload.RestletFileUpload;
+import org.restlet.representation.OutputRepresentation;
 import org.restlet.representation.Representation;
 import org.restlet.representation.StringRepresentation;
 import org.restlet.resource.ResourceException;
@@ -14,10 +24,77 @@ import ca.digitalcave.parts.model.Attribute;
 
 public class AttributeResource extends ServerResource {
 
-//	@Override
-//	protected Representation get() throws ResourceException {
-//		
-//	}
+	@Override
+	protected Representation get() throws ResourceException {
+		final PartsApplication application = (PartsApplication) getApplication();
+		final Account account = new Account(0); // TODO implement auth 
+
+		final long attribute = Long.parseLong((String) getRequestAttributes().get("attribute"));
+		
+		final SqlSession sql = application.getSqlFactory().openSession(false);
+		try {
+			final Attribute attr = sql.getMapper(PartsMapper.class).selectAttribute(account.getId(), attribute);
+			return new OutputRepresentation(new MediaType(attr.getMimeType())) {
+				@Override
+				public void write(OutputStream os) throws IOException {
+					try {
+						Streams.copy(attr.getData().getBinaryStream(), os, true);
+						sql.commit();
+					} catch (SQLException e) {
+						throw new IOException(e);
+					}
+				}
+			};
+		} finally {
+			sql.close();
+		}
+	}
+	
+	@Override
+	protected Representation post(Representation entity) throws ResourceException {
+		final PartsApplication application = (PartsApplication) getApplication();
+		final Account account = new Account(0); // TODO implement auth 
+
+		final long attribute = Long.parseLong((String) getRequestAttributes().get("attribute"));
+		
+		final SqlSession sql = application.getSqlFactory().openSession(false);
+		try {
+			Attribute attr = sql.getMapper(PartsMapper.class).selectAttribute(account.getId(), attribute);
+			attr.setId(attribute);
+			final FileItemIterator i = new RestletFileUpload().getItemIterator(entity);
+			while (i.hasNext()) {
+				final FileItemStream item = i.next();
+				final String name = item.getFieldName();
+				if (item.isFormField() && "url".equals(name)) {
+					attr.setHref(Streams.asString(item.openStream()));
+					if (attr.getHref().trim().length() == 0) attr.setHref(null);
+				} else if ("file".equals(name)) {
+					if (item.getName() == null || item.getName().trim().length() == 0) {
+						attr.setValue(item.getName());
+						attr.setData(null);
+						attr.setMimeType(null);
+					} else {
+						attr.setMimeType(item.getContentType());
+					}
+					
+					sql.getMapper(PartsMapper.class).updateAttribute(account.getId(), attr);
+					sql.commit();
+					
+					attr = sql.getMapper(PartsMapper.class).selectAttribute(account.getId(), attribute);
+					if (attr.getData() != null) {
+						attr.getData().truncate(1);
+						Streams.copy(item.openStream(), attr.getData().setBinaryStream(1), true);
+					}
+					sql.commit();
+				}
+			}
+			return new StringRepresentation("{\"success\":true}");
+		} catch (Exception e) {
+			throw new ResourceException(e);
+		} finally {
+			sql.close();
+		}
+	}
 	
 	
 	@Override

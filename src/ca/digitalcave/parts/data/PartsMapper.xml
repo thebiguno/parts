@@ -94,10 +94,20 @@ delete from part
 where part_id = #{id}
 	</delete>
 	
+	<update id="createData">
+update attribute 
+set data = lo_create(-1)
+where attributeId = #{attribute}
+	</update>
+	<select id="selectAttribute" resultType="ca.digitalcave.parts.model.Attribute">
+select attribute_id as id, mime_type as mimeType, data
+from attribute
+where attribute_id = #{attribute}
+	</select>
 	<select id="selectAttributes" resultType="ca.digitalcave.parts.model.Attribute">
 select attribute_id as id, name, val as value, href, mime_type as mimeType
 from attribute
-where part_id = ${part}
+where part_id = #{part}
 order by name
 	</select>
 	<insert id="insertAttribute">
@@ -113,10 +123,21 @@ where p.part_id = #{attribute.part} and c.account_id = #{account}
 	<update id="updateAttribute">
 update attribute
 		<set>
-			<if test="attribute.name != null">name = #{attribute.name},</if>
-			<if test="attribute.value != null">val = #{attribute.value},</if>
-			<if test="attribute.href != null">href = #{attribute.href},</if>
-			<if test="attribute.mimeType != null">mime_type = #{attribute.mimeType}</if>
+			<choose>
+				<when test="attribute.name != null and attribute.value != null">
+					name = #{attribute.name}, val = #{attribute.value},
+				</when>
+				<otherwise>
+					href = #{attribute.href,jdbcType=VARCHAR}, mime_type = #{attribute.mimeType,jdbcType=VARCHAR},
+					<if test="attribute.value != null">val = #{attribute.value},</if>
+					<if test="attribute.mimeType != null and attribute.data == null">
+						data = lo_create(-1),
+					</if>
+					<if test="attribute.mimeType == null">
+						data = null,
+					</if>
+				</otherwise>
+			</choose>
 			modified_at = CURRENT_TIMESTAMP
 		</set>
 where attribute_id = #{attribute.id}

@@ -1,5 +1,6 @@
 package ca.digitalcave.parts.model;
 
+import java.sql.Blob;
 import java.util.Iterator;
 import java.util.List;
 
@@ -11,6 +12,7 @@ public class Attribute {
 	private String value;
 	private String href;
 	private String mimeType;
+	private Blob data; // TODO change this to be a blob when PostgreSql supports Conn.createBlob
 	
 	public Attribute() {
 	}
@@ -61,16 +63,11 @@ public class Attribute {
 		this.mimeType = mimeType;
 	}
 	
-	public String toString() {
-		final StringBuilder sb = new StringBuilder();
-		sb.append(name);
-		sb.append(" => ");
-		sb.append(value);
-		if (href != null) {
-			sb.append(" => ");
-			sb.append(href);
-		}
-		return sb.toString();
+	public Blob getData() {
+		return data;
+	}
+	public void setData(Blob data) {
+		this.data = data;
 	}
 	
 	public static Attribute find(String name, List<Attribute> attributes) {

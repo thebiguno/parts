@@ -1,5 +1,6 @@
 package ca.digitalcave.parts;
 
+import java.sql.Blob;
 import java.sql.Connection;
 import java.util.Locale;
 import java.util.Properties;
@@ -13,6 +14,7 @@ import org.apache.ibatis.mapping.Environment;
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.apache.ibatis.session.SqlSessionFactoryBuilder;
 import org.apache.ibatis.transaction.jdbc.JdbcTransactionFactory;
+import org.apache.ibatis.type.JdbcType;
 import org.codehaus.jackson.JsonFactory;
 import org.restlet.Application;
 import org.restlet.Restlet;
@@ -28,6 +30,7 @@ import org.restlet.routing.Template;
 import org.restlet.security.ChallengeAuthenticator;
 import org.restlet.service.StatusService;
 
+import ca.digitalcave.parts.data.BlobTypeHandler;
 import ca.digitalcave.parts.resource.AttributeResource;
 import ca.digitalcave.parts.resource.AttributesResource;
 import ca.digitalcave.parts.resource.CategoriesResource;
@@ -78,6 +81,7 @@ public class PartsApplication extends Application {
 		// set up mybatis
 		final Environment environment = new Environment("prod", new JdbcTransactionFactory(), dataSource);
 		final org.apache.ibatis.session.Configuration config = new org.apache.ibatis.session.Configuration(environment);
+		config.getTypeHandlerRegistry().register(Blob.class, new BlobTypeHandler());
 		config.addMappers("ca.digitalcave.parts.data");
 		sqlFactory = new SqlSessionFactoryBuilder().build(config);
 		
