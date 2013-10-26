@@ -1,10 +1,11 @@
 package ca.digitalcave.parts.resource;
 
+import java.util.logging.Level;
+
 import org.apache.ibatis.session.SqlSession;
 import org.json.JSONObject;
 import org.restlet.data.MediaType;
 import org.restlet.representation.Representation;
-import org.restlet.representation.StringRepresentation;
 import org.restlet.representation.Variant;
 import org.restlet.resource.ResourceException;
 import org.restlet.resource.ServerResource;
@@ -39,9 +40,10 @@ public class PartResource extends ServerResource {
 			part.setAvailable(object.optInt("available", 0));
 			part.setMinimum(object.optInt("minimum", 0));
 			sql.getMapper(PartsMapper.class).updatePart(account.getId(), part);
-			return new StringRepresentation("{\"success\":true}");
+			return new ExtResponseRepresentation();
 		} catch (Exception e) {
-			throw new ResourceException(e);
+			getLogger().log(Level.WARNING, null, e);
+			return new ExtResponseRepresentation(e.getMessage());
 		} finally {
 			sql.close();
 		}
@@ -57,7 +59,10 @@ public class PartResource extends ServerResource {
 			final String part = (String) getRequestAttributes().get("part");
 			final int partId = Integer.parseInt(part);
 			sql.getMapper(PartsMapper.class).deletePart(account.getId(), partId);
-			return new StringRepresentation("{\"success\":true}");
+			return new ExtResponseRepresentation();
+		} catch (Exception e) {
+			getLogger().log(Level.WARNING, null, e);
+			return new ExtResponseRepresentation(e.getMessage());
 		} finally {
 			sql.close();
 		}

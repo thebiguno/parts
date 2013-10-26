@@ -73,7 +73,7 @@ where category_id = #{id} and account_id = #{account}
 select coalesce(max(part_id),0) + 1 from part
 		</selectKey>
 insert into part (part_id, category_id, available, minimum, part_no, description, notes, created_at, modified_at)
-select #{part.id}, category_id, #{part.available}, #{part.minimum}, #{part.number}, #{part.description}, #{part.notes}, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP
+select #{part.id}, category_id, #{part.available}, #{part.minimum}, #{part.number,jdbcType=VARCHAR}, #{part.description,jdbcType=VARCHAR}, #{part.notes,jdbcType=VARCHAR}, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP
 from category where category_id = #{part.category} and account_id = #{account}
 	</insert>
 	<update id="updatePart">
@@ -100,7 +100,7 @@ set data = lo_create(-1)
 where attributeId = #{attribute}
 	</update>
 	<select id="selectAttribute" resultType="ca.digitalcave.parts.model.Attribute">
-select attribute_id as id, mime_type as mimeType, data
+select val as value, attribute_id as id, mime_type as mimeType, data, created_at as createdAt, modified_at as modifiedAt
 from attribute
 where attribute_id = #{attribute}
 	</select>
@@ -146,6 +146,27 @@ where attribute_id = #{attribute.id}
 delete from attribute
 where attribute_id = #{id}
 	</delete>
+	
+	<select id="selectDigikey" resultType="ca.digitalcave.parts.model.Category">
+with c (category_id) as (
+	select category_id
+	from category 
+	where account_id = #{account} 
+	and parent_id is null
+	and name = #{category}
+	fetch first 1 rows only
+), f (category_id) as (
+	select f.category_id
+	from category f
+	inner join c on f.parent_id = c.category_id
+	where name = #{family}
+	fetch first 1 rows only
+)
+select category_id as id from c
+union
+select category_id as id from f
+ 
+	</select>
 	
 	<select id="selectAccount" resultType="ca.digitalcave.parts.model.Account">
 select account_id as id, email, secret, created_at as createdAt, modified_at as modifiedAt

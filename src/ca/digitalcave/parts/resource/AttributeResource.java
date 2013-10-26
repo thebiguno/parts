@@ -3,17 +3,18 @@ package ca.digitalcave.parts.resource;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.sql.SQLException;
+import java.util.logging.Level;
 
 import org.apache.commons.fileupload.FileItemIterator;
 import org.apache.commons.fileupload.FileItemStream;
 import org.apache.commons.fileupload.util.Streams;
 import org.apache.ibatis.session.SqlSession;
 import org.json.JSONObject;
+import org.restlet.data.Disposition;
 import org.restlet.data.MediaType;
 import org.restlet.ext.fileupload.RestletFileUpload;
 import org.restlet.representation.OutputRepresentation;
 import org.restlet.representation.Representation;
-import org.restlet.representation.StringRepresentation;
 import org.restlet.resource.ResourceException;
 import org.restlet.resource.ServerResource;
 
@@ -34,19 +35,26 @@ public class AttributeResource extends ServerResource {
 		final SqlSession sql = application.getSqlFactory().openSession(false);
 		try {
 			final Attribute attr = sql.getMapper(PartsMapper.class).selectAttribute(account.getId(), attribute);
-			return new OutputRepresentation(new MediaType(attr.getMimeType())) {
+			final Representation result = new OutputRepresentation(new MediaType(attr.getMimeType())) {
 				@Override
 				public void write(OutputStream os) throws IOException {
 					try {
 						Streams.copy(attr.getData().getBinaryStream(), os, true);
 						sql.commit();
+						sql.close();
 					} catch (SQLException e) {
 						throw new IOException(e);
 					}
 				}
 			};
-		} finally {
-			sql.close();
+			result.setDisposition(new Disposition(Disposition.TYPE_INLINE));
+			result.getDisposition().setFilename(attr.getValue());
+			result.getDisposition().setSize(attr.getData().length());
+			result.getDisposition().setCreationDate(attr.getCreatedAt());
+			result.getDisposition().setModificationDate(attr.getModifiedAt());
+			return result;
+		} catch (Exception e) {
+			throw new ResourceException(e);
 		}
 	}
 	
@@ -88,9 +96,10 @@ public class AttributeResource extends ServerResource {
 					sql.commit();
 				}
 			}
-			return new StringRepresentation("{\"success\":true}");
+			return new ExtResponseRepresentation();
 		} catch (Exception e) {
-			throw new ResourceException(e);
+			getLogger().log(Level.WARNING, null, e);
+			return new ExtResponseRepresentation(e.getMessage());
 		} finally {
 			sql.close();
 		}
@@ -110,9 +119,11 @@ public class AttributeResource extends ServerResource {
 			attr.setName(object.optString("name", ""));
 			attr.setValue(object.optString("value",""));
 			sql.getMapper(PartsMapper.class).updateAttribute(account.getId(), attr);
-			return new StringRepresentation("{\"success\":true}");
+			return new ExtResponseRepresentation();
 		} catch (Exception e) {
-			throw new ResourceException(e);
+			getLogger().log(Level.WARNING, null, e);
+			return new ExtResponseRepresentation(e.getMessage());
+
 		} finally {
 			sql.close();
 		}
@@ -128,7 +139,10 @@ public class AttributeResource extends ServerResource {
 			final String attr = (String) getRequestAttributes().get("attribute");
 			final long partId = Long.parseLong(attr);
 			sql.getMapper(PartsMapper.class).deletePart(account.getId(), partId);
-			return new StringRepresentation("{\"success\":true}");
+			return new ExtResponseRepresentation();
+		} catch (Exception e) {
+			getLogger().log(Level.WARNING, null, e);
+			return new ExtResponseRepresentation(e.getMessage());
 		} finally {
 			sql.close();
 		}

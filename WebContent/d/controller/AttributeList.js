@@ -56,6 +56,7 @@ Ext.define("Parts.controller.AttributeList", {
 							"url": "categories/" + record.category + "/parts/" + record.part + "/attributes/" + record.id,
 							"waitMsg": "Uploading",
 							"success": function(fp, p) {
+								win.up('attributelist').getStore().load();
 								win.close();
 							},
 							"failure": function(fp, p) {

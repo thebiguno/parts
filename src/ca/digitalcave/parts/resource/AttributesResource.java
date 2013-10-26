@@ -2,6 +2,7 @@ package ca.digitalcave.parts.resource;
 
 import java.io.IOException;
 import java.io.Writer;
+import java.util.logging.Level;
 
 import org.apache.ibatis.session.ResultContext;
 import org.apache.ibatis.session.ResultHandler;
@@ -127,7 +128,8 @@ public class AttributesResource extends ServerResource {
 			resultAttr.put("value", attr.getValue());
 			return new JsonRepresentation(result);
 		} catch (Exception e) {
-			throw new ResourceException(e);
+			getLogger().log(Level.WARNING, null, e);
+			return new ExtResponseRepresentation(e.getMessage());
 		} finally {
 			sql.close();
 		}

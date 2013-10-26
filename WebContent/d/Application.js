@@ -8,7 +8,7 @@ Ext.application({
 		"autoMaximize": true
 	},
 
-	"views": ["CategoryTree","PartList","AttributeList","AttachmentDialog"],
+	"views": ["CategoryTree","PartList","AttributeList","AttachmentDialog","ImportDialog"],
 	"stores": ["CategoryTree", "PartList", "AttributeList"],
 	"controllers": ["Toolbar", "CategoryTree", "PartList", "AttributeList"],
 

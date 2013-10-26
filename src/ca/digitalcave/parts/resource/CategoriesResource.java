@@ -5,6 +5,7 @@ import java.io.Writer;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.logging.Level;
 
 import org.apache.ibatis.session.SqlSession;
 import org.codehaus.jackson.JsonGenerationException;
@@ -130,7 +131,8 @@ public class CategoriesResource extends ServerResource {
 			if (ct == 0) throw new ResourceException(Status.CLIENT_ERROR_NOT_FOUND);
 			return new JsonRepresentation(result);
 		} catch (Exception e) {
-			throw new ResourceException(e);
+			getLogger().log(Level.WARNING, null, e);
+			return new ExtResponseRepresentation(e.getMessage());
 		} finally {
 			sql.close();
 		}
@@ -152,7 +154,8 @@ public class CategoriesResource extends ServerResource {
 			if (ct == 0) throw new ResourceException(Status.CLIENT_ERROR_NOT_FOUND);
 			return new JsonRepresentation(result);
 		} catch (Exception e) {
-			throw new ResourceException(e);
+			getLogger().log(Level.WARNING, null, e);
+			return new ExtResponseRepresentation(e.getMessage());
 		} finally {
 			sql.close();
 		}

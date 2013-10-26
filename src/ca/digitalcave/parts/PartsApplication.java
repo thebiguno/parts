@@ -14,7 +14,6 @@ import org.apache.ibatis.mapping.Environment;
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.apache.ibatis.session.SqlSessionFactoryBuilder;
 import org.apache.ibatis.transaction.jdbc.JdbcTransactionFactory;
-import org.apache.ibatis.type.JdbcType;
 import org.codehaus.jackson.JsonFactory;
 import org.restlet.Application;
 import org.restlet.Restlet;
@@ -34,7 +33,9 @@ import ca.digitalcave.parts.data.BlobTypeHandler;
 import ca.digitalcave.parts.resource.AttributeResource;
 import ca.digitalcave.parts.resource.AttributesResource;
 import ca.digitalcave.parts.resource.CategoriesResource;
+import ca.digitalcave.parts.resource.CsvResource;
 import ca.digitalcave.parts.resource.DefaultResource;
+import ca.digitalcave.parts.resource.DigikeyResource;
 import ca.digitalcave.parts.resource.IndexResource;
 import ca.digitalcave.parts.resource.PartResource;
 import ca.digitalcave.parts.resource.PartsResource;
@@ -144,15 +145,24 @@ public class PartsApplication extends Application {
 		categoriesRouter.attach("/{category}/parts/{part}/attributes", AttributesResource.class);
 		categoriesRouter.attach("/{category}/parts/{part}/attributes/{attribute}", AttributeResource.class);
 		
-		final ChallengeAuthenticator authenticator = new ChallengeAuthenticator(getContext(), ChallengeScheme.HTTP_BASIC, "Parts");
-		authenticator.setVerifier(new CookieVerifier(this));
-		authenticator.setNext(categoriesRouter);
+		final ChallengeAuthenticator categegoryAuth = new ChallengeAuthenticator(getContext(), ChallengeScheme.HTTP_BASIC, "Parts");
+		categegoryAuth.setVerifier(new CookieVerifier(this));
+		categegoryAuth.setNext(categoriesRouter);
+		
+		final Router importRouter = new Router(getContext());
+		importRouter.attach("/digikey", DigikeyResource.class);
+		importRouter.attach("/csv", CsvResource.class);
 
+		final ChallengeAuthenticator importAuth = new ChallengeAuthenticator(getContext(), ChallengeScheme.HTTP_BASIC, "Parts");
+		importAuth.setVerifier(new CookieVerifier(this));
+		importAuth.setNext(importRouter);
+		
 		final Router publicRouter = new Router(getContext());
 		publicRouter.attach("", new Redirector(getContext(), "index.html", Redirector.MODE_CLIENT_TEMPORARY));
 		publicRouter.attach("/", new Redirector(getContext(), "index.html", Redirector.MODE_CLIENT_TEMPORARY));
 		publicRouter.attach("/index", IndexResource.class);
-		publicRouter.attach("/categories", categoriesRouter);
+		publicRouter.attach("/categories", categoriesRouter); // TODO attach categoryAuth
+		publicRouter.attach("/import", importRouter); // TODO attach importAuth
 		
 		publicRouter.attachDefault(DefaultResource.class).setMatchingMode(Template.MODE_STARTS_WITH);
 

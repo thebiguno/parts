@@ -35,15 +35,13 @@ Ext.define("Parts.view.Viewport", {
 				{
 					"xtype": "numberfield",
 					"emptyText": "Available",
-					"itemId": "digikeyavail",
-					//"value": 0,
+					"itemId": "digikeyqty",
 					"width": 75
 				},
 				{
 					"xtype": "numberfield",
 					"emptyText": "Minimum",
 					"itemId": "digikeymin",
-					//"value": 0,
 					"width": 75
 				},
 				{
@@ -53,6 +51,12 @@ Ext.define("Parts.view.Viewport", {
 					"icon": "img/digikey.png"
 				},
 				"-",
+				{
+					"xtype": "button",
+					"text": "Import",
+					"itemId": "importbutton",
+					"icon": "img/document-import.png"
+				},
 				{
 					"xtype": "button",
 					"text": "Report",

@@ -1,6 +1,7 @@
 package ca.digitalcave.parts.model;
 
 import java.sql.Blob;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 
@@ -12,13 +13,20 @@ public class Attribute {
 	private String value;
 	private String href;
 	private String mimeType;
-	private Blob data; // TODO change this to be a blob when PostgreSql supports Conn.createBlob
+	private Blob data;
+	private Date createdAt;
+	private Date modifiedAt;
 	
 	public Attribute() {
 	}
 	public Attribute(String name, String value) {
 		this.name = name;
 		this.value = value;
+	}
+	public Attribute(String name, String value, String href) {
+		this.name = name;
+		this.value = value;
+		this.href = href;
 	}
 	
 	public Long getId() {
@@ -70,6 +78,20 @@ public class Attribute {
 		this.data = data;
 	}
 	
+	public Date getCreatedAt() {
+		return createdAt;
+	}
+	public void setCreatedAt(Date createdAt) {
+		this.createdAt = createdAt;
+	}
+	
+	public Date getModifiedAt() {
+		return modifiedAt;
+	}
+	public void setModifiedAt(Date modifiedAt) {
+		this.modifiedAt = modifiedAt;
+	}
+
 	public static Attribute find(String name, List<Attribute> attributes) {
 		for (Attribute attribute : attributes) {
 			if (attribute.getName().equals(name)) return attribute;
