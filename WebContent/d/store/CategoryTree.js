@@ -18,7 +18,7 @@ Ext.define("Parts.store.CategoryTree", {
 		"url": "categories",
 		"reader": {
 			"type": "json",
-			"rootProperty": "data"
+			"rootProperty": "children"
 		}
 	}
 });

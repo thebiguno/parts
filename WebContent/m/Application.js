@@ -8,9 +8,9 @@ Ext.application({
 		"autoMaximize": true
 	},
 
-	"stores": ["CatalogList", "FamilyList"],
+	"stores": ["CatalogList"],
 	"views": ["CatalogList"],
-	"controllers": ["CatalogList", "FamilyList", "PartDetail"],
+	"controllers": ["CatalogList", "PartDetail"],
 
 	"launch": function() {
 		Parts.app = this;

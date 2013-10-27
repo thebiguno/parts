@@ -1,22 +1,21 @@
 Ext.define("Parts.store.CatalogList", {
-	extend: 'Ext.data.Store',
-	config: {
-		fields: [
-			"family",
-			"category"
-		],
-		grouper: {
-			groupFn: function(record) {
-				return record.get('category');
-			}
-		},
-		autoLoad: true,
-		proxy: {
-			type: "ajax",
-			url: "data/",
-			reader: {
-				type: 'json',
-				rootProperty: 'data'
+	"extend": 'Ext.data.TreeStore',
+	"root": {
+		"id": 0,
+		"name": "All"
+	},
+	"rootVisible": true,
+	"config": {
+		"fields": [ "id", "name" ],
+		"autoLoad": true,
+		
+		"proxy": {
+			"type": "ajax",
+			"method": "GET",
+			"url": "categories",
+			"reader": {
+				"type": "json",
+				"rootProperty": "children"
 			}
 		}
 	}

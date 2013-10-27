@@ -1,26 +1,11 @@
 Ext.define("Parts.controller.CatalogList", {
-	extend: "Ext.app.Controller",
-	config: {
-		refs: {
-			catalogList: "catalog-list",
-			familyList: "family-list"
+	"extend": "Ext.app.Controller",
+	"config": {
+		"refs": {
+			"catalogList": "catalog-list",
 		},
-		control: {
-			catalogList: {
-				itemtap: "activateFamilyList"
-			}
+		"control": {
+			
 		}
-	},
-	activateFamilyList: function (list, index, target, record) {
-		var familyList = this.getFamilyList();
-		if (familyList == null){
-			familyList = Ext.create("Parts.view.FamilyList", {});
-		}
-		familyList.getStore().getProxy().setUrl("data/" + record.data.category + "/" + record.data.family);
-		familyList.getStore().load({
-			callback: function(){
-				Ext.Viewport.animateActiveItem(familyList, {type: 'slide', direction: 'left'});
-			}
-		});
 	}
 });
