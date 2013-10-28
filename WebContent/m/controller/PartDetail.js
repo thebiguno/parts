@@ -1,40 +1,31 @@
 Ext.define("Parts.controller.PartDetail", {
-	extend: "Ext.app.Controller",
-	config: {
-		refs: {
-			partDetail: "part-detail",
-			familyList: "family-list",
-			familyListBack: "#back-family-list",
-			quantitySpinner: "#quantity-spinner"
+	"extend": "Ext.app.Controller",
+	"config": {
+		"refs": {
 		},
-		control: {
-			familyListBack: {
-				tap: "backToFamilyList"
+		"control": {
+			"partdetail button[itemId=back]": {
+				"tap": function(button) {
+					var partlist = button.up('viewport').down('partlist');
+					Ext.Viewport.animateActiveItem(partlist, {"type": 'slide', "direction": 'right'});
+				}
 			},
-			quantitySpinner: {
-				spin: "persistQuantity"
-			}
+			"partdetail field": {
+				"change": function(field) {
+					var record = field.up('formpanel').getValues();
+					Ext.Ajax.request({
+						"url": "categories/" + record.data.category + "/parts/" + record.data.id,
+						"method": "PUT",
+						"jsonData": record.data,
+						"success": function(response) {
+							record.commit();
+						},
+						"failure": function(response) {
+							record.reject();
+						}
+					});
+				}
+			},
 		}
-	},
-	conn: new Ext.data.Connection({
-		"autoAbort": true
-	}),
-	backToFamilyList: function(){
-		var familyList = this.getFamilyList();
-		Ext.Viewport.animateActiveItem(familyList, {type: 'slide', direction: 'right'});
-	},
-	persistQuantity: function(){
-		this.conn.request({
-			"url": "../m/part/foo",
-			"method": "POST",
-			"success": function(response) {
-				callDetail.currentId = id;
-				callDetail.update({
-					"xtype": "panel",
-					"layout": "border",
-					"html": response.responseText
-				});
-			}
-		});
 	}
 });

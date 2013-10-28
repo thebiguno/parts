@@ -59,6 +59,7 @@ public class PartsResource extends ServerResource {
 								final Part part = (Part) ctx.getResultObject();
 								g.writeStartObject();
 								g.writeNumberField("id", part.getId());
+								g.writeStringField("group", part.getGroup());
 								g.writeNumberField("category", part.getCategory());
 								g.writeStringField("number", part.getNumber());
 								g.writeStringField("description", part.getDescription());

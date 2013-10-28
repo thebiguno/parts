@@ -8,12 +8,12 @@ Ext.application({
 		"autoMaximize": true
 	},
 
-	"stores": ["CatalogList"],
-	"views": ["CatalogList"],
-	"controllers": ["CatalogList", "PartDetail"],
+	"stores": ["PartList"],
+	"views": ["PartList", "PartDetail"],
+	"controllers": ["PartList", "PartDetail"],
 
 	"launch": function() {
 		Parts.app = this;
-		Ext.Viewport.add(Ext.create('Parts.view.CatalogList'));
+		Ext.Viewport.add(Ext.create('Parts.view.PartList'));
 	}
 });

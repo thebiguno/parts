@@ -1,7 +1,6 @@
 Ext.define("Parts.view.PartDetail", {
 	extend: 'Ext.form.Panel',
-	requires: ["Parts.view.components.LabelField"],
-	alias: "widget.part-detail",
+	alias: "widget.partdetail",
 	config: {
 		scrollable:'vertical',
 
@@ -11,57 +10,54 @@ Ext.define("Parts.view.PartDetail", {
 				docked: "top",
 				items: [
 					{
-						xtype: "button",
-						text: "Family",
-						ui: "back",
-						id:"back-family-list"
+						"xtype": "button",
+						"text": "Family",
+						"ui": "back",
+						"itemId":"back"
 					},
 					{
-						xtype: "spacer"
+						"xtype": "spacer"
 					}
 				]
 			},
 			{
-				xtype: "fieldset",
+				"xtype": "fieldset",
 				items: [
 					{
-						xtype: "labelfield",
-						name: "part",
-						label: "Part #"
+						"xtype": "textfield",
+						"name": "number",
+						"label": "Part #"
 					},
 					{
-						xtype: "labelfield",
+						"xtype": "spinnerfield",
+						"name": "available",
+						"label": "Available",
+						"minValue": 0,
+						"increment": 1
+					},
+					{
+						"xtype": "spinnerfield",
+						"name": "minimum",
+						"label": "Qty",
+						"minValue": 0,
+						"increment": 1
+					},
+					{
+						xtype: "textfield",
 						name: "description",
 						label: "Desc"
 					},
 					{
-						xtype: "labelfield",
+						xtype: "textfield",
 						name: "notes",
 						label: "Notes"
-					},
-					{
-						xtype: "spinnerfield",
-						name: "quantity",
-						id: "quantity-spinner",
-						label: "Qty",
-						minValue: 0,
-						increment: 1
-					}
-				]
-			},
-			{
-				xtype: "fieldset",
-				items: [
-					{
-						xtype: "labelfield",
-						name: "datasheets",
-						label: "Docs"
 					}
 				]
 			}
 		]
 	},
 	setPart: function(record){
+		this.down('button[itemId=back]').setText(record.data.group);
 		this.setRecord(record);
 	}
 });

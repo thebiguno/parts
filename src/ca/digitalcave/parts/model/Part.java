@@ -7,6 +7,7 @@ import java.util.List;
 public class Part {
 
 	private Integer category;
+	private String group;
 	private Integer id;
 	private Integer available;
 	private Integer minimum;
@@ -27,6 +28,13 @@ public class Part {
 	}
 	public void setCategory(Integer category) {
 		this.category = category;
+	}
+	
+	public String getGroup() {
+		return group;
+	}
+	public void setGroup(String group) {
+		this.group = group;
 	}
 	
 	public Integer getId() {
