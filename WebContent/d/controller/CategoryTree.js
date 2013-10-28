@@ -11,9 +11,14 @@ Ext.define("Parts.controller.CategoryTree", {
 					toolbar.down('button[itemId=remove]').setDisabled(data.id == 'root');
 					toolbar.down('button[itemId=add]').enable();
 
-					var partlist = row.view.up('viewport').down('partlist');
+					var viewport = row.view.up('viewport');
+					var terms = viewport.down('textfield[itemId=searchterms]').getValue();
+					var partlist = viewport.down('partlist');
 					partlist.getStore().load({
-						"url": "categories/" + data.id + "/parts?q=", // TODO add terms
+						"url": "categories/" + data.id + "/parts",
+						"params": {
+							"q": terms
+						}
 					});
 					
 					partlist.down('toolbar').down('button[itemId=add]').setDisabled(record.data.id == 0);

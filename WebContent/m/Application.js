@@ -10,7 +10,7 @@ Ext.application({
 
 	"stores": ["PartList"],
 	"views": ["PartList", "PartDetail"],
-	"controllers": ["PartList", "PartDetail"],
+	"controllers": ["PartList", "PartDetail", "Toolbar"],
 
 	"launch": function() {
 		Parts.app = this;

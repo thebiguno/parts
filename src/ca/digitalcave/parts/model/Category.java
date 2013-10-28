@@ -55,7 +55,8 @@ public class Category {
 			lookup.put(category.getId(), category);
 		}
 		for (Category category : categories) {
-			final Category parent = category.parentId == null ? root : lookup.get(category.parentId);
+			Category parent = category.parentId == null ? root : lookup.get(category.parentId);
+			if (parent == null) parent = root;
 			parent.getChildren().add(category);
 		}
 		return root;

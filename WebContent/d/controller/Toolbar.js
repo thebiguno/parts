@@ -58,11 +58,11 @@ Ext.define("Parts.controller.Toolbar", {
 	},
 	
 	"search": function(cmp, e) {
-		if (e.getKey() == null || e.getKey() == e.ENTER) {
+		if (e.getKey() == 0 || e.getKey() == e.ENTER) {
 			var terms = cmp.up('viewport').down('textfield[itemId=searchterms]').getValue();
 			
-			var catalog = cmp.up('viewport').down('catalogtree').getStore();
-			catalog.load({
+			var tree = cmp.up('viewport').down('categorytree').getStore();
+			tree.load({
 				"params": {
 					"q": terms
 				}
