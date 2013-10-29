@@ -38,9 +38,9 @@ public class CookieVerifier implements Verifier {
 			try {
 				final Properties p = new Properties();
 				p.load(new StringReader(CryptoUtil.decrypt(value)));
-				final String uid = p.getProperty("uid");
-				final String password = p.getProperty("password");
-				request.setChallengeResponse(new ChallengeResponse(ChallengeScheme.CUSTOM, uid, password));
+				final String identifier = p.getProperty("identifier");
+				final String secret = p.getProperty("secret");
+				request.setChallengeResponse(new ChallengeResponse(ChallengeScheme.HTTP_COOKIE, identifier, secret));
 			} catch (Throwable e) {
 				;
 			}
@@ -74,37 +74,46 @@ public class CookieVerifier implements Verifier {
 		}
 	}
 	
-	private boolean checkSecret(Request request) {
+	public boolean checkSecret(Request request) {
 		final String identifier = request.getChallengeResponse().getIdentifier();
 		final char[] secret = request.getChallengeResponse().getSecret();
 		
 		final SqlSession sql = application.getSqlFactory().openSession(true);
 		try {
 			final Account account = sql.getMapper(PartsMapper.class).selectAccount(identifier);
+			
 			if (account == null) {
 				return false;
 			}
+			final boolean result;
 			if ((secret == null) || account.getSecret() == null) {
-				return (secret == account.getSecret());
+				result = (secret == account.getSecret());
 			} else {
 				final String stored = new String(account.getSecret());
 				if (stored.startsWith("SHA1:")) {
-					return PasswordUtil.verify(stored, new String(secret));
+					result = PasswordUtil.verify(stored, new String(secret));
 				} else {
-					return stored.equals(new String(secret));
+					result = stored.equals(new String(secret));
 				}
 			}
+			
+			if (result) {
+				request.getClientInfo().setUser(account);
+			}
+			return result;
 		} finally {
 			sql.close();
 		}
 	}
 	
-	public void setCookie(Request request, Response response, String identifier, String password) {
+	public void setCookie(Request request, Response response, String identifier, String secret) {
 		try {
 			final StringWriter w = new StringWriter();
 			final Properties p = new Properties();
-			p.put("uid", identifier);
-			p.put("pwd", password);
+			if (identifier != null && secret != null) {
+				p.put("identifier", identifier);
+				p.put("secret", secret);
+			}
 			p.store(w, null);
 			w.close();
 			

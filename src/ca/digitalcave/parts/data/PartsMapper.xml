@@ -176,7 +176,7 @@ select category_id as id from f
 	</select>
 	
 	<select id="selectAccount" resultType="ca.digitalcave.parts.model.Account">
-select account_id as id, email, secret, created_at as createdAt, modified_at as modifiedAt
+select account_id as id, identifier, email, secret secretString, created_at as createdAt, modified_at as modifiedAt
 from account
 where identifier = #{identifier}
 	</select>

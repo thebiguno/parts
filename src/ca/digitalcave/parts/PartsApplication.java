@@ -54,6 +54,7 @@ public class PartsApplication extends Application {
 	private final Configuration fmConfig = new Configuration();
 	private ComboPooledDataSource dataSource;
 	private SqlSessionFactory sqlFactory;
+	private final CookieVerifier verifier = new CookieVerifier(this);
 	
 	public PartsApplication() {
 		setStatusService(new StatusService());
@@ -118,6 +119,10 @@ public class PartsApplication extends Application {
 		super.stop();
 	}
 	
+	public CookieVerifier getVerifier() {
+		return verifier;
+	}
+	
 	public JsonFactory getJsonFactory() {
 		return jsonFactory;
 	}
@@ -145,26 +150,31 @@ public class PartsApplication extends Application {
 		categoriesRouter.attach("/{category}/parts/{part}/attributes", AttributesResource.class);
 		categoriesRouter.attach("/{category}/parts/{part}/attributes/{attribute}", AttributeResource.class);
 		
-		final ChallengeAuthenticator categegoryAuth = new ChallengeAuthenticator(getContext(), ChallengeScheme.HTTP_BASIC, "Parts");
-		categegoryAuth.setVerifier(new CookieVerifier(this));
+		final ChallengeAuthenticator categegoryAuth = new ChallengeAuthenticator(getContext(), ChallengeScheme.HTTP_COOKIE, null);
+		categegoryAuth.setVerifier(getVerifier());
 		categegoryAuth.setNext(categoriesRouter);
 		
 		final Router importRouter = new Router(getContext());
 		importRouter.attach("/digikey", DigikeyResource.class);
 		importRouter.attach("/csv", CsvResource.class);
 
-		final ChallengeAuthenticator importAuth = new ChallengeAuthenticator(getContext(), ChallengeScheme.HTTP_BASIC, "Parts");
-		importAuth.setVerifier(new CookieVerifier(this));
+		final ChallengeAuthenticator importAuth = new ChallengeAuthenticator(getContext(), ChallengeScheme.HTTP_COOKIE, null);
+		importAuth.setVerifier(getVerifier());
 		importAuth.setNext(importRouter);
+		
+		final ChallengeAuthenticator defaultAuth = new ChallengeAuthenticator(getContext(), ChallengeScheme.HTTP_COOKIE, null);
+		defaultAuth.setVerifier(getVerifier());
+		defaultAuth.setNext(DefaultResource.class);
+		defaultAuth.setOptional(true);
 		
 		final Router publicRouter = new Router(getContext());
 		publicRouter.attach("", new Redirector(getContext(), "index.html", Redirector.MODE_CLIENT_TEMPORARY));
 		publicRouter.attach("/", new Redirector(getContext(), "index.html", Redirector.MODE_CLIENT_TEMPORARY));
 		publicRouter.attach("/index", IndexResource.class);
-		publicRouter.attach("/categories", categoriesRouter); // TODO attach categoryAuth
-		publicRouter.attach("/import", importRouter); // TODO attach importAuth
+		publicRouter.attach("/categories", categegoryAuth);
+		publicRouter.attach("/import", importAuth);
 		
-		publicRouter.attachDefault(DefaultResource.class).setMatchingMode(Template.MODE_STARTS_WITH);
+		publicRouter.attachDefault(defaultAuth).setMatchingMode(Template.MODE_STARTS_WITH);
 
 		final Encoder encoder = new Encoder(getContext(), false, true, getEncoderService());
 		encoder.setNext(publicRouter);

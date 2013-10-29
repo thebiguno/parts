@@ -11,7 +11,11 @@ div.word-wrap {
 }
 		</style>
 		<script src="http://cdn.sencha.com/ext/gpl/4.2.0/ext-all-debug.js"></script>
+<#if user??>
 		<script type="text/javascript" src="d/Application.js"></script>
+<#else>
+		<script type="text/javascript" src="d/Login.js"></script>
+</#if>
 	</head>
 	<body>
 	</body>
