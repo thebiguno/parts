@@ -1,5 +1,3 @@
-window.onbeforeunload = function(){return " ";};
-
 Ext.application({
 	"name": "Parts",
 	"appFolder": "d",
@@ -9,10 +7,15 @@ Ext.application({
 	},
 
 	"views": ["Login"],
-	//"controllers": ["Login"],
+	"controllers": ["Login"],
 
 	"launch": function() {
 		Parts.app = this;
-		Ext.create( "Parts.view.Login");
+		Ext.create('Ext.container.Viewport', {
+			"layout": "fit",
+			"items": [
+				Ext.create( "Parts.view.Login")
+			]
+		});
 	}
 });
