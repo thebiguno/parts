@@ -14,6 +14,13 @@ Ext.define("Parts.controller.PartList", {
 					part.setPart(record);
 					Ext.Viewport.animateActiveItem(part, {type: 'slide', direction: 'left'});
 				}
+			},
+			"searchfield[itemId=search]": {
+				"change": function(field, newValue) {
+					var store = field.up('partlist').getStore();
+					store.setParams({"q":newValue});
+					store.load();
+				}
 			}
 		}
 	}
