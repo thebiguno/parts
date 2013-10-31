@@ -10,6 +10,10 @@ public class Account extends User {
 	private Date createdAt;
 	private Date modifiedAt;
 
+	public Account() {
+		
+	}
+	
 	public Account(int id) {
 		this.id = id;
 	}
@@ -34,5 +38,8 @@ public class Account extends User {
 	public void setModifiedAt(Date modifiedAt) {
 		this.modifiedAt = modifiedAt;
 	}
-
+	
+	public void setSecretString(String password) {
+		setSecret(password.toCharArray());
+	}
 }

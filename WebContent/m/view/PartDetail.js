@@ -53,11 +53,43 @@ Ext.define("Parts.view.PartDetail", {
 						"label": "Notes"
 					}
 				]
+			},
+			{
+				"xtype": "fieldset",
+				"itemId": "extended",
+				"items": [
+				          {
+							"xtype": "textfield",
+							"readOnly": true,
+							"name": "test",
+							"label": "test",
+							"value": "test"
+						}]
 			}
 		]
 	},
 	"setPart": function(record){
 		this.down('button[itemId=back]').setText(record.data.group);
 		this.setRecord(record);
+		
+		var fieldset = this.down('fieldset[itemId=extended]').getItems();
+		fieldset.removeAll(true);
+		Ext.Ajax.request({
+			"url": "categories/" + record.data.category + "/parts/" + record.data.id + "/attributes",
+			"success": function(response) {
+				var object = Ext.decode(response.responseText);
+				if (object.success) {
+					Ext.each(object.data, function(attr) {
+						fieldset.add({
+							"xtype": "textfield",
+							"readOnly": true,
+							"name": attr.id,
+							"label": attr.name,
+							"value": attr.value
+						});
+					});
+				}
+			}
+		});
 	}
 });

@@ -4,6 +4,7 @@ import org.restlet.data.MediaType;
 import org.restlet.data.Status;
 import org.restlet.representation.EmptyRepresentation;
 import org.restlet.representation.Representation;
+import org.restlet.representation.StringRepresentation;
 import org.restlet.representation.Variant;
 import org.restlet.resource.ResourceException;
 import org.restlet.resource.ServerResource;
@@ -28,5 +29,16 @@ public class IndexResource extends ServerResource {
 			getResponse().setLocationRef("d.html");
 		}
 		return new EmptyRepresentation();
+	}
+	
+	@Override
+	protected Representation post(Representation entity, Variant variant) throws ResourceException {
+		// login
+		return new StringRepresentation("{success:true}");
+	}
+	@Override
+	protected Representation delete(Variant variant) throws ResourceException {
+		// logout
+		return new StringRepresentation("{success:true}");
 	}
 }

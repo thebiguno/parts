@@ -14,7 +14,8 @@ Ext.define("Parts.view.PartList", {
 				"items": [
 					{
 						"xtype": "searchfield",
-						"placeHolder": "Search"
+						"placeHolder": "Search",
+						"itemId": "search"
 					}
 				]
 			}
