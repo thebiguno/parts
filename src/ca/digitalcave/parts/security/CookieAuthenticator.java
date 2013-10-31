@@ -79,6 +79,8 @@ public class CookieAuthenticator extends ChallengeAuthenticator {
 			result.setTimeIssued(Long.parseLong(p.getProperty("issued")));
 			result.setIdentifier(p.getProperty("identifier"));
 			result.setSecret(p.getProperty("secret"));
+			result.getParameters().set("expiry", p.getProperty("expiry"));
+			result.getParameters().set("impersonate", p.getProperty("impersonate"));
 			return result;
 		} catch (Exception e) {
 			getLogger().log(Level.INFO, "Unable to decrypt cookie credentials", e);
@@ -91,6 +93,8 @@ public class CookieAuthenticator extends ChallengeAuthenticator {
 			p.setProperty("issued", Long.toString(challengeResponse.getTimeIssued()));
 			p.setProperty("identifier", challengeResponse.getIdentifier());
 			p.setProperty("secret", new String(challengeResponse.getSecret()));
+			p.setProperty("expiry", challengeResponse.getParameters().getFirstValue("expiry"));
+			p.setProperty("impersonate", challengeResponse.getParameters().getFirstValue("impersonate"));
 
 			final ByteArrayOutputStream out = new ByteArrayOutputStream();
 			p.store(out, null);
@@ -117,6 +121,7 @@ public class CookieAuthenticator extends ChallengeAuthenticator {
 		try {
 			final JSONObject object = new JSONObject(request.getEntityAsText()); 
 			final ChallengeResponse cr = new ChallengeResponse(getScheme(), object.getString("identifier"), object.getString("secret"));
+			cr.getParameters().add("impersonate", object.optString("impersonate"));
 			request.setChallengeResponse(cr);
 		} catch (Exception e) {
 			;
