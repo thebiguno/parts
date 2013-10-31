@@ -1,5 +1,6 @@
 package ca.digitalcave.parts;
 
+import java.security.Key;
 import java.sql.Blob;
 import java.sql.Connection;
 import java.util.Locale;
@@ -17,7 +18,6 @@ import org.apache.ibatis.transaction.jdbc.JdbcTransactionFactory;
 import org.codehaus.jackson.JsonFactory;
 import org.restlet.Application;
 import org.restlet.Restlet;
-import org.restlet.data.ChallengeScheme;
 import org.restlet.data.CharacterSet;
 import org.restlet.data.Language;
 import org.restlet.data.MediaType;
@@ -26,7 +26,6 @@ import org.restlet.resource.ClientResource;
 import org.restlet.routing.Redirector;
 import org.restlet.routing.Router;
 import org.restlet.routing.Template;
-import org.restlet.security.ChallengeAuthenticator;
 import org.restlet.service.StatusService;
 
 import ca.digitalcave.parts.data.BlobTypeHandler;
@@ -39,7 +38,9 @@ import ca.digitalcave.parts.resource.DigikeyResource;
 import ca.digitalcave.parts.resource.IndexResource;
 import ca.digitalcave.parts.resource.PartResource;
 import ca.digitalcave.parts.resource.PartsResource;
-import ca.digitalcave.parts.security.CookieVerifier;
+import ca.digitalcave.parts.security.CookieAuthenticator;
+import ca.digitalcave.parts.security.CryptoUtil;
+import ca.digitalcave.parts.security.PartsVerifier;
 
 import com.mchange.v2.c3p0.ComboPooledDataSource;
 
@@ -54,7 +55,7 @@ public class PartsApplication extends Application {
 	private final Configuration fmConfig = new Configuration();
 	private ComboPooledDataSource dataSource;
 	private SqlSessionFactory sqlFactory;
-	private final CookieVerifier verifier = new CookieVerifier(this);
+	private final PartsVerifier verifier = new PartsVerifier(this);
 	
 	public PartsApplication() {
 		setStatusService(new StatusService());
@@ -119,7 +120,7 @@ public class PartsApplication extends Application {
 		super.stop();
 	}
 	
-	public CookieVerifier getVerifier() {
+	public PartsVerifier getVerifier() {
 		return verifier;
 	}
 	
@@ -142,6 +143,8 @@ public class PartsApplication extends Application {
 	@Override  
 	public Restlet createInboundRoot() {
 
+		final Key key = CryptoUtil.createKey("password".toCharArray());
+		
 		final Router categoriesRouter = new Router(getContext());
 		categoriesRouter.attach("", CategoriesResource.class);
 		categoriesRouter.attach("/{category}", CategoriesResource.class);
@@ -150,7 +153,7 @@ public class PartsApplication extends Application {
 		categoriesRouter.attach("/{category}/parts/{part}/attributes", AttributesResource.class);
 		categoriesRouter.attach("/{category}/parts/{part}/attributes/{attribute}", AttributeResource.class);
 		
-		final ChallengeAuthenticator categegoryAuth = new ChallengeAuthenticator(getContext(), ChallengeScheme.HTTP_COOKIE, null);
+		final CookieAuthenticator categegoryAuth = new CookieAuthenticator(getContext(), false, key);
 		categegoryAuth.setVerifier(getVerifier());
 		categegoryAuth.setNext(categoriesRouter);
 		
@@ -158,19 +161,22 @@ public class PartsApplication extends Application {
 		importRouter.attach("/digikey", DigikeyResource.class);
 		importRouter.attach("/csv", CsvResource.class);
 
-		final ChallengeAuthenticator importAuth = new ChallengeAuthenticator(getContext(), ChallengeScheme.HTTP_COOKIE, null);
+		final CookieAuthenticator importAuth = new CookieAuthenticator(getContext(), false, key);
 		importAuth.setVerifier(getVerifier());
 		importAuth.setNext(importRouter);
 		
-		final ChallengeAuthenticator defaultAuth = new ChallengeAuthenticator(getContext(), ChallengeScheme.HTTP_COOKIE, null);
+		final CookieAuthenticator defaultAuth = new CookieAuthenticator(getContext(), true, key);
 		defaultAuth.setVerifier(getVerifier());
 		defaultAuth.setNext(DefaultResource.class);
-		defaultAuth.setOptional(true);
 		
+		final CookieAuthenticator indexAuth = new CookieAuthenticator(getContext(), true, key);
+		indexAuth.setVerifier(getVerifier());
+		indexAuth.setNext(IndexResource.class);
+
 		final Router publicRouter = new Router(getContext());
 		publicRouter.attach("", new Redirector(getContext(), "index.html", Redirector.MODE_CLIENT_TEMPORARY));
 		publicRouter.attach("/", new Redirector(getContext(), "index.html", Redirector.MODE_CLIENT_TEMPORARY));
-		publicRouter.attach("/index", IndexResource.class);
+		publicRouter.attach("/index", indexAuth);
 		publicRouter.attach("/categories", categegoryAuth);
 		publicRouter.attach("/import", importAuth);
 		
