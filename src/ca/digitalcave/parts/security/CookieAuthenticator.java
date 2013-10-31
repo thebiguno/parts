@@ -49,6 +49,25 @@ public class CookieAuthenticator extends ChallengeAuthenticator {
 		return super.authenticate(request, response);
 	}
 
+	@Override
+	protected int beforeHandle(Request request, Response response) {
+		if (isLoggingIn(request, response)) {
+			login(request, response);
+		} else if (isLoggingOut(request, response)) {
+			return logout(request, response);
+		}
+
+		return super.beforeHandle(request, response);
+	}
+	
+	@Override
+	protected int authenticated(Request request, Response response) {
+		final CookieSetting credentialsCookie = getCredentialsCookie(request, response);
+		credentialsCookie.setValue(format(request.getChallengeResponse()));
+		credentialsCookie.setMaxAge(maxCookieAge);
+		return super.authenticated(request, response);
+	}
+
 	public ChallengeResponse parse(String encoded) {
 		try {
 			final byte[] bytes = CryptoUtil.decrypt(key, Base64.decode(encoded));
@@ -102,14 +121,6 @@ public class CookieAuthenticator extends ChallengeAuthenticator {
 		} catch (Exception e) {
 			;
 		}
-	}
-
-	@Override
-	protected int authenticated(Request request, Response response) {
-		final CookieSetting credentialsCookie = getCredentialsCookie(request, response);
-		credentialsCookie.setValue(format(request.getChallengeResponse()));
-		credentialsCookie.setMaxAge(maxCookieAge);
-		return super.authenticated(request, response);
 	}
 
 	protected int logout(Request request, Response response) {
