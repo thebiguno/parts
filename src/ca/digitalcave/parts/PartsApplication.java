@@ -165,25 +165,20 @@ public class PartsApplication extends Application {
 		importAuth.setVerifier(getVerifier());
 		importAuth.setNext(importRouter);
 		
-		final CookieAuthenticator defaultAuth = new CookieAuthenticator(getContext(), true, key);
-		defaultAuth.setVerifier(getVerifier());
-		defaultAuth.setNext(DefaultResource.class);
-		
-		final CookieAuthenticator indexAuth = new CookieAuthenticator(getContext(), true, key);
-		indexAuth.setVerifier(getVerifier());
-		indexAuth.setNext(IndexResource.class);
-
 		final Router publicRouter = new Router(getContext());
 		publicRouter.attach("", new Redirector(getContext(), "index.html", Redirector.MODE_CLIENT_TEMPORARY));
 		publicRouter.attach("/", new Redirector(getContext(), "index.html", Redirector.MODE_CLIENT_TEMPORARY));
-		publicRouter.attach("/index", indexAuth);
+		publicRouter.attach("/index", IndexResource.class);
 		publicRouter.attach("/categories", categegoryAuth);
 		publicRouter.attach("/import", importAuth);
-		
-		publicRouter.attachDefault(defaultAuth).setMatchingMode(Template.MODE_STARTS_WITH);
+		publicRouter.attachDefault(DefaultResource.class).setMatchingMode(Template.MODE_STARTS_WITH);
+
+		final CookieAuthenticator optionalAuth = new CookieAuthenticator(getContext(), true, key);
+		optionalAuth.setVerifier(getVerifier());
+		optionalAuth.setNext(publicRouter);
 
 		final Encoder encoder = new Encoder(getContext(), false, true, getEncoderService());
-		encoder.setNext(publicRouter);
+		encoder.setNext(optionalAuth);
 
 		return encoder;
 	}
