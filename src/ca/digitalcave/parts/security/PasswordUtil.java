@@ -7,58 +7,6 @@ import java.security.SecureRandom;
 
 public class PasswordUtil {
 
-	public static void main(String[] args) {
-		if (args.length == 0) {
-			final byte[] salt = randomSalt(2);
-			final byte[] test = "password".getBytes();
-
-			long start = System.currentTimeMillis();
-			System.out.println(hash("MD5", 0, salt, test));
-			System.out.println(System.currentTimeMillis() - start);
-
-			start = System.currentTimeMillis();
-			System.out.println(hash("SHA-1", 0, salt, test));
-			System.out.println(System.currentTimeMillis() - start);
-
-			start = System.currentTimeMillis();
-			System.out.println(hash("SHA-1", 255, salt, test));
-			System.out.println(System.currentTimeMillis() - start);
-
-			start = System.currentTimeMillis();
-			System.out.println(hash("SHA-1", 32767, salt, test));
-			System.out.println(System.currentTimeMillis() - start);
-
-			start = System.currentTimeMillis();
-			System.out.println(hash("SHA-1", 65535, salt, test));
-			System.out.println(System.currentTimeMillis() - start);
-
-			start = System.currentTimeMillis();
-			System.out.println(hash("SHA-1", 16777215, salt, test));
-			System.out.println(System.currentTimeMillis() - start);
-		} else {
-			if (args[0].startsWith("OBF:")) {
-				System.out.println(recover(args[0]));
-			} else {
-				final byte[] salt = randomSalt(2);
-				final String algorithm;
-				final int iterations;
-				if (args.length > 1) {
-					algorithm = args[1];
-				} else {
-					algorithm = "SHA-1";
-				}
-				if (args.length > 2) {
-					iterations = Integer.parseInt(args[2]);
-				} else {
-					iterations = 0;
-				}
-				System.out.println(obfuscate(args[0]));
-				System.out.println(hash(algorithm, iterations, salt, args[0].getBytes()));
-			}
-		}
-	}
-
-
 	/**
 	 * Returns a code with the given strength scale:
 	 * <ul>
@@ -86,30 +34,31 @@ public class PasswordUtil {
 	/**
 	 * The resulting string is 40 characters for the hash + 5 for the algorithm + salt + iteration
 	 */
-	public static String sha1(int iterations, byte[] salt, byte[] message) {
+	public static String sha1(int iterations, byte[] salt, String message) {
 		return hash("SHA-1", 0, salt, message);
 	}
 
 	/**
 	 * The resulting string is 64 characters for the hash + 7 for the algorithm + salt + iteration
 	 */
-	public static String sha256(int iterations, byte[] salt, byte[] message) {
+	public static String sha256(int iterations, byte[] salt, String message) {
 		return hash("SHA-256", iterations, salt, message);
 	}
 
 	/**
 	 * Returns a string in the format "algorithm:iterations:salt:hash".
 	 */
-	public static String hash(String algorithm, int iterations, byte[] salt, byte[] message) {
+	public static String hash(String algorithm, int iterations, byte[] salt, String message) {
 		try {
 			final MessageDigest digest = MessageDigest.getInstance(algorithm);
 
-			digest.update(message);
+			byte[] bytes = message.getBytes("UTF-8");
+			digest.update(bytes);
 			digest.update(salt);
 
 			for (int i = 0; i < iterations; i++) {
 				digest.update(digest.digest());
-				digest.update(message);
+				digest.update(bytes);
 				digest.update(salt);
 			}
 
@@ -122,24 +71,22 @@ public class PasswordUtil {
 			sb.append(":");
 			sb.append(encode(digest.digest()));
 			return sb.toString();
+		} catch (UnsupportedEncodingException e) {
+			throw new RuntimeException(e);
 		} catch (NoSuchAlgorithmException e) {
 			throw new RuntimeException(e);
 		}
 	}
 
 	public static boolean verify(String hash, String secret) {
-		try {
-			final int a = hash.indexOf(':');
-			final int b = hash.indexOf(':', a + 1);
-			final int c = hash.indexOf(':', b + 1);
-			final String algorithm = hash.substring(0, a);
-			final int iterations = Integer.parseInt(hash.substring(a + 1, b), 16);
-			final byte[] salt = decode(hash.substring(b + 1, c));
-			final String calc = hash(algorithm, iterations, salt, secret.getBytes("UTF-8"));
-			return hash.equalsIgnoreCase(calc);
-		} catch (UnsupportedEncodingException e) {
-			throw new RuntimeException(e);
-		}
+		final int a = hash.indexOf(':');
+		final int b = hash.indexOf(':', a + 1);
+		final int c = hash.indexOf(':', b + 1);
+		final String algorithm = hash.substring(0, a);
+		final int iterations = Integer.parseInt(hash.substring(a + 1, b), 16);
+		final byte[] salt = decode(hash.substring(b + 1, c));
+		final String calc = hash(algorithm, iterations, salt, secret);
+		return hash.equalsIgnoreCase(calc);
 	}
 
 	public static String encode(byte[] bytes) {

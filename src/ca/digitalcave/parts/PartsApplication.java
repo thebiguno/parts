@@ -55,7 +55,7 @@ public class PartsApplication extends Application {
 	private final Configuration fmConfig = new Configuration();
 	private ComboPooledDataSource dataSource;
 	private SqlSessionFactory sqlFactory;
-	private final PartsVerifier verifier = new PartsVerifier(this);
+	private final PartsVerifier verifier = new PartsVerifier();
 	
 	public PartsApplication() {
 		setStatusService(new StatusService());
@@ -80,6 +80,9 @@ public class PartsApplication extends Application {
 		dataSource.setJdbcUrl(properties.getProperty("jdbc.url"));
 		dataSource.setUser(properties.getProperty("jdbc.user"));
 		dataSource.setPassword(properties.getProperty("jdbc.password"));
+		dataSource.setMinPoolSize(1);
+		dataSource.setInitialPoolSize(1);
+		dataSource.setMaxPoolSize(10);
 		
 		// set up mybatis
 		final Environment environment = new Environment("prod", new JdbcTransactionFactory(), dataSource);

@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="ca.digitalcave.parts.data.AccountMapper">
+
+	<cache/>
+
+	<select id="select" resultType="ca.digitalcave.parts.model.Account">
+select account_id as id, identifier, email, activation_key activationKey, secret secretString, created_at as createdAt, modified_at as modifiedAt
+from account
+where identifier = #{identifier} or email = #{identifier} or activation_key = #{identifier}
+	</select>
+
+	<insert id="insert">
+		<selectKey order="BEFORE" resultType="int" keyProperty="account.id">
+select coalesce(max(account_id),0) + 1 from account
+		</selectKey>
+insert into account (account_id, identifier, email, secret, created_at, modified_at)
+values (account.id, account.identifier, account.email, account.secretString, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
+	</insert>
+	
+	<update id="updateSecret">
+update account set secret = account.secretString
+where account_id = account.id
+	</update>
+
+	<update id="updateActivationKey">
+update account set activation_key = account.activationKey
+where account_id = account.id
+	</update>
+</mapper>

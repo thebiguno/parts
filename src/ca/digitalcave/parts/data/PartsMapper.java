@@ -5,7 +5,6 @@ import java.util.List;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.session.ResultHandler;
 
-import ca.digitalcave.parts.model.Account;
 import ca.digitalcave.parts.model.Attribute;
 import ca.digitalcave.parts.model.Category;
 import ca.digitalcave.parts.model.Part;
@@ -30,6 +29,4 @@ public interface PartsMapper {
 	int deleteAttribute(@Param("account") int account, @Param("id") int id);
 	
 	Attribute selectAttribute(@Param("account") int account, @Param("attribute") long attribute);
-	
-	Account selectAccount(@Param("identifier") String identifier);
 }

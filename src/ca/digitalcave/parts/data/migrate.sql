@@ -4,15 +4,16 @@
 create table account (
 	account_id smallint primary key,
 	identifier varchar(255) not null unique,
-	email varchar(255) not null,
+	email varchar(255) not null unique,
 	secret varchar(255) not null,
+	activation_key varchar(36) unique, -- used during account creation and for password reset
 	created_at timestamp not null,
 	modified_at timestamp not null
 );
 --rollback drop table account;
 
 --changeset wj:insert_admin
-insert into account values (0, 'Administrator', 'admin@example.com', 'password', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
+insert into account values (0, 'admin', 'admin@example.com', 'password', null, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
 --rollback delete from account where account_id = 0;
 
 --changeset wj:create_category

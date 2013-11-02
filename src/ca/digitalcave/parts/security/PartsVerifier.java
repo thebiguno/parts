@@ -1,84 +1,49 @@
 package ca.digitalcave.parts.security;
 
-import java.util.Collections;
-import java.util.Map;
-import java.util.WeakHashMap;
-import java.util.concurrent.Semaphore;
-
 import org.apache.ibatis.session.SqlSession;
+import org.restlet.Application;
 import org.restlet.Request;
 import org.restlet.Response;
+import org.restlet.data.ChallengeResponse;
 import org.restlet.security.Verifier;
 
 import ca.digitalcave.parts.PartsApplication;
-import ca.digitalcave.parts.data.PartsMapper;
+import ca.digitalcave.parts.data.AccountMapper;
 import ca.digitalcave.parts.model.Account;
 
 public class PartsVerifier implements Verifier {
 
-	private final PartsApplication application;
-	private final static Map<String, Semaphore> loginAttempts = Collections.synchronizedMap(new WeakHashMap<String, Semaphore>());
-	
-	public PartsVerifier(PartsApplication application) {
-		this.application = application;
-	}
-	
 	@Override
 	public int verify(Request request, Response response) {
-		if (request.getChallengeResponse() == null) {
-			return RESULT_MISSING;
-		} else {
-			final boolean validSecret = checkSecret(request);
-			
-			if (!validSecret) {
-				final String identifier = request.getChallengeResponse().getIdentifier();
-				
-				// delay 1.5 seconds
-				try {
-					if (loginAttempts.get(identifier) == null) {
-						loginAttempts.put(identifier, new Semaphore(1));
-					}
-					final Semaphore semaphore = loginAttempts.get(identifier);
-					semaphore.acquire();
-					Thread.sleep(1500);
-					semaphore.release();
-				} catch (InterruptedException e) {
-					;
-				}
-			}
-			return validSecret ? RESULT_VALID : RESULT_INVALID;
-		}
-	}
-	
-	public boolean checkSecret(Request request) {
-		final String identifier = request.getChallengeResponse().getIdentifier();
-		final char[] secret = request.getChallengeResponse().getSecret();
-		
+		final ChallengeResponse cr = request.getChallengeResponse();
+		if (cr == null) return RESULT_MISSING;
+
+		final PartsApplication application = (PartsApplication) Application.getCurrent();
+
 		final SqlSession sql = application.getSqlFactory().openSession(true);
 		try {
-			final Account account = sql.getMapper(PartsMapper.class).selectAccount(identifier);
+			final Account account = sql.getMapper(AccountMapper.class).select(cr.getIdentifier());
+			if (account == null) return RESULT_UNKNOWN;
 			
-			if (account == null) {
-				return false;
-			}
-			final boolean result;
-			if ((secret == null) || account.getSecret() == null) {
-				result = (secret == account.getSecret());
-			} else {
-				final String stored = new String(account.getSecret());
-				if (stored.startsWith("SHA1:")) {
-					result = PasswordUtil.verify(stored, new String(secret));
-				} else {
-					result = stored.equals(new String(secret));
-				}
-			}
-			
-			if (result) {
-				request.getClientInfo().setUser(account);
-			}
-			return result;
+			if (checkSecret(cr, account) == false) return RESULT_INVALID;
+
+			request.getClientInfo().setUser(account);
+
+			return RESULT_VALID;
 		} finally {
 			sql.close();
 		}
 	}
+	
+	private boolean checkSecret(ChallengeResponse cr, Account account) {
+		if ((cr.getSecret() == null) || account.getSecret() == null) return false;
+			
+		if (account.getSecretString().startsWith("SHA")) {
+			return PasswordUtil.verify(account.getSecretString(), new String(cr.getSecret()));
+		} else {
+			return account.getSecretString().equals(new String(cr.getSecret()));
+		}
+	}
+	
+
 }

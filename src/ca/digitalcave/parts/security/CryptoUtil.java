@@ -22,16 +22,17 @@ public class CryptoUtil {
 	public static void main(String[] args) throws Exception {
 		final Key key = createKey("password".toCharArray());
 		decrypt(key, encrypt(key, "message"));
+		decrypt(key, encrypt(key, "message"));
 	}
 	
 	/**
-	 * Generates an AES key from a password
+	 * Generates an AES key from a password with random salt
 	 */
 	public static Key createKey(char[] password) {
 		try {
-			byte[] salt = new byte[8];
+			byte[] salt = new byte[128];
 			SecureRandom.getInstance("SHA1PRNG").nextBytes(salt);
-			return createKey(new PBEKeySpec(password, salt, 65536, 256));
+			return createKey(new PBEKeySpec(password, salt, 8, 128));
 		} catch (NoSuchAlgorithmException e) {
 			throw new RuntimeException(e);
 		} catch (InvalidKeySpecException e) {
@@ -42,7 +43,8 @@ public class CryptoUtil {
 	public static Key createKey(PBEKeySpec keySpec) throws InvalidKeySpecException {
 		try {
 			final SecretKeyFactory keyFactory = SecretKeyFactory.getInstance(KEY_ALGORITHM);
-			return new SecretKeySpec(keyFactory.generateSecret(keySpec).getEncoded(), "AES");
+			final SecretKeySpec result =  new SecretKeySpec(keyFactory.generateSecret(keySpec).getEncoded(), "AES");
+			return result;
 		} catch (NoSuchAlgorithmException e) {
 			throw new RuntimeException(e);
 		}
