@@ -18,13 +18,13 @@ Ext.define("Parts.controller.Login", {
 						"success": function(response) {
 							window.location.reload();
 						},
-						"failure": function(response) {
-							var key = response.getResponseHeader('WWW-Authenticate').split(' ')[1];
+						"failure": function(form, action) {
+							var key = action.result.activationKey;
 							if (key) {
 								var card = button.up('panel').getLayout().next();
 								card.down('hiddenfield[name=identifier]').setValue(key);
 							} else {
-								button.up('form').down('label[itemId=message]').setText('Authentication Failed');
+								button.up('form').down('label[itemId=message]').setText('Invalid Credentials');
 							}
 						}
 					});

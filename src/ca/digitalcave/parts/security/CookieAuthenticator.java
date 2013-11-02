@@ -136,7 +136,7 @@ public class CookieAuthenticator extends ChallengeAuthenticator {
 			authenticated = true;
 		}
 		
-		if (!authenticated && delay > 0) {
+		if (!isOptional() && !authenticated && delay > 0) {
 			// delay to reduce the effectiveness of brute force attacks
 			final String identifier = cr.getIdentifier();
 			
@@ -169,10 +169,11 @@ public class CookieAuthenticator extends ChallengeAuthenticator {
 	
 	@Override
 	protected int authenticated(Request request, Response response) {
-		if (request.getChallengeResponse() == null) return CONTINUE;
+		final ChallengeResponse cr = request.getChallengeResponse();
+		if (cr == null) return CONTINUE;
 		
-		final String value = format(request.getChallengeResponse());
-		if (value.equals(request.getChallengeResponse().getRawValue())) return CONTINUE;
+		final String value = format(cr);
+		if (value.equals(cr.getRawValue())) return CONTINUE;
 		
 		final CookieSetting credentialsCookie = getCredentialsCookie(request, response);
 		credentialsCookie.setValue(value);
@@ -208,7 +209,8 @@ public class CookieAuthenticator extends ChallengeAuthenticator {
 	public String format(ChallengeResponse cr) {
 		try {
 			long issued = cr.getTimeIssued();
-			long expires = Long.parseLong(cr.getParameters().getFirstValue("expires"));
+			long expires = System.currentTimeMillis() + maxTokenAge;
+			try { Long.parseLong(cr.getParameters().getFirstValue("expires")); } catch (Throwable t) {}
 			if (issued + 60000 < System.currentTimeMillis()) {
 				issued = System.currentTimeMillis();
 				expires = System.currentTimeMillis() + maxTokenAge;
@@ -219,7 +221,7 @@ public class CookieAuthenticator extends ChallengeAuthenticator {
 			p.setProperty("expires", Long.toString(expires));
 			p.setProperty("identifier", cr.getIdentifier());
 			p.setProperty("secret", new String(cr.getSecret()));
-			p.setProperty("authenticator", cr.getParameters().getFirstValue("authenticator"));
+			try { p.setProperty("authenticator", cr.getParameters().getFirstValue("authenticator")); } catch (NullPointerException e) {}
 
 			final ByteArrayOutputStream out = new ByteArrayOutputStream();
 			p.store(out, null);
@@ -283,6 +285,7 @@ public class CookieAuthenticator extends ChallengeAuthenticator {
 			cr.getParameters().add("impersonate", form.getFirstValue("impersonate"));
 			request.setChallengeResponse(cr);
 		}
+		cr.getParameters().add("action", action);
 		request.setChallengeResponse(cr);
 		return true;
 	}
