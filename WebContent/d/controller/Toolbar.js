@@ -53,6 +53,18 @@ Ext.define("Parts.controller.Toolbar", {
 						}
 					});
 				}
+			},
+			
+			"toolbar button[itemId=logoutbutton]": {
+				"click": function(button) {
+					Ext.Ajax.request({
+						"url": "index",
+						"method": "DELETE",
+						"success": function() {
+							window.location.reload();
+						}
+					});
+				}
 			}
 		});
 	},

@@ -1,10 +1,13 @@
 package ca.digitalcave.parts;
 
 import java.security.Key;
+import java.security.spec.InvalidKeySpecException;
 import java.sql.Blob;
 import java.sql.Connection;
 import java.util.Locale;
 import java.util.Properties;
+
+import javax.crypto.spec.PBEKeySpec;
 
 import liquibase.Liquibase;
 import liquibase.database.DatabaseConnection;
@@ -145,44 +148,48 @@ public class PartsApplication extends Application {
 
 	@Override  
 	public Restlet createInboundRoot() {
-
-		final Key key = CryptoUtil.createKey("password".toCharArray());
-		
-		final Router categoriesRouter = new Router(getContext());
-		categoriesRouter.attach("", CategoriesResource.class);
-		categoriesRouter.attach("/{category}", CategoriesResource.class);
-		categoriesRouter.attach("/{category}/parts", PartsResource.class);
-		categoriesRouter.attach("/{category}/parts/{part}", PartResource.class);
-		categoriesRouter.attach("/{category}/parts/{part}/attributes", AttributesResource.class);
-		categoriesRouter.attach("/{category}/parts/{part}/attributes/{attribute}", AttributeResource.class);
-		
-		final CookieAuthenticator categegoryAuth = new CookieAuthenticator(getContext(), false, key);
-		categegoryAuth.setVerifier(getVerifier());
-		categegoryAuth.setNext(categoriesRouter);
-		
-		final Router importRouter = new Router(getContext());
-		importRouter.attach("/digikey", DigikeyResource.class);
-		importRouter.attach("/csv", CsvResource.class);
-
-		final CookieAuthenticator importAuth = new CookieAuthenticator(getContext(), false, key);
-		importAuth.setVerifier(getVerifier());
-		importAuth.setNext(importRouter);
-		
-		final Router publicRouter = new Router(getContext());
-		publicRouter.attach("", new Redirector(getContext(), "index.html", Redirector.MODE_CLIENT_TEMPORARY));
-		publicRouter.attach("/", new Redirector(getContext(), "index.html", Redirector.MODE_CLIENT_TEMPORARY));
-		publicRouter.attach("/index", IndexResource.class);
-		publicRouter.attach("/categories", categegoryAuth);
-		publicRouter.attach("/import", importAuth);
-		publicRouter.attachDefault(DefaultResource.class).setMatchingMode(Template.MODE_STARTS_WITH);
-
-		final CookieAuthenticator optionalAuth = new CookieAuthenticator(getContext(), true, key);
-		optionalAuth.setVerifier(getVerifier());
-		optionalAuth.setNext(publicRouter);
-
-		final Encoder encoder = new Encoder(getContext(), false, true, getEncoderService());
-		encoder.setNext(optionalAuth);
-
-		return encoder;
+		try {
+			final byte[] salt = {14, -43, -91, -67, 85, 55, 44, -115};
+			final Key key = CryptoUtil.createKey(new PBEKeySpec("password".toCharArray(), salt, 8, 128));
+			
+			final Router categoriesRouter = new Router(getContext());
+			categoriesRouter.attach("", CategoriesResource.class);
+			categoriesRouter.attach("/{category}", CategoriesResource.class);
+			categoriesRouter.attach("/{category}/parts", PartsResource.class);
+			categoriesRouter.attach("/{category}/parts/{part}", PartResource.class);
+			categoriesRouter.attach("/{category}/parts/{part}/attributes", AttributesResource.class);
+			categoriesRouter.attach("/{category}/parts/{part}/attributes/{attribute}", AttributeResource.class);
+			
+			final CookieAuthenticator categegoryAuth = new CookieAuthenticator(getContext(), false, key);
+			categegoryAuth.setVerifier(getVerifier());
+			categegoryAuth.setNext(categoriesRouter);
+			
+			final Router importRouter = new Router(getContext());
+			importRouter.attach("/digikey", DigikeyResource.class);
+			importRouter.attach("/csv", CsvResource.class);
+	
+			final CookieAuthenticator importAuth = new CookieAuthenticator(getContext(), false, key);
+			importAuth.setVerifier(getVerifier());
+			importAuth.setNext(importRouter);
+			
+			final Router publicRouter = new Router(getContext());
+			publicRouter.attach("", new Redirector(getContext(), "index.html", Redirector.MODE_CLIENT_TEMPORARY));
+			publicRouter.attach("/", new Redirector(getContext(), "index.html", Redirector.MODE_CLIENT_TEMPORARY));
+			publicRouter.attach("/index", IndexResource.class);
+			publicRouter.attach("/categories", categegoryAuth);
+			publicRouter.attach("/import", importAuth);
+			publicRouter.attachDefault(DefaultResource.class).setMatchingMode(Template.MODE_STARTS_WITH);
+	
+			final CookieAuthenticator optionalAuth = new CookieAuthenticator(getContext(), true, key);
+			optionalAuth.setVerifier(getVerifier());
+			optionalAuth.setNext(publicRouter);
+	
+			final Encoder encoder = new Encoder(getContext(), false, true, getEncoderService());
+			encoder.setNext(optionalAuth);
+	
+			return encoder;
+		} catch (InvalidKeySpecException e) {
+			throw new RuntimeException(e);
+		}
 	}
 }

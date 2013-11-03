@@ -1,11 +1,8 @@
 package ca.digitalcave.parts.security;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.security.Key;
 import java.util.Collections;
 import java.util.Map;
-import java.util.Properties;
 import java.util.WeakHashMap;
 import java.util.concurrent.Semaphore;
 import java.util.logging.Level;
@@ -115,25 +112,19 @@ public class CookieAuthenticator extends ChallengeAuthenticator {
 	
 	@Override
 	protected boolean authenticate(Request request, Response response) {
-		boolean authenticated;
-		ChallengeResponse cr = request.getChallengeResponse();
-		if (cr == null) {
-			// normal request
+		final boolean authenticated;
+		ChallengeResponse cr = null;
+		if (isIntercepting(request, response)) {
+			intercept(request, response);
+			super.authenticate(request, response);
+			authenticated = true;
+		} else {
 			final Cookie cookie = request.getCookies().getFirst(cookieName);
 			if (cookie != null) {
 				cr = parse(cookie.getValue());
 				request.setChallengeResponse(cr);
 			}
 			authenticated = super.authenticate(request, response);
-		} else {
-			// intercepted request
-			final String action = cr.getParameters().getFirstValue("action");
-			if ("login".equals(action) || "impersonate".equals(action)) {
-				super.authenticate(request, response);
-			} else if ("enrole".equals(action) || "reset".equals(action)) {
-				request.setChallengeResponse(null);
-			}
-			authenticated = true;
 		}
 		
 		if (!isOptional() && !authenticated && delay > 0) {
@@ -156,23 +147,12 @@ public class CookieAuthenticator extends ChallengeAuthenticator {
 	}
 
 	@Override
-	protected int beforeHandle(Request request, Response response) {
-		if (isIntercepting(request, response)) {
-			if (intercept(request, response)) {
-				return super.beforeHandle(request, response);
-			} else {
-				return STOP;
-			}
-		}
-		return super.beforeHandle(request, response);
-	}
-	
-	@Override
 	protected int authenticated(Request request, Response response) {
 		final ChallengeResponse cr = request.getChallengeResponse();
 		if (cr == null) return CONTINUE;
 		
 		final String value = format(cr);
+		// TODO these will never match due to CBC on cipher, change to no block algorithm
 		if (value.equals(cr.getRawValue())) return CONTINUE;
 		
 		final CookieSetting credentialsCookie = getCredentialsCookie(request, response);
@@ -184,21 +164,20 @@ public class CookieAuthenticator extends ChallengeAuthenticator {
 	public ChallengeResponse parse(String encoded) {
 		try {
 			final byte[] bytes = CryptoUtil.decrypt(key, Base64.decode(encoded));
-			final Properties p = new Properties();
-			p.load(new ByteArrayInputStream(bytes));
+			final Form p = new Form(new String(bytes, "UTF-8"));
 			
-			long expires = Long.parseLong(p.getProperty("expires"));
+			long expires = Long.parseLong(p.getFirstValue("expires"));
 			if (expires < System.currentTimeMillis()) {
 				return null;
 			}
 
 			final ChallengeResponse result = new ChallengeResponse(getScheme());
 			result.setRawValue(encoded);
-			result.setTimeIssued(Long.parseLong(p.getProperty("issued")));
-			result.setIdentifier(p.getProperty("identifier"));
-			result.setSecret(p.getProperty("secret"));
+			result.setTimeIssued(Long.parseLong(p.getFirstValue("issued")));
+			result.setIdentifier(p.getFirstValue("identifier"));
+			result.setSecret(p.getFirstValue("secret"));
 			result.getParameters().set("expires", Long.toString(expires));
-			result.getParameters().set("authenticator", p.getProperty("authenticator"));
+			result.getParameters().set("authenticator", p.getFirstValue("authenticator"));
 			return result;
 		} catch (Exception e) {
 			getLogger().log(Level.INFO, "Unable to decrypt cookie credentials", e);
@@ -209,23 +188,21 @@ public class CookieAuthenticator extends ChallengeAuthenticator {
 	public String format(ChallengeResponse cr) {
 		try {
 			long issued = cr.getTimeIssued();
-			long expires = System.currentTimeMillis() + maxTokenAge;
-			try { Long.parseLong(cr.getParameters().getFirstValue("expires")); } catch (Throwable t) {}
+			long expires = Long.parseLong(cr.getParameters().getFirstValue("expires"));
 			if (issued + 60000 < System.currentTimeMillis()) {
 				issued = System.currentTimeMillis();
 				expires = System.currentTimeMillis() + maxTokenAge;
 			}
 			
-			final Properties p = new Properties();
-			p.setProperty("issued", Long.toString(issued));
-			p.setProperty("expires", Long.toString(expires));
-			p.setProperty("identifier", cr.getIdentifier());
-			p.setProperty("secret", new String(cr.getSecret()));
-			try { p.setProperty("authenticator", cr.getParameters().getFirstValue("authenticator")); } catch (NullPointerException e) {}
+			final Form p = new Form();
+			p.set("issued", Long.toString(issued));
+			p.set("expires", Long.toString(expires));
+			p.set("identifier", cr.getIdentifier());
+			p.set("secret", new String(cr.getSecret()));
+			p.set("authenticator", cr.getParameters().getFirstValue("authenticator"));
 
-			final ByteArrayOutputStream out = new ByteArrayOutputStream();
-			p.store(out, null);
-			return Base64.encode(CryptoUtil.encrypt(key, out.toByteArray()), false);
+			System.out.println(p.getQueryString());
+			return Base64.encode(CryptoUtil.encrypt(key, p.getQueryString().getBytes("UTF-8")), false);
 		} catch (Exception e) {
 			getLogger().log(Level.INFO, "Unable to encrypt cookie credentials", e);
 			return null;
@@ -235,7 +212,7 @@ public class CookieAuthenticator extends ChallengeAuthenticator {
 	protected boolean isIntercepting(Request request, Response response) {
 		return interceptPath != null
 			&& interceptPath.equals(request.getResourceRef().getRemainingPart(false, false))
-			&& Method.POST.equals(request.getMethod());
+			&& (Method.POST.equals(request.getMethod()) || Method.DELETE.equals(request.getMethod()));
 	}
 	
 	protected boolean intercept(Request request, Response response) {

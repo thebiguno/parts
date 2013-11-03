@@ -74,22 +74,21 @@ public class IndexResource extends ServerResource {
 				
 				try {
 					sql.getMapper(AccountMapper.class).insert(account);
-					sendEmail(account);
 				} catch (PersistenceException e) {
 					return failure;
 				}
+				sendEmail(account.getEmail(), account.getActivationKey());
 			} else if ("reset".equals(action)) {
-				final Account account = sql.getMapper(AccountMapper.class).select(cr.getIdentifier());
-				account.setActivationKey(UUID.randomUUID().toString());
-				sql.getMapper(AccountMapper.class).updateActivationKey(account);
+				final String activationKey = UUID.randomUUID().toString();
+				sql.getMapper(AccountMapper.class).updateActivationKey(cr.getParameters().getFirstValue("email"), activationKey);
+				sendEmail(cr.getParameters().getFirstValue("email"), activationKey);
 			} else if ("activate".equals(action)) {
-				final Account account = sql.getMapper(AccountMapper.class).select(cr.getIdentifier());
 				final String password = new String(cr.getSecret());
 				if (PasswordUtil.strength(password) < 30) {
 					return failure;
 				}
-				account.setSecretString(PasswordUtil.sha1(1, PasswordUtil.randomSalt(8), password));
-				sql.getMapper(AccountMapper.class).updateSecret(account);
+				final String hash = PasswordUtil.sha1(1, PasswordUtil.randomSalt(8), password);
+				sql.getMapper(AccountMapper.class).updateSecret(cr.getParameters().getFirstValue("activationKey"), hash);
 			}
 		} finally {
 			sql.close();
@@ -97,7 +96,12 @@ public class IndexResource extends ServerResource {
 		return new StringRepresentation("{success:true}");
 	}
 	
-	private void sendEmail(final Account account) {
+	@Override
+	protected Representation delete(Variant variant) throws ResourceException {
+		return new StringRepresentation("{success:true}");
+	}
+	
+	private void sendEmail(final String email, final String activationKey) {
 		final Request request = new Request(Method.GET, "smtp://localhost"); // TODO
 		SaxRepresentation entity = new SaxRepresentation() {
 			@Override
@@ -108,11 +112,11 @@ public class IndexResource extends ServerResource {
 					w.startElement("head");
 					w.dataElement("subject", "Account activation");
 					w.dataElement("from", "donotreply@example.com");
-					w.dataElement("to", account.getEmail());
+					w.dataElement("to", email);
 					w.endElement("head");
 					w.startElement("body");
 					w.characters("Here is the activation key you requested: ");
-					w.characters(account.getActivationKey());
+					w.characters(activationKey);
 					w.characters("\n");
 					w.characters("If you did not request this activation key please ignore this email.\n");
 					w.endElement("body");

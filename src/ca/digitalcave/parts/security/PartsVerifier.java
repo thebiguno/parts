@@ -1,5 +1,7 @@
 package ca.digitalcave.parts.security;
 
+import java.util.Map;
+
 import org.apache.ibatis.session.SqlSession;
 import org.restlet.Application;
 import org.restlet.Request;
@@ -22,8 +24,9 @@ public class PartsVerifier implements Verifier {
 
 		final SqlSession sql = application.getSqlFactory().openSession(true);
 		try {
-			final Account account = sql.getMapper(AccountMapper.class).select(cr.getIdentifier());
-			if (account == null) return RESULT_UNKNOWN;
+			final Map<String, Object> map = sql.getMapper(AccountMapper.class).select(cr.getIdentifier());
+			if (map == null) return RESULT_UNKNOWN;
+			final Account account = new Account(map);
 			
 			if (checkSecret(cr, account) == false) return RESULT_INVALID;
 

@@ -62,6 +62,13 @@ Ext.define("Parts.view.Viewport", {
 					"text": "Report",
 					"itemId": "reportbutton",
 					"icon": "img/report.png"
+				},
+				"->",
+				{
+					"xtype": "button",
+					"text": "Logout",
+					"itemId": "logoutbutton",
+					"icon": "img/control-power.png"
 				}
 			]
 		},
