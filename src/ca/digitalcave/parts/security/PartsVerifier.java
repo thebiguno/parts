@@ -27,6 +27,7 @@ public class PartsVerifier implements Verifier {
 			final Map<String, Object> map = sql.getMapper(AccountMapper.class).select(cr.getIdentifier());
 			if (map == null) return RESULT_UNKNOWN;
 			final Account account = new Account(map);
+			cr.setIdentifier(account.getIdentifier()); // the identifier could be an email or activation key so replace it
 			
 			if (checkSecret(cr, account) == false) return RESULT_INVALID;
 
