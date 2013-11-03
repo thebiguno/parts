@@ -13,6 +13,7 @@ Ext.define('Parts.view.Login', {
 	"tabPosition": "bottom",
 	"items": [
 		{
+			"xtype": "panel",
 			"defaults": { "border": false, "margin": 10 },
 			"title": "Authenticate",
 			"layout": "card",
@@ -22,7 +23,6 @@ Ext.define('Parts.view.Login', {
 					"itemId": "authenticate",
 					"defaults": { "anchor": "100%", "allowBlank": false, "xtype": "textfield" },
 					"items": [
-						{ "xtype": "hiddenfield", "name": "action", "value": "login" },
 						{ "fieldLabel": "Identifier", "name": "identifier" },
 						{ "fieldLabel": "Password", "inputType": "password", "name": "secret" },
 						{ "xtype": "label", "itemId": "message" }
@@ -36,10 +36,9 @@ Ext.define('Parts.view.Login', {
 					"itemId": "activate",
 					"defaults": { "anchor": "100%", "allowBlank": false, "xtype": "textfield", "inputType": "password" },
 					"items": [
-						{ "xtype": "hiddenfield", "name": "action", "value": "activate" },
 						{ "xtype": "hiddenfield", "name": "identifier", "value": "" },
 						{ "fieldLabel": "New Password", "name": "secret" },
-						{ "fieldLabel": "Verify Password", "name": "secret" },
+						{ "fieldLabel": "Verify Password", "name": "verify" },
 						{ "xtype": "label", "itemId": "message" }
 					],
 					"buttons": [
@@ -50,6 +49,7 @@ Ext.define('Parts.view.Login', {
 			]
 		},
 		{
+			"xtype": "panel",
 			"defaults": { "border": false, "margin": 10 },
 			"title": "Enrole",
 			"layout": "card",
@@ -59,9 +59,8 @@ Ext.define('Parts.view.Login', {
 					"itemId": "enrole",
 					"defaults": { "anchor": "100%", "allowBlank": false, "xtype": "textfield" },
 					"items": [
-						{ "xtype": "hiddenfield", "name": "action", "value": "enrole" },
 						{ "fieldLabel": "Identifier", "name": "identifier" },
-						{ "fieldLabel": "Email", "name": "email" },
+						{ "fieldLabel": "Email", "name": "email", "vtype": "email" },
 						{ "xtype": "label", "itemId": "message" }
 					],
 					"buttons": [
@@ -71,12 +70,11 @@ Ext.define('Parts.view.Login', {
 				{
 					"xtype": "form",
 					"itemId": "activate",
-					"defaults": { "anchor": "100%", "allowBlank": false, "xtype": "textfield", "inputType": "password" },
+					"defaults": { "anchor": "100%", "allowBlank": false, "xtype": "textfield" },
 					"items": [
-						{ "xtype": "hiddenfield", "name": "action", "value": "activate" },
 						{ "fieldLabel": "Activation Key", "name": "identifier" },
-						{ "fieldLabel": "New Password", "name": "secret" },
-						{ "fieldLabel": "Password", "name": "secret" },
+						{ "fieldLabel": "New Password", "name": "secret", "inputType": "password" },
+						{ "fieldLabel": "Verify Password", "name": "verify", "inputType": "password" },
 						{ "xtype": "label", "itemId": "message" }
 					],
 					"buttons": [
@@ -87,6 +85,7 @@ Ext.define('Parts.view.Login', {
 			]
 		},
 		{
+			"xtype": "panel",
 			"defaults": { "border": false, "margin": 10 },
 			"title": "Forgot Password",
 			"layout": "card",
@@ -106,12 +105,11 @@ Ext.define('Parts.view.Login', {
 				{
 					"xtype": "form",
 					"itemId": "activate",
-					"defaults": { "anchor": "100%", "allowBlank": false, "xtype": "textfield", "inputType": "password" },
+					"defaults": { "anchor": "100%", "allowBlank": false, "xtype": "textfield" },
 					"items": [
-						{ "xtype": "hiddenfield", "name": "action", "value": "activate" },
 						{ "fieldLabel": "Activation Key", "name": "identifier" },
-						{ "fieldLabel": "New Password", "name": "secret" },
-						{ "fieldLabel": "Password", "name": "secret" },
+						{ "fieldLabel": "New Password", "name": "secret", "inputType": "password" },
+						{ "fieldLabel": "Password", "name": "verify", "inputType": "password" },
 						{ "xtype": "label", "itemId": "message" }
 					],
 					"buttons": [
