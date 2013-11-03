@@ -152,7 +152,7 @@ public class CookieAuthenticator extends ChallengeAuthenticator {
 		if (cr == null) return CONTINUE;
 		
 		final String value = format(cr);
-		if (value.equals(cr.getRawValue())) return CONTINUE;
+		if (value == null || value.equals(cr.getRawValue())) return CONTINUE;
 		
 		final CookieSetting credentialsCookie = getCredentialsCookie(request, response);
 		credentialsCookie.setValue(value);
@@ -198,9 +198,10 @@ public class CookieAuthenticator extends ChallengeAuthenticator {
 			p.set("issued", Long.toString(issued));
 			p.set("expires", Long.toString(expires));
 			p.set("identifier", cr.getIdentifier());
-			p.set("secret", new String(cr.getSecret()));
+			if (cr.getSecret() != null) p.set("secret", new String(cr.getSecret()));
 			p.set("authenticator", cr.getParameters().getFirstValue("authenticator"));
 
+			System.out.println(p.getQueryString());
 			return Base64.encode(CryptoUtil.encrypt(key, p.getQueryString().getBytes("UTF-8")), false);
 		} catch (Exception e) {
 			getLogger().log(Level.INFO, "Unable to encrypt cookie credentials", e);
