@@ -51,10 +51,10 @@ public class Account extends User {
 	}
 	
 	public void setSecretString(String secret) {
-		setSecret(secret.toCharArray());
+		setSecret(secret == null ? null : secret.toCharArray());
 	}
 	public String getSecretString() {
-		return new String(getSecret());
+		return getSecret() == null ? null : new String(getSecret());
 	}
 	
 	public String getActivationKey() {
