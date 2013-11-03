@@ -152,7 +152,6 @@ public class CookieAuthenticator extends ChallengeAuthenticator {
 		if (cr == null) return CONTINUE;
 		
 		final String value = format(cr);
-		// TODO these will never match due to CBC on cipher, change to no block algorithm
 		if (value.equals(cr.getRawValue())) return CONTINUE;
 		
 		final CookieSetting credentialsCookie = getCredentialsCookie(request, response);
@@ -188,7 +187,8 @@ public class CookieAuthenticator extends ChallengeAuthenticator {
 	public String format(ChallengeResponse cr) {
 		try {
 			long issued = cr.getTimeIssued();
-			long expires = Long.parseLong(cr.getParameters().getFirstValue("expires"));
+			long expires = 0;
+			try { expires = Long.parseLong(cr.getParameters().getFirstValue("expires")); } catch (Throwable e) {}
 			if (issued + 60000 < System.currentTimeMillis()) {
 				issued = System.currentTimeMillis();
 				expires = System.currentTimeMillis() + maxTokenAge;
@@ -201,7 +201,6 @@ public class CookieAuthenticator extends ChallengeAuthenticator {
 			p.set("secret", new String(cr.getSecret()));
 			p.set("authenticator", cr.getParameters().getFirstValue("authenticator"));
 
-			System.out.println(p.getQueryString());
 			return Base64.encode(CryptoUtil.encrypt(key, p.getQueryString().getBytes("UTF-8")), false);
 		} catch (Exception e) {
 			getLogger().log(Level.INFO, "Unable to encrypt cookie credentials", e);

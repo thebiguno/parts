@@ -1,6 +1,5 @@
 package ca.digitalcave.parts.security;
 
-import java.security.AlgorithmParameters;
 import java.security.Key;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
@@ -8,7 +7,6 @@ import java.security.spec.InvalidKeySpecException;
 
 import javax.crypto.Cipher;
 import javax.crypto.SecretKeyFactory;
-import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.PBEKeySpec;
 import javax.crypto.spec.SecretKeySpec;
 
@@ -17,7 +15,7 @@ import org.restlet.engine.util.Base64;
 public class CryptoUtil {
 
 	private static final String KEY_ALGORITHM = "PBKDF2WithHmacSHA1";
-	private static final String CIPHER_ALGORITHM = "AES/CBC/PKCS5Padding";
+	private static final String CIPHER_ALGORITHM = "AES";
 
 	public static void main(String[] args) throws Exception {
 		final Key key = createKey("password".toCharArray());
@@ -50,36 +48,16 @@ public class CryptoUtil {
 		}
 	}
 	
-	/**
-	 * Given an AES key and plain-text, returns an 16 byte IV concatenated with cipher-text.
-	 */
 	public static byte[] encrypt(Key key, byte[] bytes) throws Exception {
 		final Cipher c = Cipher.getInstance(CIPHER_ALGORITHM);
 		c.init(Cipher.ENCRYPT_MODE, key);
-		final AlgorithmParameters p = c.getParameters();
-		
-		final byte[] iv = p.getParameterSpec(IvParameterSpec.class).getIV();
-		final byte[] out = c.doFinal(bytes);
-
-		final byte[] result = new byte[out.length + iv.length];
-		System.arraycopy(iv, 0, result, 0, iv.length);
-		System.arraycopy(out, 0, result, iv.length, out.length);
-
-		return result;
+		return c.doFinal(bytes);
 	}
 	
-	/**
-	 * Given an AES key and a 16 byte IV concatenated with cipher-text, returns plain-text.
-	 */
 	public static byte[] decrypt(Key key, byte[] bytes) throws Exception {
-		final byte[] iv = new byte[16];
-		final byte[] in = new byte[bytes.length - iv.length];
-		System.arraycopy(bytes, 0, iv, 0, iv.length);
-		System.arraycopy(bytes, iv.length, in, 0, in.length);
-
 		final Cipher c = Cipher.getInstance(CIPHER_ALGORITHM);
-		c.init(Cipher.DECRYPT_MODE, key, new IvParameterSpec(iv));
-		return c.doFinal(in);
+		c.init(Cipher.DECRYPT_MODE, key);
+		return c.doFinal(bytes);
 	}
 	
 	public static String encrypt(Key key, String string) throws Exception {
