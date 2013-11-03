@@ -5,8 +5,8 @@ create table account (
 	account_id smallint primary key,
 	identifier varchar(255) not null unique,
 	email varchar(255) not null unique,
-	secret varchar(255) not null,
-	activation_key varchar(36) unique, -- used during account creation and for password reset
+	secret varchar(255),
+	activation_key varchar(36) unique,
 	created_at timestamp not null,
 	modified_at timestamp not null
 );
