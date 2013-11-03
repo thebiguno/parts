@@ -45,15 +45,15 @@ public class CookieAuthenticator extends ChallengeAuthenticator {
 	 * <p>This authenticator supports the following features:</p>
 	 * <ul><li>XHR-based interface to a single end-point for all authentication operations</li>
 	 *     <li>Redirects are not used since they result in mixed content warnings when using Apache mod_proxy and HTTPS</li>
-	 *     <li>Both authentication identity and authorisation identity (i.e. impersonation of another user)</li>
-	 *     <li>Automatic login after forced and requested password reset and enrolment</li>
+	 *     <li>Both authentication identity and authorization identity (i.e. impersonation of another user)</li>
+	 *     <li>Automatic login after enrollment and both forced and elective password reset</li>
 	 *     <li>Time limited authentication window that moves with each valid request (defaults to max integer which is 24 days)</li>
 	 *     <li>Automatic delay after invalid authentication (defaults to 1500 ms)</li>
 	 *     <li>Does not permit user enumeration attacks for account creation and password reset requests</li>
 	 *     <li>Can be combined with other authenticators</li></ul>
 	 * <p>Uses following additional parameters in the challenge response:</p>
 	 * <dl><dt>action</dt><dd>one of login, logout, impersonate, enrole, reset, activate</dd>
-	 *     <dt>expires</dt><dd>the date/time after which the token will no longer be honoured</dd>
+	 *     <dt>expires</dt><dd>the date/time after which the token will no longer be honored</dd>
 	 *     <dt>authenticator</dt><dd>the authentication identity whose password will be verified</dd>
 	 *     <dt>email</dt><dd>the email address of the user requesting a new account or requesting a password reset</dd>
 	 *     <dt>firstName</dt><dd>the first name of the user requesting a new account</dd>
@@ -61,30 +61,39 @@ public class CookieAuthenticator extends ChallengeAuthenticator {
 	 * <p>The following information is written into the cookie:</p>
 	 * <ul><li>Authentication Identifier</li>
 	 *     <li>Authentication Secret</li>
-	 *     <li>Authorisation Identifier</li>
+	 *     <li>Authorization Identifier</li>
 	 *     <li>Issue Date/Time</li>
 	 *     <li>Expire Date/Time</li></ul>
-	 * <p>The work-flows for each action are:</p>
+	 * <p>The following basic work-flows are supported:</p>
+	 * <ul><li>Logged Out > Login [ > Activation ] > Logged In</li>
+	 *     <li>Logged Out > Enrole > Activation > Logged In</li>
+	 *     <li>Logged Out > Reset > Activation > Logged In</li>
+	 *     <li>Logged In > Impersonate > Logged In</li>
+	 *     <li>Logged In > Logout > Logged Out</li></ul>
+	 * <p>Each action has the following requirements:</p>
 	 * <p>Login with optional forced password change</p>
-	 * <ol><li>POST identifier=authenticationIdentifer, secret=authenticationSecret [, action=login]</i>
-	 *     <li>If the request is honoured the verifier MUST set the client info user</li>
-	 *     <li>If password reset is required the resource MUST return an activationKey for use by the activation action</li></ol>
+	 * <ol><li>POST identifier=identifier, secret=secret [, action=login][, impersonate=identifier]</i>
+	 *     <li>If the request is honored the verifier MUST set the client info user</li>
+	 *     <li>If password reset is required the verifier SHOULD return INVALID to prevent access to other resources</li> 
+	 *     <li>If password reset is required the resource MUST return an activation key for use by the activation form</li>
+	 *     <li>(Login should be called immediately after a successful elective password change to update the cookie)</li></ol>
 	 * <p>Logout</p>
 	 * <ol><li>POST action=logout OR DELETE</li></ol>
 	 * <p>Password reset</p>
-	 * <ol><li>POST reset=email</li>
-	 *     <li>the resource send an activation key by email</li>
+	 * <ol><li>POST action=reset, identifier=identifier OR email</li>
+	 *     <li>the resource sends an activation key by email</li>
 	 * <p>Account creation</p>
-	 * <ol><li>POST enrole=identifier, email=email, [, firstName=first_name, lastName=last_name]</li>
-	 *     <li>the resource send an activation key by email</li>
+	 * <ol><li>POST action=enrole, identifier=identifier, email=email [, firstName=first_name] [, lastName=last_name]</li>
+	 *     <li>the resource sends an activation key by email</li>
 	 * <p>Account impersonation</p>
-	 * <ol><li>POST impersonate=identifier</li>
-	 *     <li>If the request is honoured the verifier MUST set authenticator=identifier into the challenge response parameters and set identifier=impersonate into the challenge response</li></ol>
-	 *     <li>The resource may vary the response on the presence of the authenticator parameter
+	 * <ol><li>POST action=impersonate, identifier=identifier</li>
+	 *     <li>If the request is honored the verifier MUST set authenticator=identifier into the challenge response parameters and set identifier=impersonate into the challenge response so that access to other resources appears to originate as the user being impersonated</li></ol>
+	 *     <li>The resource MAY vary the response on the presence of the authenticator parameter to provide feedback if required</li></ol>
 	 * <p>Account activation (second step for forced password change, password reset, and account creation</p>
-	 * <ol><li>POST identifier=activationKey and secret=newPassword</li>
+	 * <ol><li>POST action=activate, identifier=activationKey and secret=newPassword</li>
 	 *     <li>The resource may vary the response on the acceptance of the new secret</li>
 	 * <p>It is recommended that the activation key used for account creation, password reset and forced password change be a UUID stored in the account table.  Furthermore it is required that the identifier, activationKey and email address be unique in the account table.</p>
+	 * <p>The verifier needs to find a user by identifier, by email, or by activation key.  When found the verifier needs to replace update the identifier in the challenge response so that the cookie will have the correct value.</p>
 	 */
 	public CookieAuthenticator(Context context, boolean optional, Key key, String cookieName, String interceptPath) {
 		super(context, optional, ChallengeScheme.HTTP_COOKIE, null);
@@ -232,6 +241,7 @@ public class CookieAuthenticator extends ChallengeAuthenticator {
 		if (ACTION_LOGIN.equals(action)) {
 			// the user is attempting to log in
 			cr = new ChallengeResponse(getScheme(), form.getFirstValue("identifier"), form.getFirstValue("secret"));
+			cr.getParameters().add("impersonate", form.getFirstValue("impersonate"));
 		} else if ("logout".equals(action)) {
 			// the user is attempting to log out
 			cr = parse(request.getCookies().getFirst(cookieName).getValue());
