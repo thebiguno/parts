@@ -14,6 +14,6 @@ public interface AccountMapper {
 	 */
 	Map<String, Object> select(@Param("identifier") String identifier);
 	void insert(@Param("account") Account account);
-	void updateSecret(@Param("activationKey") String activationKey, @Param("secret") String secret);
+	void updateSecret(@Param("identifier") String identifier, @Param("secret") String secret);
 	void updateActivationKey(@Param("identifier") String identifier, @Param("activationKey") String activationKey);
 }

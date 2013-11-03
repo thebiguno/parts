@@ -14,17 +14,17 @@ where identifier = #{identifier} or email = #{identifier} or activation_key = #{
 		<selectKey order="BEFORE" resultType="int" keyProperty="account.id">
 select coalesce(max(account_id),0) + 1 from account
 		</selectKey>
-insert into account (account_id, identifier, email, secret, created_at, modified_at)
-values (#{account.id}, #{account.identifier}, #{account.email}, #{account.secretString}, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
+insert into account (account_id, identifier, activation_key, email, secret, created_at, modified_at)
+values (#{account.id}, #{account.identifier}, #{account.activationKey}, #{account.email}, #{account.secretString}, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
 	</insert>
 	
 	<update id="updateSecret">
-update account set secret = #{secret}, activationKey = null
-where activationKey = #{activationKey}
+update account set secret = #{secret}, activation_key = null
+where identifier = #{identifier}
 	</update>
 
 	<update id="updateActivationKey">
 update account set activation_key = #{activationKey}
-where identifier = #{identifier} or email = #{identifier} or activation_key = #{identifier}
+where identifier = #{identifier}
 	</update>
 </mapper>
