@@ -1,13 +1,10 @@
 package ca.digitalcave.parts;
 
 import java.security.Key;
-import java.security.spec.InvalidKeySpecException;
 import java.sql.Blob;
 import java.sql.Connection;
 import java.util.Locale;
 import java.util.Properties;
-
-import javax.crypto.spec.PBEKeySpec;
 
 import liquibase.Liquibase;
 import liquibase.database.DatabaseConnection;
@@ -31,6 +28,8 @@ import org.restlet.routing.Router;
 import org.restlet.routing.Template;
 import org.restlet.service.StatusService;
 
+import ca.digitalcave.moss.crypto.Crypto;
+import ca.digitalcave.moss.crypto.Crypto.CryptoException;
 import ca.digitalcave.parts.data.BlobTypeHandler;
 import ca.digitalcave.parts.resource.AttributeResource;
 import ca.digitalcave.parts.resource.AttributesResource;
@@ -42,7 +41,6 @@ import ca.digitalcave.parts.resource.IndexResource;
 import ca.digitalcave.parts.resource.PartResource;
 import ca.digitalcave.parts.resource.PartsResource;
 import ca.digitalcave.parts.security.CookieAuthenticator;
-import ca.digitalcave.parts.security.CryptoUtil;
 import ca.digitalcave.parts.security.PartsVerifier;
 
 import com.mchange.v2.c3p0.ComboPooledDataSource;
@@ -149,8 +147,7 @@ public class PartsApplication extends Application {
 	@Override  
 	public Restlet createInboundRoot() {
 		try {
-			final byte[] salt = {14, -43, -91, -67, 85, 55, 44, -115};
-			final Key key = CryptoUtil.createKey(new PBEKeySpec("password".toCharArray(), salt, 8, 128));
+			final Key key = new Crypto().setKeySaltLength(0).generateKey("password");
 			
 			final Router categoriesRouter = new Router(getContext());
 			categoriesRouter.attach("", CategoriesResource.class);
@@ -188,7 +185,7 @@ public class PartsApplication extends Application {
 			encoder.setNext(optionalAuth);
 	
 			return encoder;
-		} catch (InvalidKeySpecException e) {
+		} catch (CryptoException e) {
 			throw new RuntimeException(e);
 		}
 	}

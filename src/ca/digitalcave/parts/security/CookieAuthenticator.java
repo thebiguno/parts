@@ -18,8 +18,10 @@ import org.restlet.data.CookieSetting;
 import org.restlet.data.Form;
 import org.restlet.data.Method;
 import org.restlet.data.Status;
-import org.restlet.engine.util.Base64;
 import org.restlet.security.ChallengeAuthenticator;
+
+import ca.digitalcave.moss.crypto.Crypto;
+import ca.digitalcave.moss.crypto.Crypto.CryptoException;
 
 public class CookieAuthenticator extends ChallengeAuthenticator {
 
@@ -163,16 +165,21 @@ public class CookieAuthenticator extends ChallengeAuthenticator {
 		final String value = format(cr);
 		if (value == null || value.equals(cr.getRawValue())) return CONTINUE;
 		
-		final CookieSetting credentialsCookie = getCredentialsCookie(request, response);
-		credentialsCookie.setValue(value);
-		credentialsCookie.setMaxAge(maxCookieAge);
-		return super.authenticated(request, response);
+		try {
+			final CookieSetting credentialsCookie = getCredentialsCookie(request, response);
+			credentialsCookie.setValue(new Crypto().encrypt(key, value));
+			credentialsCookie.setMaxAge(maxCookieAge);
+			return super.authenticated(request, response);
+		} catch (CryptoException e) {
+			getLogger().log(Level.WARNING, "Unable to set cookie", e);
+			return STOP;
+		}
 	}
 
-	public ChallengeResponse parse(String encoded) {
+	public ChallengeResponse parse(String encrypted) {
 		try {
-			final byte[] bytes = CryptoUtil.decrypt(key, Base64.decode(encoded));
-			final Form p = new Form(new String(bytes, "UTF-8"));
+			final String decrypted = Crypto.decrypt(key, encrypted);
+			final Form p = new Form(decrypted);
 			
 			long expires = Long.parseLong(p.getFirstValue("expires"));
 			if (expires < System.currentTimeMillis()) {
@@ -180,7 +187,7 @@ public class CookieAuthenticator extends ChallengeAuthenticator {
 			}
 
 			final ChallengeResponse result = new ChallengeResponse(getScheme());
-			result.setRawValue(encoded);
+			result.setRawValue(decrypted);
 			result.setTimeIssued(Long.parseLong(p.getFirstValue("issued")));
 			result.setIdentifier(p.getFirstValue("identifier"));
 			result.setSecret(p.getFirstValue("secret"));
@@ -194,28 +201,23 @@ public class CookieAuthenticator extends ChallengeAuthenticator {
 	}
 	
 	public String format(ChallengeResponse cr) {
-		try {
-			long issued = cr.getTimeIssued();
-			long expires = 0;
-			try { expires = Long.parseLong(cr.getParameters().getFirstValue("expires")); } catch (Throwable e) {}
-			if (issued + 60000 < System.currentTimeMillis()) {
-				issued = System.currentTimeMillis();
-				expires = System.currentTimeMillis() + maxTokenAge;
-			}
-			
-			final Form p = new Form();
-			p.set("issued", Long.toString(issued));
-			p.set("expires", Long.toString(expires));
-			p.set("identifier", cr.getIdentifier());
-			if (cr.getSecret() != null) p.set("secret", new String(cr.getSecret()));
-			p.set("authenticator", cr.getParameters().getFirstValue("authenticator"));
-
-			System.out.println(p.getQueryString());
-			return Base64.encode(CryptoUtil.encrypt(key, p.getQueryString().getBytes("UTF-8")), false);
-		} catch (Exception e) {
-			getLogger().log(Level.INFO, "Unable to encrypt cookie credentials", e);
-			return null;
+		long issued = cr.getTimeIssued();
+		long expires = 0;
+		try { expires = Long.parseLong(cr.getParameters().getFirstValue("expires")); } catch (Throwable e) {}
+		if (issued + 60000 < System.currentTimeMillis()) {
+			issued = System.currentTimeMillis();
+			expires = System.currentTimeMillis() + maxTokenAge;
 		}
+		
+		final Form p = new Form();
+		p.set("issued", Long.toString(issued));
+		p.set("expires", Long.toString(expires));
+		p.set("identifier", cr.getIdentifier());
+		if (cr.getSecret() != null) p.set("secret", new String(cr.getSecret()));
+		final String authenticator = cr.getParameters().getFirstValue("authenticator");
+		if (authenticator != null) p.set("authenticator", authenticator);
+
+		return p.getQueryString();
 	}
 
 	protected boolean isIntercepting(Request request, Response response) {
