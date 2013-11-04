@@ -78,6 +78,41 @@ Ext.define("Parts.controller.Login", {
 					});
 				}
 			},
+			"login textfield[name=secret]": {
+				"change": function(field) {
+					var password = field.getValue();
+					var length = password.length;
+					var factor = 0;
+
+					if (password.match(/.*[a-z].*/)) factor += 2.6;
+					if (password.match(/.*[A-Z].*/)) factor += 2.6;
+					if (password.match(/.*[0-9].*/)) factor += 1.0;
+					if (password.match(/.*[ ].*/)) factor += 0.1;
+					if (password.match(/.*[!@#$%^&*()].*/)) factor += 1.0;
+					if (password.match(/.*[^ a-zA-Z0-9!@#$%^&*()].*/)) factor += 2.2;
+					
+					var combinations = Math.pow(factor*10.0,length);
+					var seconds = combinations / 4000000000;
+					var minutes = seconds / 60;
+					var hours = minutes / 60;
+					var days = hours / 24;
+					var years = days / 365;
+					var thousand = years / 1000;
+					var million = thousand / 1000;
+					var billion = million / 1000;
+					var duration = '';
+					if (billion > 1) duration = Math.round(billion) + ' billion years';
+					else if (million > 1) duration = Math.round(million) + ' million years';
+					else if (thousand > 1) duration = Math.round(thousand) + ' thousand years';
+					else if (years > 1) duration = Math.round(years) + ' years';
+					else if (days > 1) duration = Math.round(days) + ' days';
+					else if (hours > 1) duration = Math.round(hours) + ' hours';
+					else if (minutes > 1) duration = Math.round(minutes) + ' minutes';
+					else duration = Math.round(seconds) + ' seconds'; 
+					var score = Math.min(100, seconds / 50000);
+					field.up('form').down('label[itemId=message]').setText(Math.round(score) + '% (' + duration + ' to crack)');
+				}
+			}
 		});
 	}
 });
