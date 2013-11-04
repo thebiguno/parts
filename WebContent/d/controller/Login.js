@@ -92,7 +92,8 @@ Ext.define("Parts.controller.Login", {
 					if (password.match(/.*[^ a-zA-Z0-9!@#$%^&*()].*/)) factor += 2.2;
 					
 					var combinations = Math.pow(factor*10.0,length);
-					var seconds = combinations / 4000000000;
+					var ms = combinations / 4000000;
+					var seconds = ms / 1000; 
 					var minutes = seconds / 60;
 					var hours = minutes / 60;
 					var days = hours / 24;
@@ -108,9 +109,10 @@ Ext.define("Parts.controller.Login", {
 					else if (days > 1) duration = Math.round(days) + ' days';
 					else if (hours > 1) duration = Math.round(hours) + ' hours';
 					else if (minutes > 1) duration = Math.round(minutes) + ' minutes';
-					else duration = Math.round(seconds) + ' seconds'; 
-					var score = Math.min(100, seconds / 50000);
-					field.up('form').down('label[itemId=message]').setText(Math.round(score) + '% (' + duration + ' to crack)');
+					else if (seconds > 1) duration = Math.round(seconds) + ' seconds'; 
+					else duration = Math.round(ms) + ' milliseconds';
+					var score = Math.min(1, minutes / 525600.0);
+					field.up('form').down('label[itemId=message]').setText(Math.round(score * 100.0) + '% (' + duration + ' to crack)');
 				}
 			}
 		});
