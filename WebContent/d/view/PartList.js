@@ -5,6 +5,9 @@ Ext.define('Parts.view.PartList', {
 	"rootVisible": false,
 	"store": "PartList",
 	
+	"viewConfig": {
+		"plugins": [{ "ptype": "gridviewdragdrop", "enableDrop": false, "ddGroup": "parts" }]
+	},
 	"dockedItems": [
 		{
 			"xtype": "toolbar",

@@ -43,21 +43,37 @@ Ext.define("Parts.controller.CategoryTree", {
 					return evt.record.data.id != null;
 				}
 			},
-			"categorytree treeview": {
-				"beforedrop": function(node, source, target, position) {
-					Ext.Ajax.request({
-						"url": "categories/" + source.records[0].data.id,
-						"method": "PUT",
-						"jsonData": {
-							"parent": target.data.id
-						},
-						"success": function(response) {
-							target.appendChild(source.records[0]);
-						},
-						"failure": function(response) {
-						}
-					});
-					return false;
+			"categorytree > treeview": {
+				"beforedrop": function(node, source, target) {
+					var data = source.records[0].data;
+					if (data.category) {
+						data.category = target.data.id;
+						Ext.Ajax.request({
+							"url": "categories/" + data.category + '/parts/' + data.id,
+							"method": "PUT",
+							"jsonData": data,
+							"success": function(response) {
+								source.view.up('grid').getStore().reload();
+							},
+							"failure": function(response) {
+							}
+						});
+						return false;
+					} else {
+						Ext.Ajax.request({
+							"url": "categories/" + data.id,
+							"method": "PUT",
+							"jsonData": {
+								"parent": target.data.id
+							},
+							"success": function(response) {
+								target.appendChild(source.records[0]);
+							},
+							"failure": function(response) {
+							}
+						});
+						return false;
+					}
 				}
 			},
 			"categorytree toolbar button[itemId=add]": {

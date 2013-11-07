@@ -6,7 +6,7 @@ Ext.define('Parts.view.CategoryTree', {
 	"store": "CategoryTree",
 
 	"viewConfig": {
-		"plugins": [{ "ptype": "treeviewdragdrop" }]
+		"plugins": [{ "ptype": "treeviewdragdrop", "ddGroup": "parts" }]
 	},
 	"dockedItems": [
 		{
