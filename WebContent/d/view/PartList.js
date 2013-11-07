@@ -86,23 +86,6 @@ Ext.define('Parts.view.PartList', {
 		}
 	],
 	"plugins": [
-		Ext.create('Ext.grid.plugin.CellEditing', {
-			"clicksToEdit": 2,
-			"listeners": {
-				"edit": function(editor, evt) {
-					Ext.Ajax.request({
-						"url": "categories/" + evt.record.data.category + "/parts/" + evt.record.data.id,
-						"method": "PUT",
-						"jsonData": evt.record.data,
-						"success": function(response) {
-							evt.record.commit();
-						},
-						"failure": function(response) {
-							evt.record.reject();
-						}
-					});
-				}
-			}
-		})
+		{ "ptype": "cellediting", "clicksToEdit": 2 }
 	]
 });

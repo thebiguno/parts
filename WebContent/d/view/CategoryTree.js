@@ -5,6 +5,9 @@ Ext.define('Parts.view.CategoryTree', {
 	"rootVisible": true,
 	"store": "CategoryTree",
 	
+//	"viewConfig": {
+//		"plugins": { "ptype": "Ext.tree.plugin.TreeViewDragDrop" }
+//	},
 	"dockedItems": [
 		{
 			"xtype": "toolbar",
@@ -40,27 +43,6 @@ Ext.define('Parts.view.CategoryTree', {
 		}
 	],
 	"plugins": [
-		Ext.create("Ext.grid.plugin.CellEditing", {
-			"clicksToEdit": 2,
-			"listeners": {
-				"edit": function(editor, evt) {
-					Ext.Ajax.request({
-						"url": "categories/" + evt.record.data.id,
-						"method": "PUT",
-						"params": evt.record.data.name,
-						"success": function(response) {
-							evt.record.commit();
-						},
-						"failure": function(response) {
-							evt.record.reject();
-						}
-					});
-				},
-				"beforeedit": function(editor, evt) {
-					// don't allow the root node to be edited
-					return evt.record.data.id != null;
-				}
-			}
-		})
+		{ "ptype": "cellediting", "clicksToEdit": 2 }
 	]
 });

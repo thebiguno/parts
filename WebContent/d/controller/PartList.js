@@ -16,6 +16,19 @@ Ext.define("Parts.controller.PartList", {
 					});
 					
 					attrlist.down('toolbar').down('button[itemId=add]').setDisabled(record.data == null);
+				},
+				"edit": function(editor, evt) {
+					Ext.Ajax.request({
+						"url": "categories/" + evt.record.data.category + "/parts/" + evt.record.data.id,
+						"method": "PUT",
+						"jsonData": evt.record.data,
+						"success": function(response) {
+							evt.record.commit();
+						},
+						"failure": function(response) {
+							evt.record.reject();
+						}
+					});
 				}
 			},
 			"partlist toolbar button[itemId=add]": {

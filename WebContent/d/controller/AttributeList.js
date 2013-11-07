@@ -9,6 +9,19 @@ Ext.define("Parts.controller.AttributeList", {
 					
 					var toolbar = row.view.up('attributelist').down('toolbar');
 					toolbar.down('button[itemId=remove]').setDisabled(data == null);
+				},
+				"edit": function(editor, evt) {
+					Ext.Ajax.request({
+						"url": "categories/" + evt.record.data.category + "/parts/" + evt.record.data.part + "/attributes/" + evt.record.data.id,
+						"method": "PUT",
+						"jsonData": evt.record.data,
+						"success": function(response) {
+							evt.record.commit();
+						},
+						"failure": function(response) {
+							evt.record.reject();
+						}
+					});
 				}
 			},
 			"attributelist toolbar button[itemId=add]": {
