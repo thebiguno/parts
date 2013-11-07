@@ -4,10 +4,10 @@ Ext.define('Parts.view.CategoryTree', {
 	
 	"rootVisible": true,
 	"store": "CategoryTree",
-	
-//	"viewConfig": {
-//		"plugins": { "ptype": "Ext.tree.plugin.TreeViewDragDrop" }
-//	},
+
+	"viewConfig": {
+		"plugins": [{ "ptype": "treeviewdragdrop" }]
+	},
 	"dockedItems": [
 		{
 			"xtype": "toolbar",

@@ -27,7 +27,9 @@ Ext.define("Parts.controller.CategoryTree", {
 					Ext.Ajax.request({
 						"url": "categories/" + evt.record.data.id,
 						"method": "PUT",
-						"params": evt.record.data.name,
+						"jsonData": {
+							"name": evt.record.data.name,
+						},
 						"success": function(response) {
 							evt.record.commit();
 						},
@@ -39,6 +41,23 @@ Ext.define("Parts.controller.CategoryTree", {
 				"beforeedit": function(editor, evt) {
 					// don't allow the root node to be edited
 					return evt.record.data.id != null;
+				}
+			},
+			"categorytree treeview": {
+				"beforedrop": function(node, source, target, position) {
+					Ext.Ajax.request({
+						"url": "categories/" + source.records[0].data.id,
+						"method": "PUT",
+						"jsonData": {
+							"parent": target.data.id
+						},
+						"success": function(response) {
+							target.appendChild(source.records[0]);
+						},
+						"failure": function(response) {
+						}
+					});
+					return false;
 				}
 			},
 			"categorytree toolbar button[itemId=add]": {

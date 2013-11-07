@@ -16,6 +16,8 @@ public interface PartsMapper {
 	
 	int insertCategory(@Param("account") int account, @Param("category") Category category);
 	int updateCategory(@Param("account") int account, @Param("id") int id, @Param("name") String name);
+	int moveCategory(@Param("account") int account, @Param("id") int id, @Param("parent") Integer parent);
+	
 	int deleteCategory(@Param("account") int account, @Param("id") int id);
 	
 	void selectParts(@Param("account") int account, @Param("category") Integer category, @Param("terms") List<String> terms, ResultHandler handler);
@@ -29,4 +31,5 @@ public interface PartsMapper {
 	int deleteAttribute(@Param("account") int account, @Param("id") int id);
 	
 	Attribute selectAttribute(@Param("account") int account, @Param("attribute") long attribute);
+
 }

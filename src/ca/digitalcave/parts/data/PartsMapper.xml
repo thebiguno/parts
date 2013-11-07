@@ -70,6 +70,10 @@ from category where category_id = #{category.parentId} and account_id = #{accoun
 update category set name = #{name}, modified_at = CURRENT_TIMESTAMP
 where category_id = #{id} and account_id = #{account}
 	</update>
+	<update id="moveCategory">
+update category set parent_id = nullif(#{parent}, 0)
+where category_id = #{id} and account_id = #{account}
+	</update>
 	<delete id="deleteCategory">
 delete from category
 where category_id = #{id} and account_id = #{account}

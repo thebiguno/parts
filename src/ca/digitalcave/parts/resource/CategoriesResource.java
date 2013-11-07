@@ -11,6 +11,7 @@ import org.apache.ibatis.session.SqlSession;
 import org.codehaus.jackson.JsonGenerationException;
 import org.codehaus.jackson.JsonGenerator;
 import org.json.JSONObject;
+import org.json.JSONTokener;
 import org.restlet.data.MediaType;
 import org.restlet.data.Status;
 import org.restlet.ext.json.JsonRepresentation;
@@ -126,9 +127,16 @@ public class CategoriesResource extends ServerResource {
 			result.put("success", true);
 			
 			final int categoryId = Integer.parseInt((String) getRequestAttributes().get("category"));
-
-			int ct = sql.getMapper(PartsMapper.class).updateCategory(account.getId(), categoryId, entity.getText());
-			if (ct == 0) throw new ResourceException(Status.CLIENT_ERROR_NOT_FOUND);
+			final JSONObject object = new JSONObject(entity.getText());
+			if (object.has("name")) {
+				int ct = sql.getMapper(PartsMapper.class).updateCategory(account.getId(), categoryId, object.getString("name"));
+				if (ct == 0) throw new ResourceException(Status.CLIENT_ERROR_NOT_FOUND);
+			} else if (object.has("parent")) {
+				int ct = sql.getMapper(PartsMapper.class).moveCategory(account.getId(), categoryId, object.getInt("parent"));
+				if (ct == 0) throw new ResourceException(Status.CLIENT_ERROR_NOT_FOUND);
+			} else {
+				throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST);
+			}
 			return new JsonRepresentation(result);
 		} catch (Exception e) {
 			getLogger().log(Level.WARNING, null, e);
