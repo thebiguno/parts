@@ -6,6 +6,8 @@ import java.sql.Connection;
 import java.util.Locale;
 import java.util.Properties;
 
+import javax.crypto.spec.PBEKeySpec;
+
 import liquibase.Liquibase;
 import liquibase.database.DatabaseConnection;
 import liquibase.database.jvm.JdbcConnection;
@@ -29,6 +31,7 @@ import org.restlet.routing.Template;
 import org.restlet.service.StatusService;
 
 import ca.digitalcave.moss.crypto.Crypto;
+import ca.digitalcave.moss.crypto.Crypto.Algorithm;
 import ca.digitalcave.moss.crypto.Crypto.CryptoException;
 import ca.digitalcave.moss.restlet.CookieAuthenticator;
 import ca.digitalcave.parts.data.BlobTypeHandler;
@@ -147,7 +150,9 @@ public class PartsApplication extends Application {
 	@Override  
 	public Restlet createInboundRoot() {
 		try {
-			final Key key = new Crypto().setKeySaltLength(0).generateKey("password");
+			final byte[] salt = {14, -43, -91, -67, 85, 55, 44, -115};
+
+			final Key key = Crypto.recoverKey(Algorithm.AES_128, new PBEKeySpec("password".toCharArray(), salt, 8, 128));
 			
 			final Router categoriesRouter = new Router(getContext());
 			categoriesRouter.attach("", CategoriesResource.class);
