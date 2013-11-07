@@ -28,5 +28,6 @@
 	<classpathentry kind="lib" path="lib/org.apache.taglibs.standard.glassfish_1.2.0.v201004190952.jar"/>
 	<classpathentry kind="lib" path="lib/servlet-api-2.5.jar"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/ca.digitalcave.moss.crypto"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/ca.digitalcave.moss.restlet"/>
 	<classpathentry kind="output" path="build/classes"/>
 </classpath>

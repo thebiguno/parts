@@ -30,10 +30,10 @@ import org.restlet.resource.ResourceException;
 import org.restlet.resource.ServerResource;
 import org.xml.sax.SAXException;
 
+import ca.digitalcave.moss.crypto.Hash;
 import ca.digitalcave.parts.PartsApplication;
 import ca.digitalcave.parts.data.AccountMapper;
 import ca.digitalcave.parts.model.Account;
-import ca.digitalcave.parts.security.PasswordUtil;
 
 
 public class IndexResource extends ServerResource {
@@ -102,13 +102,8 @@ public class IndexResource extends ServerResource {
 				sendEmail(cr.getParameters().getFirstValue("email"), activationKey);
 			} else if ("activate".equals(action)) {
 				final String password = new String(cr.getSecret());
-				if (PasswordUtil.strength(password) < 30) {
-					result.put("success", false);
-					errors.put("secret", "Not strong enough");
-					result.put("msg", "Unable to activate account");
-				}
-				// TODO additional policies could be enforced here such as dictionary words or password history
-				final String hash = PasswordUtil.sha1(1, PasswordUtil.randomSalt(8), password);
+				// TODO policies could be enforced here such as strength, dictionary words or password history
+				final String hash = new Hash().generate(password);
 				sql.getMapper(AccountMapper.class).updateSecret(cr.getIdentifier(), hash);
 			}
 			sql.commit();

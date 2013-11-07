@@ -9,6 +9,7 @@ import org.restlet.Response;
 import org.restlet.data.ChallengeResponse;
 import org.restlet.security.Verifier;
 
+import ca.digitalcave.moss.crypto.Hash;
 import ca.digitalcave.parts.PartsApplication;
 import ca.digitalcave.parts.data.AccountMapper;
 import ca.digitalcave.parts.model.Account;
@@ -43,7 +44,7 @@ public class PartsVerifier implements Verifier {
 		if ((cr.getSecret() == null) || account.getSecret() == null) return false;
 			
 		if (account.getSecretString().startsWith("SHA")) {
-			return PasswordUtil.verify(account.getSecretString(), new String(cr.getSecret()));
+			return Hash.verify(account.getSecretString(), new String(cr.getSecret()));
 		} else {
 			return account.getSecretString().equals(new String(cr.getSecret()));
 		}

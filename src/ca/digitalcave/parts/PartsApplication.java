@@ -30,6 +30,7 @@ import org.restlet.service.StatusService;
 
 import ca.digitalcave.moss.crypto.Crypto;
 import ca.digitalcave.moss.crypto.Crypto.CryptoException;
+import ca.digitalcave.moss.restlet.CookieAuthenticator;
 import ca.digitalcave.parts.data.BlobTypeHandler;
 import ca.digitalcave.parts.resource.AttributeResource;
 import ca.digitalcave.parts.resource.AttributesResource;
@@ -40,7 +41,6 @@ import ca.digitalcave.parts.resource.DigikeyResource;
 import ca.digitalcave.parts.resource.IndexResource;
 import ca.digitalcave.parts.resource.PartResource;
 import ca.digitalcave.parts.resource.PartsResource;
-import ca.digitalcave.parts.security.CookieAuthenticator;
 import ca.digitalcave.parts.security.PartsVerifier;
 
 import com.mchange.v2.c3p0.ComboPooledDataSource;
