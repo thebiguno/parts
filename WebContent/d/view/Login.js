@@ -21,7 +21,7 @@ Ext.define('Parts.view.Login', {
 				{
 					"xtype": "form",
 					"itemId": "authenticate",
-					"defaults": { "anchor": "100%", "allowBlank": false, "xtype": "textfield" },
+					"defaults": { "anchor": "100%", "allowBlank": false, "xtype": "textfield", "enableKeyEvents": true },
 					"items": [
 						{ "fieldLabel": "Identifier", "name": "identifier" },
 						{ "fieldLabel": "Password", "inputType": "password", "name": "secret" },
@@ -34,7 +34,7 @@ Ext.define('Parts.view.Login', {
 				{
 					"xtype": "form",
 					"itemId": "activate",
-					"defaults": { "anchor": "100%", "allowBlank": false, "xtype": "textfield", "inputType": "password" },
+					"defaults": { "anchor": "100%", "allowBlank": false, "xtype": "textfield", "inputType": "password", "enableKeyEvents": true },
 					"items": [
 						{ "xtype": "hiddenfield", "name": "identifier", "value": "" },
 						{ "fieldLabel": "New Password", "name": "secret" },
@@ -57,7 +57,7 @@ Ext.define('Parts.view.Login', {
 				{
 					"xtype": "form",
 					"itemId": "enrole",
-					"defaults": { "anchor": "100%", "allowBlank": false, "xtype": "textfield" },
+					"defaults": { "anchor": "100%", "allowBlank": false, "xtype": "textfield", "enableKeyEvents": true },
 					"items": [
 						{ "fieldLabel": "Identifier", "name": "identifier" },
 						{ "fieldLabel": "Email", "name": "email", "vtype": "email" },
@@ -70,7 +70,7 @@ Ext.define('Parts.view.Login', {
 				{
 					"xtype": "form",
 					"itemId": "activate",
-					"defaults": { "anchor": "100%", "allowBlank": false, "xtype": "textfield" },
+					"defaults": { "anchor": "100%", "allowBlank": false, "xtype": "textfield", "enableKeyEvents": true },
 					"items": [
 						{ "fieldLabel": "Activation Key", "name": "identifier" },
 						{ "fieldLabel": "New Password", "name": "secret", "inputType": "password" },
@@ -93,7 +93,7 @@ Ext.define('Parts.view.Login', {
 				{
 					"xtype": "form",
 					"itemId": "enrole",
-					"defaults": { "anchor": "100%", "allowBlank": false, "xtype": "textfield" },
+					"defaults": { "anchor": "100%", "allowBlank": false, "xtype": "textfield", "enableKeyEvents": true },
 					"items": [
 						{ "fieldLabel": "Identifier or Email", "name": "identifier" },
 						{ "xtype": "label", "itemId": "message" }
@@ -105,7 +105,7 @@ Ext.define('Parts.view.Login', {
 				{
 					"xtype": "form",
 					"itemId": "activate",
-					"defaults": { "anchor": "100%", "allowBlank": false, "xtype": "textfield" },
+					"defaults": { "anchor": "100%", "allowBlank": false, "xtype": "textfield", "enableKeyEvents": true },
 					"items": [
 						{ "fieldLabel": "Activation Key", "name": "identifier" },
 						{ "fieldLabel": "New Password", "name": "secret", "inputType": "password" },

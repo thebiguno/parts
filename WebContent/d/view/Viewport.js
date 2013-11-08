@@ -18,7 +18,8 @@ Ext.define("Parts.view.Viewport", {
 				{
 					"xtype": "textfield",
 					"emptyText": "Search Terms",
-					"itemId": "searchterms"
+					"itemId": "searchterms",
+					"enableKeyEvents": true
 				},
 				{
 					"xtype": "button",
