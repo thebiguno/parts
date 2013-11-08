@@ -10,7 +10,7 @@ import ca.digitalcave.parts.model.Category;
 import ca.digitalcave.parts.model.Part;
 
 public interface PartsMapper {
-	List<Category> selectCategories(@Param("account") int account, @Param("terms") List<String> terms);
+	List<Category> selectCategories(@Param("account") int account, @Param("terms") List<String> terms, @Param("required") boolean required);
 	
 	List<Category> selectDigikey(@Param("account") int account, @Param("category") String category, @Param("family") String family);
 	
@@ -20,7 +20,7 @@ public interface PartsMapper {
 	
 	int deleteCategory(@Param("account") int account, @Param("id") int id);
 	
-	void selectParts(@Param("account") int account, @Param("category") Integer category, @Param("terms") List<String> terms, ResultHandler handler);
+	void selectParts(@Param("account") int account, @Param("category") Integer category, @Param("terms") List<String> terms, @Param("required") boolean required, ResultHandler handler);
 	int insertPart(@Param("account") int account, @Param("part") Part part);
 	int updatePart(@Param("account") int account, @Param("part") Part part);
 	int deletePart(@Param("account") int account, @Param("id") long id);

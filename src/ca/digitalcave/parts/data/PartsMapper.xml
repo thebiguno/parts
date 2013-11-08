@@ -17,6 +17,9 @@ and (
 				</foreach>
 )
 			</if>
+			<if test="required">
+and p.available &lt; p.minimum
+			</if>
 		</where>
 order by c.name
 	</select>
@@ -43,6 +46,9 @@ and (
 (lower(a.name) like '%${term}%' or lower(a.val) like '%${term}%' or lower(p.part_no) like '%${term}%')
 				</foreach>
 )
+			</if>
+			<if test="required">
+and p.available &lt; p.minimum
 			</if>
 		</where>
 order by p.part_no

@@ -5,6 +5,7 @@ Ext.define("Parts.controller.Toolbar", {
 		this.control({
 			"toolbar button[itemId=searchbutton]": { "click": this.search },
 			"toolbar textfield[itemId=searchterms]": { "keypress": this.search },
+			"categorytree": { "select": this.search },
 			
 			"toolbar button[itemId=importbutton]": { 
 				"click": function(button) {
@@ -12,6 +13,9 @@ Ext.define("Parts.controller.Toolbar", {
 						"xtype": "importdialog"
 					}).show(this);
 				}
+			},
+			"toolbar button[itemId=requiredbutton]": {
+				"toggle": this.search
 			},
 			
 			"importdialog button[itemId=okbutton]": {
@@ -47,9 +51,6 @@ Ext.define("Parts.controller.Toolbar", {
 						"jsonData": object,
 						"success": function() {
 							this.search();
-						},
-						"failure": function() {
-							
 						}
 					});
 				}
@@ -70,13 +71,30 @@ Ext.define("Parts.controller.Toolbar", {
 	},
 	
 	"search": function(cmp, e) {
-		if (e.getKey() == 0 || e.getKey() == e.ENTER) {
-			var terms = cmp.up('viewport').down('textfield[itemId=searchterms]').getValue();
+		if (e.getKey == null || e.getKey() == 0 || e.getKey() == e.ENTER) {
+
+			var viewport = cmp.view ? cmp.view.up('viewport') : cmp.up('viewport');
+			var terms = viewport.down('textfield[itemId=searchterms]').getValue();
+			var required = viewport.down('button[itemId=requiredbutton]').pressed;
+			var tree = viewport.down('categorytree');
+			var partlist = viewport.down('partlist');
 			
-			var tree = cmp.up('viewport').down('categorytree').getStore();
-			tree.load({
+			if (cmp.view == null) {
+				tree.getStore().load({
+					"params": {
+						"q": terms,
+						"required": required
+					}
+				});
+			}
+
+			var selected = tree.getSelectionModel().getSelection()[0];
+			var category = selected ? selected.data.id : 0;
+			partlist.getStore().load({
+				"url": "categories/" + category + "/parts",
 				"params": {
-					"q": terms
+					"q": terms,
+					"required": required
 				}
 			});
 		}

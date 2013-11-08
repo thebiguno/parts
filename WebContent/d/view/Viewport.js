@@ -26,6 +26,13 @@ Ext.define("Parts.view.Viewport", {
 					"itemId": "searchbutton",
 					"icon": "img/magnifier.png"
 				},
+				{
+					"xtype": "button",
+					"text": "Required",
+					"itemId": "requiredbutton",
+					"toggleGroup": "filter",
+					"icon": "img/funnel.png"
+				},
 				"-",
 				{
 					"xtype": "textfield",
@@ -56,12 +63,6 @@ Ext.define("Parts.view.Viewport", {
 					"text": "Import",
 					"itemId": "importbutton",
 					"icon": "img/document-import.png"
-				},
-				{
-					"xtype": "button",
-					"text": "Report",
-					"itemId": "reportbutton",
-					"icon": "img/report.png"
 				},
 				"->",
 				{

@@ -40,6 +40,7 @@ public class PartsResource extends ServerResource {
 		final Integer categoryId = Integer.parseInt((String) getRequestAttributes().get("category"));
 		
 		final String q = getQuery().getFirstValue("q", "");
+		final boolean required = "true".equals(getQuery().getFirstValue("required"));
 		final String[] terms = q.trim().length() > 0 ? q.split(" ") : new String[0];
 
 		return new WriterRepresentation(MediaType.APPLICATION_JSON) {
@@ -52,7 +53,7 @@ public class PartsResource extends ServerResource {
 				
 				final SqlSession sql = application.getSqlFactory().openSession();
 				try {
-					sql.getMapper(PartsMapper.class).selectParts(account.getId(), categoryId == 0 ? null : categoryId, Arrays.asList(terms), new ResultHandler() {
+					sql.getMapper(PartsMapper.class).selectParts(account.getId(), categoryId == 0 ? null : categoryId, Arrays.asList(terms), required, new ResultHandler() {
 						@Override
 						public void handleResult(ResultContext ctx) {
 							try {

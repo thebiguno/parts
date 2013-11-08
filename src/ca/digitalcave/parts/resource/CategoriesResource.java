@@ -42,8 +42,9 @@ public class CategoriesResource extends ServerResource {
 		final SqlSession sqlSession = application.getSqlFactory().openSession();
 		try {
 			final String q = getQuery().getFirstValue("q", "");
+			final boolean required = "true".equals(getQuery().getFirstValue("required"));
 			final String[] terms = q.trim().length() > 0 ? q.split(" ") : new String[0];
-			final List<Category> categories = sqlSession.getMapper(PartsMapper.class).selectCategories(account.getId(), Arrays.asList(terms));
+			final List<Category> categories = sqlSession.getMapper(PartsMapper.class).selectCategories(account.getId(), Arrays.asList(terms), required);
 			final Category root = Category.buildTree(categories);
 			
 			return new WriterRepresentation(MediaType.APPLICATION_JSON) {
