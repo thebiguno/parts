@@ -99,11 +99,8 @@ Ext.define("Parts.controller.Login", {
 					var days = hours / 24;
 					var years = days / 365;
 					var thousand = years / 1000;
-					var million = thousand / 1000;
-					var billion = million / 1000;
 					var duration = '';
-					if (billion > 1) duration = Math.round(billion) + ' billion years';
-					else if (million > 1) duration = Math.round(million) + ' million years';
+					if (thousand > 1000) duration = 'more than 1,000 years';
 					else if (thousand > 1) duration = Math.round(thousand) + ' thousand years';
 					else if (years > 1) duration = Math.round(years) + ' years';
 					else if (days > 1) duration = Math.round(days) + ' days';
@@ -111,8 +108,7 @@ Ext.define("Parts.controller.Login", {
 					else if (minutes > 1) duration = Math.round(minutes) + ' minutes';
 					else if (seconds > 1) duration = Math.round(seconds) + ' seconds'; 
 					else duration = Math.round(ms) + ' milliseconds';
-					var score = Math.min(1, minutes / 525600.0);
-					field.up('form').down('label[itemId=message]').setText(Math.round(score * 100.0) + '% (' + duration + ' to crack)');
+					field.up('form').down('label[itemId=message]').setText(duration + ' to crack');
 				}
 			}
 		});
