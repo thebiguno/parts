@@ -116,8 +116,7 @@ public class CategoriesResource extends ServerResource {
 	@Override
 	protected Representation put(Representation entity, Variant variant) throws ResourceException {
 		final PartsApplication application = (PartsApplication) getApplication();
-//		final Account account = (Account) getClientInfo().getUser();
-		final Account account = new Account(0); // TODO implement auth
+		final Account account = (Account) getClientInfo().getUser();
 		
 		final SqlSession sql = application.getSqlFactory().openSession(true);
 		try {
@@ -147,8 +146,7 @@ public class CategoriesResource extends ServerResource {
 	@Override
 	protected Representation delete(Variant variant) throws ResourceException {
 		final PartsApplication application = (PartsApplication) getApplication();
-		//final Account account = (Account) getClientInfo().getUser();
-		final Account account = new Account(0); // TODO implement auth
+		final Account account = (Account) getClientInfo().getUser();
 		
 		final SqlSession sql = application.getSqlFactory().openSession(true);
 		try {
