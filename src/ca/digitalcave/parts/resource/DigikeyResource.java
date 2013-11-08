@@ -6,7 +6,6 @@ import java.util.logging.Level;
 import org.apache.ibatis.session.SqlSession;
 import org.json.JSONObject;
 import org.restlet.representation.Representation;
-import org.restlet.representation.Variant;
 import org.restlet.resource.ResourceException;
 import org.restlet.resource.ServerResource;
 
@@ -21,13 +20,13 @@ import ca.digitalcave.parts.model.Part;
 public class DigikeyResource extends ServerResource {
 
 	@Override
-	protected Representation post(Representation entity, Variant variant) throws ResourceException {
+	protected Representation post(Representation entity) throws ResourceException {
 		final PartsApplication application = (PartsApplication) getApplication();
 		final Account account = (Account) getClientInfo().getUser();
 		
-		final JSONObject object = new JSONObject(entity);
-		final SqlSession sql = application.getSqlFactory().openSession(false);
+		final SqlSession sql = application.getSqlFactory().openSession(true);
 		try {
+			final JSONObject object = new JSONObject(entity.getText());
 			final DigiKeyClient client = new DigiKeyClient();
 			final List<Attribute> attributes = client.parse(object.getString("url"));
 

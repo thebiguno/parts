@@ -42,9 +42,9 @@ Ext.define("Parts.controller.Toolbar", {
 			"toolbar button[itemId=digikeyadd]": {
 				"click": function(button) {
 					var object = {
-						"url": button.up('toolbar').down('digikeyurl').getValue(),
-						"min": button.up('toolbar').down('digikeymin').getValue(),
-						"qty": button.up('toolbar').down('digikeyqty').getValue()
+						"url": button.up('toolbar').down('textfield[itemId=digikeyurl]').getValue(),
+						"min": button.up('toolbar').down('textfield[itemId=digikeymin]').getValue() || 0,
+						"qty": button.up('toolbar').down('textfield[itemId=digikeyqty]').getValue() || 0
 					};
 					Ext.Ajax.request({
 						"url": "import/digikey",
