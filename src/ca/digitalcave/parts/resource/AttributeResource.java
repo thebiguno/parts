@@ -28,7 +28,7 @@ public class AttributeResource extends ServerResource {
 	@Override
 	protected Representation get() throws ResourceException {
 		final PartsApplication application = (PartsApplication) getApplication();
-		final Account account = new Account(0); // TODO implement auth 
+		final Account account = (Account) getClientInfo().getUser();
 
 		final long attribute = Long.parseLong((String) getRequestAttributes().get("attribute"));
 		
@@ -61,7 +61,7 @@ public class AttributeResource extends ServerResource {
 	@Override
 	protected Representation post(Representation entity) throws ResourceException {
 		final PartsApplication application = (PartsApplication) getApplication();
-		final Account account = new Account(0); // TODO implement auth 
+		final Account account = (Account) getClientInfo().getUser();
 
 		final long attribute = Long.parseLong((String) getRequestAttributes().get("attribute"));
 		
@@ -109,7 +109,7 @@ public class AttributeResource extends ServerResource {
 	@Override
 	protected Representation put(Representation entity) throws ResourceException {
 		final PartsApplication application = (PartsApplication) getApplication();
-		final Account account = new Account(0); // TODO implement auth 
+		final Account account = (Account) getClientInfo().getUser();
 		
 		final SqlSession sql = application.getSqlFactory().openSession(true);
 		try {
@@ -132,7 +132,7 @@ public class AttributeResource extends ServerResource {
 	@Override
 	protected Representation delete() throws ResourceException {
 		final PartsApplication application = (PartsApplication) getApplication();
-		final Account account = new Account(0); // TODO implement auth 
+		final Account account = (Account) getClientInfo().getUser();
 
 		final SqlSession sql = application.getSqlFactory().openSession(true);
 		try {

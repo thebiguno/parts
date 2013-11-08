@@ -11,7 +11,6 @@ import org.apache.ibatis.session.SqlSession;
 import org.codehaus.jackson.JsonGenerationException;
 import org.codehaus.jackson.JsonGenerator;
 import org.json.JSONObject;
-import org.json.JSONTokener;
 import org.restlet.data.MediaType;
 import org.restlet.data.Status;
 import org.restlet.ext.json.JsonRepresentation;
@@ -36,8 +35,7 @@ public class CategoriesResource extends ServerResource {
 	@Override
 	protected Representation get(Variant variant) throws ResourceException {
 		final PartsApplication application = (PartsApplication) getApplication();
-		//final Account account = (Account) getClientInfo().getUser(); 
-		final Account account = new Account(0); // TODO implement auth
+		final Account account = (Account) getClientInfo().getUser();
 
 		final SqlSession sqlSession = application.getSqlFactory().openSession();
 		try {
@@ -87,8 +85,7 @@ public class CategoriesResource extends ServerResource {
 	@Override
 	protected Representation post(Representation entity, Variant variant) throws ResourceException {
 		final PartsApplication application = (PartsApplication) getApplication();
-//		final Account account = (Account) getClientInfo().getUser(); 
-		final Account account = new Account(0); // TODO implement auth
+		final Account account = (Account) getClientInfo().getUser();
 		
 		final SqlSession sql = application.getSqlFactory().openSession(true);
 		try {

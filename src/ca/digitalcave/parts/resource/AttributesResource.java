@@ -33,8 +33,7 @@ public class AttributesResource extends ServerResource {
 	@Override
 	protected Representation get(Variant variant) throws ResourceException {
 		final PartsApplication application = (PartsApplication) getApplication();
-//		final Account account = (Account) getClientInfo().getUser(); 
-		final Account account = new Account(0); // TODO implement auth
+		final Account account = (Account) getClientInfo().getUser();
 
 		final Integer categoryId = Integer.parseInt((String) getRequestAttributes().get("category"));
 		final Integer partId = Integer.parseInt((String) getRequestAttributes().get("part"));
@@ -106,8 +105,7 @@ public class AttributesResource extends ServerResource {
 	@Override
 	protected Representation post(Representation entity, Variant variant) throws ResourceException {
 		final PartsApplication application = (PartsApplication) getApplication();
-//		final Account account = (Account) getClientInfo().getUser(); 
-		final Account account = new Account(0); // TODO implement auth
+		final Account account = (Account) getClientInfo().getUser();
 		
 		final SqlSession sql = application.getSqlFactory().openSession(true);
 		try {
