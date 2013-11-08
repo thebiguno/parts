@@ -64,7 +64,7 @@ public class PartsResource extends ServerResource {
 								g.writeNumberField("category", part.getCategory());
 								g.writeStringField("number", part.getNumber());
 								g.writeStringField("description", part.getDescription());
-								g.writeStringField("notes", part.getNotes());
+								if (part.getNotes() != null) g.writeStringField("notes", part.getNotes());
 								g.writeNumberField("available", part.getAvailable());
 								g.writeNumberField("minimum", part.getMinimum());
 								g.writeEndObject();
