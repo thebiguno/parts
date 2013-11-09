@@ -84,10 +84,10 @@ Ext.define("Parts.controller.Login", {
 				"url": "index",
 				"params": { "action": "enrole" },
 				"success": function() {
-					button.up('form').up('panel').getLayout().next();
+					cmp.up('form').up('panel').getLayout().next();
 				},
 				"failure": function(form, action) {
-					button.up('form').down('label[itemId=message]').setText(action.result.msg);
+					cmp.up('form').down('label[itemId=message]').setText(action.result.msg);
 				}
 			});
 		}
@@ -101,7 +101,7 @@ Ext.define("Parts.controller.Login", {
 				"url": "index",
 				"params": { "action": "reset" },
 				"success": function() {
-					button.up('form').up('panel').getLayout().next();
+					cmp.up('form').up('panel').getLayout().next();
 				},
 				"failure": function(form, action) {
 					cmp.up('form').down('label[itemId=message]').setText(action.result.msg);
