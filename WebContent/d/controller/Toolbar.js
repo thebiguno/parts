@@ -41,6 +41,7 @@ Ext.define("Parts.controller.Toolbar", {
 			
 			"toolbar button[itemId=digikeyadd]": {
 				"click": function(button) {
+					var self = this;
 					var object = {
 						"url": button.up('toolbar').down('textfield[itemId=digikeyurl]').getValue(),
 						"min": button.up('toolbar').down('textfield[itemId=digikeymin]').getValue() || 0,
@@ -50,7 +51,7 @@ Ext.define("Parts.controller.Toolbar", {
 						"url": "import/digikey",
 						"jsonData": object,
 						"success": function() {
-							this.search();
+							self.search(button);
 						}
 					});
 				}
@@ -71,7 +72,7 @@ Ext.define("Parts.controller.Toolbar", {
 	},
 	
 	"search": function(cmp, e) {
-		if (e.getKey == null || e.getKey() == 0 || e.getKey() == e.ENTER) {
+		if (e == null || e.getKey == null || e.getKey() == 0 || e.getKey() == e.ENTER) {
 
 			var viewport = cmp.view ? cmp.view.up('viewport') : cmp.up('viewport');
 			var terms = viewport.down('textfield[itemId=searchterms]').getValue();

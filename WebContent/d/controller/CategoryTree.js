@@ -11,6 +11,7 @@ Ext.define("Parts.controller.CategoryTree", {
 					toolbar.down('button[itemId=remove]').setDisabled(data.id == 'root');
 					toolbar.down('button[itemId=add]').enable();
 
+					var partlist = row.view.up('viewport').down('partlist');
 					partlist.down('toolbar').down('button[itemId=add]').setDisabled(record.data.id == 0);
 				},
 				"edit": function(editor, evt) {
