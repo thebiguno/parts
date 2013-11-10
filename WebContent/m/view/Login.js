@@ -6,31 +6,14 @@ Ext.define("Parts.view.Login", {
 
 		"items": [
 			{
-				"margin": 10,
-				"xtype": "label",
-				"html": "Authentication failed.",
-				"itemId": "authenticationFailed",
-				"hidden": true,
-				"hideAnimation": 'fadeOut',
-				"showAnimation": 'fadeIn',
-				"style": 'color:#990000'
-			},
-			{
 				"xtype": "fieldset",
 				"title": "Parts",
 				"items": [
-					{
-						"xtype": "textfield",
-						"name": "identifier",
-						"placeHolder": "Identifier"
-					},
-					{
-						"xtype": "passwordfield",
-						"name": "secret",
-						"placeHolder": "Password"
-					}
+					{ "xtype": "textfield", "name": "identifier", "placeHolder": "Identifier" },
+					{ "xtype": "passwordfield", "name": "secret", "placeHolder": "Password" }
 				]
 			},
+			{ "xtype": "label", "itemId": "message", "margin": 10, "html": "&nbsp;" },
 			{
 				"xtype": "button",
 				"ui": "action",
