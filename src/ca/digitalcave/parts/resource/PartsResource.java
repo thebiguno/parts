@@ -42,7 +42,9 @@ public class PartsResource extends ServerResource {
 		final String q = getQuery().getFirstValue("q", "");
 		final boolean required = "true".equals(getQuery().getFirstValue("required"));
 		final String[] terms = q.trim().length() > 0 ? q.split(" ") : new String[0];
-
+		for (int i = 0; i < terms.length; i++) {
+			terms[i] = terms[i].toLowerCase();
+		}
 		return new WriterRepresentation(MediaType.APPLICATION_JSON) {
 			@Override
 			public void write(Writer w) throws IOException {
