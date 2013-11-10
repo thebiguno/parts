@@ -32,11 +32,12 @@ public class PartResource extends ServerResource {
 		try {
 			final JSONObject object = new JSONObject(entity.getText());
 			final Part part = new Part();
+			final int category = Integer.parseInt((String) getRequestAttributes().get("part"));
 			part.setId(Integer.parseInt((String) getRequestAttributes().get("part")));
 			part.setNumber(object.optString("number", ""));
 			part.setDescription(object.optString("description",""));
 			part.setNotes(object.optString("notes", ""));
-			part.setCategory(object.getInt("category"));
+			part.setCategory(object.optInt("category", category));
 			part.setAvailable(object.optInt("available", 0));
 			part.setMinimum(object.optInt("minimum", 0));
 			sql.getMapper(PartsMapper.class).updatePart(account.getId(), part);

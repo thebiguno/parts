@@ -6,7 +6,7 @@ Ext.define("Parts.view.PartList", {
 		"fullscreen": true,
 		"store": "PartList",
 		"grouped": true,
-		"itemTpl": "<div>{number}<br/><span style='font-size:.6em'>{description}<span><span style='float: right'>{available} / {minimum}</span></div>",
+		"itemTpl": "<div>{number}<span style='float: right'>{available} / {minimum}</span><br/><span style='font-size:.6em'>{description}<span></div>",
 		"items": [
 			{
 				"xtype": "toolbar",

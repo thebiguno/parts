@@ -1,5 +1,3 @@
-window.onbeforeunload = function(){return " ";};
-
 Ext.application({
 	"name": "Parts",
 	"appFolder": "m",
