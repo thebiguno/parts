@@ -65,7 +65,6 @@ public class IndexResource extends ServerResource {
 		final SqlSession sql = application.getSqlFactory().openSession(true);
 		
 		final HashMap<String, Object> result = new HashMap<String, Object>();
-		final HashMap<String, Object> errors = new HashMap<String, Object>();
 		result.put("success", true);
 		try {
 			if ("login".equals(action)) {
