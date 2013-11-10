@@ -32,8 +32,8 @@ public class DigikeyResource extends ServerResource {
 
 			if (attributes.size() > 0) {
 				attributes.add(new Attribute("URL", "URL", object.getString("url")));
-				attributes.add(new Attribute("Quantity Available", object.optString("qty", "0")));
-				attributes.add(new Attribute("Minimum Quantity", object.optString("min", "0")));
+				attributes.add(new Attribute("Quantity In Stock", object.optString("qty", "0")));
+				attributes.add(new Attribute("Minimum Stock", object.optString("min", "0")));
 				insertPart(sql, attributes, account.getId());
 				sql.commit();
 			}
@@ -72,11 +72,11 @@ public class DigikeyResource extends ServerResource {
 		if (desc != null) part.setDescription(desc.getValue());
 		final Attribute notes = Attribute.remove("Notes", attributes);
 		if (notes != null) part.setNotes(notes.getValue());
-		final Attribute qty = Attribute.remove("Quantity Available", attributes);
+		final Attribute qty = Attribute.remove("Quantity In Stock", attributes);
 		
 		part.setAvailable(0);
 		if (qty != null) part.setAvailable(Integer.parseInt(qty.getValue()));
-		final Attribute min = Attribute.remove("Minimum Quantity", attributes);
+		final Attribute min = Attribute.remove("Minimum Stock", attributes);
 		part.setMinimum(0);
 		if (min != null) part.setMinimum(Integer.parseInt(min.getValue()));
 		
