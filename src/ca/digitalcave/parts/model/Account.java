@@ -25,10 +25,6 @@ public class Account extends User {
 		this.setEmail((String) map.get("email"));
 	}
 
-	public Account(int id) {
-		this.id = id;
-	}
-	
 	public int getId() {
 		return id;
 	}

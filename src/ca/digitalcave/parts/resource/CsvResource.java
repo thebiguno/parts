@@ -24,7 +24,7 @@ public class CsvResource extends ServerResource {
 	@Override
 	protected Representation post(Representation entity) throws ResourceException {
 		final PartsApplication application = (PartsApplication) getApplication();
-		final Account account = new Account(0);
+		final Account account = (Account) getClientInfo().getUser();
 		
 		LinkedList<Attribute> attributes = new LinkedList<Attribute>();
 		String lastId = null;
