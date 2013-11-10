@@ -46,9 +46,9 @@ public class CsvResource extends ServerResource {
 					String name = r.get(1);
 					String value = r.get(2);
 					String href = r.get(3);
-					if ("null".equals(name)) name = null;
-					if ("null".equals(value)) value = null;
-					if ("null".equals(href)) href = null;
+					if ("null".equalsIgnoreCase(name)) name = null;
+					if ("null".equalsIgnoreCase(value)) value = null;
+					if ("null".equalsIgnoreCase(href)) href = null;
 					attributes.add(new Attribute(name, value, href));
 					lastId = id;
 				}
