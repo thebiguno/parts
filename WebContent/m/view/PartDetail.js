@@ -53,6 +53,11 @@ Ext.define("Parts.view.PartDetail", {
 						"label": "Notes"
 					}
 				]
+			},
+			{
+				"xtype": "fieldset",
+				"itemId": "extended",
+				"items": []
 			}
 		]
 	},
@@ -60,24 +65,23 @@ Ext.define("Parts.view.PartDetail", {
 		this.down('button[itemId=back]').setText(record.data.group);
 		this.setRecord(record);
 		
-//		var fieldset = this.down('fieldset[itemId=extended]').getItems();
-//		fieldset.removeAll(true);
-//		Ext.Ajax.request({
-//			"url": "categories/" + record.data.category + "/parts/" + record.data.id + "/attributes",
-//			"success": function(response) {
-//				var object = Ext.decode(response.responseText);
-//				if (object.success) {
-//					Ext.each(object.data, function(attr) {
-//						fieldset.add({
-//							"xtype": "textfield",
-//							"readOnly": true,
-//							"name": attr.id,
-//							"label": attr.name,
-//							"value": attr.value
-//						});
-//					});
-//				}
-//			}
-//		});
+		var fieldset = this.down('fieldset[itemId=extended]');
+		fieldset.removeAll(true);
+		Ext.Ajax.request({
+			"url": "categories/" + record.data.category + "/parts/" + record.data.id + "/attributes",
+			"success": function(response) {
+				var object = Ext.decode(response.responseText);
+				if (object.success) {
+					Ext.each(object.data, function(attr) {
+						fieldset.add(Ext.create('widget.textfield',{
+							"readOnly": true,
+							"name": attr.id,
+							"label": attr.name,
+							"value": attr.value
+						}));
+					});
+				}
+			}
+		});
 	}
 });
