@@ -3,7 +3,8 @@ Ext.define('Parts.view.Login', {
 	"alias": "widget.login",
 
 	"title": "Parts",
-	"margin": "300%",
+	"constrain": true,
+	"draggable": { "delegate": "html" },
 	"minWidth": 400,
 	"maxWidth": 400,
 	"minHeight": 200,
@@ -51,7 +52,7 @@ Ext.define('Parts.view.Login', {
 		{
 			"xtype": "panel",
 			"defaults": { "border": false, "margin": 10 },
-			"title": "Enrole",
+			"title": "Register",
 			"layout": "card",
 			"items": [
 				{
@@ -64,7 +65,7 @@ Ext.define('Parts.view.Login', {
 						{ "xtype": "label", "itemId": "message" }
 					],
 					"buttons": [
-						{ "text": "Enrole", "itemId": "enrole" }
+						{ "text": "Register", "itemId": "enrole" }
 					]
 				},
 				{

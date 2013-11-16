@@ -11,11 +11,13 @@ Ext.application({
 
 	"launch": function() {
 		Parts.app = this;
+		var dialog = Ext.create("Parts.view.Login");
 		Ext.create('Ext.container.Viewport', {
 			"layout": "fit",
 			"items": [
-				Ext.create( "Parts.view.Login")
+				dialog
 			]
 		});
+		dialog.center();
 	}
 });
