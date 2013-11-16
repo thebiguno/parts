@@ -163,6 +163,7 @@ public class PartsApplication extends Application {
 			categoriesRouter.attach("/{category}/parts/{part}/attributes/{attribute}", AttributeResource.class);
 			
 			final CookieAuthenticator categegoryAuth = new CookieAuthenticator(getContext(), false, key);
+			categegoryAuth.setAllowRemember(true);
 			categegoryAuth.setVerifier(getVerifier());
 			categegoryAuth.setNext(categoriesRouter);
 			
@@ -171,6 +172,7 @@ public class PartsApplication extends Application {
 			importRouter.attach("/csv", CsvResource.class);
 	
 			final CookieAuthenticator importAuth = new CookieAuthenticator(getContext(), false, key);
+			importAuth.setAllowRemember(true);
 			importAuth.setVerifier(getVerifier());
 			importAuth.setNext(importRouter);
 			
@@ -183,6 +185,7 @@ public class PartsApplication extends Application {
 			publicRouter.attachDefault(DefaultResource.class).setMatchingMode(Template.MODE_STARTS_WITH);
 	
 			final CookieAuthenticator optionalAuth = new CookieAuthenticator(getContext(), true, key);
+			optionalAuth.setAllowRemember(true);
 			optionalAuth.setVerifier(getVerifier());
 			optionalAuth.setNext(publicRouter);
 	

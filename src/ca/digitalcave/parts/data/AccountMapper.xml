@@ -20,7 +20,7 @@ values (#{account.id}, #{account.identifier}, #{account.activationKey}, #{accoun
 	
 	<update id="updateSecret">
 update account set secret = #{secret}, activation_key = null
-where identifier = #{identifier}
+where activation_key = #{activationKey}
 	</update>
 
 	<update id="updateActivationKey">

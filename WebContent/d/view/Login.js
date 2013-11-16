@@ -26,6 +26,7 @@ Ext.define('Parts.view.Login', {
 					"items": [
 						{ "fieldLabel": "Identifier", "name": "identifier" },
 						{ "fieldLabel": "Password", "inputType": "password", "name": "secret" },
+						{ "fieldLabel": "Remember Me", "xtype": "checkboxfield", "name": "remember" },
 						{ "xtype": "label", "itemId": "message" }
 					],
 					"buttons": [
