@@ -17,7 +17,7 @@ import ca.digitalcave.parts.model.Account;
 
 public class IndexResource extends AbstractCookieIndexResource {
 
-	final String mobile = "android|blackberry|iphone|ipod|iemobile|opera mobile|palmos|webos|googlebot-mobile";
+	final String mobile = ".*android.*|.*blackberry.*|.*iphone.*|.*ipod.*|.*iemobile.*|.*opera mobile.*|.*palmos.*|.*webos.*|.*googlebot-mobile.*";
 
 	@Override
 	protected void doInit() throws ResourceException {
@@ -28,7 +28,7 @@ public class IndexResource extends AbstractCookieIndexResource {
 	@Override
 	protected Representation get(Variant variant) throws ResourceException {
 		getResponse().setStatus(Status.REDIRECTION_SEE_OTHER);
-		if (getClientInfo().getAgent().matches(mobile)) {
+		if (getClientInfo().getAgent().toLowerCase().matches(mobile)) {
 			getResponse().setLocationRef("m.html");
 		} else {
 			getResponse().setLocationRef("d.html");
