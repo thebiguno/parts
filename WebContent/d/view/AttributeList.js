@@ -21,13 +21,6 @@ Ext.define('Parts.view.AttributeList', {
 					"icon": "img/minus-button.png",
 					"text": "Remove",
 					"disabled": true
-				},
-				{
-					"xtype": "button",
-					"itemId": "upload",
-					"icon": "img/upload-cloud.png",
-					"text": "Upload",
-					"disabled": true
 				}
 			]
 		},
