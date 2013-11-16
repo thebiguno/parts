@@ -10,7 +10,8 @@ Ext.define("Parts.view.Login", {
 				"title": "Parts",
 				"items": [
 					{ "xtype": "textfield", "name": "identifier", "placeHolder": "Identifier" },
-					{ "xtype": "passwordfield", "name": "secret", "placeHolder": "Password" }
+					{ "xtype": "passwordfield", "name": "secret", "placeHolder": "Password" },
+					{ "xtype": "checkboxfield", "name": "remember", "label": "Remember Me" }
 				]
 			},
 			{ "xtype": "label", "itemId": "message", "margin": 10, "html": "&nbsp;" },
@@ -19,7 +20,7 @@ Ext.define("Parts.view.Login", {
 				"ui": "action",
 				"text": "Authenticate",
 				"itemId": "authenticate",
-				"margin": "10",
+				"margin": "10"
 			}
 		]
 	}
