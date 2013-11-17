@@ -13,7 +13,7 @@ Ext.define("Parts.controller.Login", {
 							window.location.reload();
 						},
 						"failure": function(form, result) {
-							form.down('label[itemId=message]').setHtml(result.msg);
+							form.down('label[itemId=message]').setHtml("Invalid Credentials");
 						}
 					});
 				}

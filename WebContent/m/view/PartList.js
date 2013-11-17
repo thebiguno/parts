@@ -9,13 +9,20 @@ Ext.define("Parts.view.PartList", {
 		"itemTpl": "<div>{number}<span style='float: right'>{available} / {minimum}</span><br/><span style='font-size:.6em'>{description}<span></div>",
 		"items": [
 			{
-				"xtype": "toolbar",
+				"xtype": "titlebar",
 				"docked": "top",
 				"items": [
 					{
 						"xtype": "searchfield",
 						"placeHolder": "Search",
-						"itemId": "search"
+						"itemId": "search",
+						"align": "left"
+					},
+					{
+						"xtype": "button",
+						"text": "Logout",
+						"itemId": "logout",
+						"align": "right"
 					}
 				]
 			}

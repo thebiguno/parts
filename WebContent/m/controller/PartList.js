@@ -21,6 +21,17 @@ Ext.define("Parts.controller.PartList", {
 					store.setParams({"q":newValue});
 					store.load();
 				}
+			},
+			"button[itemId=logout]": {
+				"tap": function() {
+					Ext.Ajax.request({
+						"url": "index",
+						"method": "DELETE",
+						"success": function() {
+							window.location.reload();
+						}
+					});
+				}
 			}
 		}
 	}

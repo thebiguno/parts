@@ -9,8 +9,8 @@ Ext.define("Parts.view.Login", {
 				"xtype": "fieldset",
 				"title": "Parts",
 				"items": [
-					{ "xtype": "textfield", "name": "identifier", "placeHolder": "Identifier" },
-					{ "xtype": "passwordfield", "name": "secret", "placeHolder": "Password" },
+					{ "xtype": "textfield", "name": "identifier", "label": "Identifier" },
+					{ "xtype": "passwordfield", "name": "secret", "label": "Password" },
 					{ "xtype": "checkboxfield", "name": "remember", "label": "Remember Me" }
 				]
 			},
