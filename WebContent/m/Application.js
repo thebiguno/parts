@@ -5,6 +5,14 @@ Ext.application({
 	"viewport": {
 		"autoMaximize": true
 	},
+	
+	"css": [
+		{
+			"path": "resources/css/cupertino.css",
+			"platform": ["ios"],
+			"theme": "cupertino"
+		}
+	],
 
 	"stores": ["PartList"],
 	"views": ["PartList", "PartDetail"],

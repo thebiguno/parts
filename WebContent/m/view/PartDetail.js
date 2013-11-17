@@ -22,6 +22,7 @@ Ext.define("Parts.view.PartDetail", {
 			},
 			{
 				"xtype": "fieldset",
+				"title": "Attributes",
 				"items": [
 					{
 						"xtype": "textfield",
@@ -56,6 +57,7 @@ Ext.define("Parts.view.PartDetail", {
 			},
 			{
 				"xtype": "fieldset",
+				"title": "Additional Attributes",
 				"itemId": "extended",
 				"items": []
 			}
