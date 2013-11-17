@@ -69,7 +69,7 @@ Ext.define("Parts.controller.Login", {
 						var card = button.up('form').up('panel').getLayout().next();
 						card.down('hiddenfield[name=identifier]').setValue(key);
 					} else {
-						cmp.up('form').down('label[itemId=message]').setText(action.result.msg);
+						cmp.up('form').down('label[itemId=message]').setText("Invalid credentials");
 					}
 				}
 			});
@@ -87,7 +87,7 @@ Ext.define("Parts.controller.Login", {
 					cmp.up('form').up('panel').getLayout().next();
 				},
 				"failure": function(form, action) {
-					cmp.up('form').down('label[itemId=message]').setText(action.result.msg);
+					cmp.up('form').down('label[itemId=message]').setText("Unable to register");
 				}
 			});
 		}
@@ -104,7 +104,7 @@ Ext.define("Parts.controller.Login", {
 					cmp.up('form').up('panel').getLayout().next();
 				},
 				"failure": function(form, action) {
-					cmp.up('form').down('label[itemId=message]').setText(action.result.msg);
+					cmp.up('form').down('label[itemId=message]').setText("Unable to reset password");
 				}
 			});
 		}
@@ -121,7 +121,7 @@ Ext.define("Parts.controller.Login", {
 					window.location.reload();
 				},
 				"failure": function(form, action) {
-					cmp.up('form').down('label[itemId=message]').setText(action.result.msg);
+					cmp.up('form').down('label[itemId=message]').setText("Unable to activate account");
 				}
 			});
 		}
