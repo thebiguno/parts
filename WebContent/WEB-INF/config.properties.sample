@@ -1,12 +1,12 @@
 jdbc.driver org.postgresql.Driver
-jdbc.url jdbc:postgresql://zwolle.local/parts
+jdbc.url jdbc:postgresql://localhost/parts
 jdbc.user parts
 jdbc.password parts
 
-mail.smtp.from=
+mail.smtp.from=myusername@gmail.com
 mail.smtp.auth=true
-mail.smtp.username=
-mail.smtp.password=
+mail.smtp.username=myusername
+mail.smtp.password=mypassword
 mail.smtp.starttls.enable=true
 mail.smtp.host=smtp.gmail.com
 mail.smtp.port=587

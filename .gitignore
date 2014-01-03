@@ -1,4 +1,5 @@
 .DS_Store
 build
 WebContent/WEB-INF/db
+WebContent/WEB-INF/config.properties
 derby.log
