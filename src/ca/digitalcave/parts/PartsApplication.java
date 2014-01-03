@@ -6,8 +6,6 @@ import java.sql.Connection;
 import java.util.Locale;
 import java.util.Properties;
 
-import javax.crypto.spec.PBEKeySpec;
-
 import liquibase.Liquibase;
 import liquibase.database.DatabaseConnection;
 import liquibase.database.jvm.JdbcConnection;
@@ -31,9 +29,10 @@ import org.restlet.routing.Template;
 import org.restlet.service.StatusService;
 
 import ca.digitalcave.moss.crypto.Crypto;
-import ca.digitalcave.moss.crypto.Crypto.Algorithm;
 import ca.digitalcave.moss.crypto.Crypto.CryptoException;
 import ca.digitalcave.moss.restlet.CookieAuthenticator;
+import ca.digitalcave.moss.restlet.login.LoginRouter;
+import ca.digitalcave.moss.restlet.login.LoginRouterConfiguration;
 import ca.digitalcave.parts.data.BlobTypeHandler;
 import ca.digitalcave.parts.resource.AttributeResource;
 import ca.digitalcave.parts.resource.AttributesResource;
@@ -150,9 +149,7 @@ public class PartsApplication extends Application {
 	@Override  
 	public Restlet createInboundRoot() {
 		try {
-			final byte[] salt = {14, -43, -91, -67, 85, 55, 44, -115};
-
-			final Key key = Crypto.recoverKey(Algorithm.AES_128, new PBEKeySpec("password".toCharArray(), salt, 8, 128));
+			final Key key = new Crypto().generateSecretKey();
 			
 			final Router categoriesRouter = new Router(getContext());
 			categoriesRouter.attach("", CategoriesResource.class);
@@ -182,6 +179,10 @@ public class PartsApplication extends Application {
 			publicRouter.attach("/index", IndexResource.class);
 			publicRouter.attach("/categories", categegoryAuth);
 			publicRouter.attach("/import", importAuth);
+			final LoginRouterConfiguration loginConfig = new LoginRouterConfiguration();
+			loginConfig.identifierLabelKey = "EMAIL_LABEL";
+			loginConfig.showRegister = true;
+			publicRouter.attach("/login", new LoginRouter(this, loginConfig));
 			publicRouter.attachDefault(DefaultResource.class).setMatchingMode(Template.MODE_STARTS_WITH);
 	
 			final CookieAuthenticator optionalAuth = new CookieAuthenticator(getContext(), true, key);

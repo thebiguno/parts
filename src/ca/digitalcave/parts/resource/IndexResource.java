@@ -9,13 +9,13 @@ import org.restlet.representation.Variant;
 import org.restlet.resource.ResourceException;
 import org.restlet.security.User;
 
-import ca.digitalcave.moss.restlet.AbstractCookieIndexResource;
+import ca.digitalcave.moss.restlet.CookieAuthInterceptResource;
 import ca.digitalcave.parts.PartsApplication;
 import ca.digitalcave.parts.data.AccountMapper;
 import ca.digitalcave.parts.model.Account;
 
 
-public class IndexResource extends AbstractCookieIndexResource {
+public class IndexResource extends CookieAuthInterceptResource {
 
 	final String mobile = ".*android.*|.*blackberry.*|.*iphone.*|.*ipod.*|.*iemobile.*|.*opera mobile.*|.*palmos.*|.*webos.*|.*googlebot-mobile.*";
 
@@ -37,50 +37,55 @@ public class IndexResource extends AbstractCookieIndexResource {
 	}
 	
 	@Override
-	protected boolean insertUser(User user, String activationKey) {
+	protected String insertUser(User user, String activationKey) {
 		final PartsApplication application = (PartsApplication) getApplication();
 		final SqlSession sql = application.getSqlFactory().openSession(true);
 		final Account account = new Account();
 		try {
 			account.setIdentifier(user.getIdentifier());
-			account.setEmail(user.getEmail());
+			account.setEmail(user.getIdentifier());
 			account.setFirstName(user.getFirstName());
 			account.setLastName(user.getLastName());
 			account.setActivationKey(activationKey);
 			
 			sql.getMapper(AccountMapper.class).insert(account);
-			return true;
+			return user.getEmail();
 		} catch (Throwable e) {
-			return false;
+			return null;
 		} finally {
 			sql.close();
 		}
 	}
-	
+
 	@Override
-	protected void updateActivationKey(String identifier, String activationKey) {
+	protected String updateActivationKey(String identifier, String activationKey) {
 		final PartsApplication application = (PartsApplication) getApplication();
 		final SqlSession sql = application.getSqlFactory().openSession(true);
 		try {
 			sql.getMapper(AccountMapper.class).updateActivationKey(identifier, activationKey);
-		} finally {
+			return identifier;
+		}
+		catch (Throwable e){
+			return null;
+		}
+		finally {
 			sql.close();
 		}
 	}
-	
+
 	@Override
-	protected void updateSecret(String identifier, String activationKey, String hashSecret) {
+	protected void updateSecret(String activationKey, String hash) {
 		final PartsApplication application = (PartsApplication) getApplication();
 		final SqlSession sql = application.getSqlFactory().openSession(true);
 		try {
-			sql.getMapper(AccountMapper.class).updateSecret(activationKey, hashSecret);
+			sql.getMapper(AccountMapper.class).updateSecret(activationKey, hash);
 		} finally {
 			sql.close();
 		}
 	}
-	
+
 	@Override
-	protected boolean isAllowEnrole() {
+	protected boolean isAllowRegister() {
 		return true;
 	}
 

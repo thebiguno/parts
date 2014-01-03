@@ -21,9 +21,14 @@ div.word-wrap {
 <#if user??>
 		<script type="text/javascript" src="d/Application.js"></script>
 <#else>
-		<script type="text/javascript" src="d/Login.js"></script>
+		<script type="text/javascript" src="login/app/Application.js"></script>
 </#if>
 	</head>
 	<body>
+<#if !(user??)>
+		<div style="height: 80%; margin: 0 auto -2em;">
+			<div id="loginform" style="width: 500px; height: 250px; margin-top: 50px; margin-left: auto; margin-right: auto; "></div>
+		</div>
+</#if>
 	</body>
 </html>
