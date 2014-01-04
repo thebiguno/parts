@@ -50,6 +50,7 @@ public class DigikeyResource extends ServerResource {
 		final PartsMapper mapper = sql.getMapper(PartsMapper.class);
 		final Attribute catAttr = Attribute.remove("Category", attributes);
 		final Attribute famAttr = Attribute.remove("Family", attributes);
+		if (catAttr == null || famAttr == null) return;
 		final List<Category> categories = mapper.selectDigikey(account, catAttr.getValue(), famAttr.getValue());
 		if (categories.size() == 0) {
 			final Category category = new Category();
@@ -67,7 +68,7 @@ public class DigikeyResource extends ServerResource {
 		final Part part = new Part();
 		part.setCategory(categories.get(1).getId());
 		final Attribute num = Attribute.remove("Manufacturer Part Number", attributes);
-		if (num != null) part.setNumber(num.getValue());
+		part.setNumber(num != null && num.getValue() != null ? num.getValue() : "Unknown");
 		final Attribute desc = Attribute.remove("Description", attributes);
 		if (desc != null) part.setDescription(desc.getValue());
 		final Attribute notes = Attribute.remove("Notes", attributes);
