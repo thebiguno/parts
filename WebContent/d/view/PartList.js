@@ -50,8 +50,9 @@ Ext.define('Parts.view.PartList', {
 				"xtype": "textfield",
 				"maxLength": 255
 			},
-			"renderer": function(value) {
-				return '<div class="word-wrap">' + value + '</div>';
+			"renderer": function(value, metadata) {
+				metadata.tdCls = "word-wrap";
+				return value;
 			}
 		},
 		{
@@ -63,8 +64,9 @@ Ext.define('Parts.view.PartList', {
 				"xtype": "textfield",
 				"maxLength": 2048
 			},
-			"renderer": function(value) {
-				return '<div class="word-wrap">' + value + '</div>';
+			"renderer": function(value, metadata) {
+				metadata.tdCls = "word-wrap";
+				return value;
 			}
 		},
 		{
